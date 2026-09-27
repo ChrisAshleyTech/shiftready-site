@@ -6,30 +6,10 @@
 <title>ShiftReady</title>
 <meta name="description" content="A job simulator for identity and access management. Work a real IAM ticket queue, then audit your own work.">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/assets/css/tokens.css">
 <style>
-:root{
-  --bg:#F2F4F6; --panel:#FFFFFF; --panel2:#E9EDF1; --ink:#121B24; --muted:#56636F; --line:#D3DAE1;
-  --accent:#0B6E6E; --accent-ink:#FFFFFF; --accent-soft:#D9ECEB; --bad:#B42318; --bad-soft:#FBE3E0; --ok:#1E7A3C; --ok-soft:#DFF2E4; --warn:#94600A; --warn-soft:#FBEFD6;
-  --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
-  --cond:"IBM Plex Sans Condensed","IBM Plex Sans",system-ui,sans-serif;
-  --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
-}
-@media (prefers-color-scheme: dark){
-  :root:not([data-theme="light"]){color-scheme:dark;
-    --bg:#0E141A; --panel:#161F28; --panel2:#1C2733; --ink:#E6ECF1; --muted:#94A2AF; --line:#2A3643;
-    --accent:#4FC1B8; --accent-ink:#0B1A1A; --accent-soft:#143533; --bad:#F0776B; --bad-soft:#3D1B18; --ok:#5CC98A; --ok-soft:#173524; --warn:#E3A63C; --warn-soft:#3A2C10;}
-}
-:root[data-theme="dark"]{color-scheme:dark;
-  --bg:#0E141A; --panel:#161F28; --panel2:#1C2733; --ink:#E6ECF1; --muted:#94A2AF; --line:#2A3643;
-  --accent:#4FC1B8; --accent-ink:#0B1A1A; --accent-soft:#143533; --bad:#F0776B; --bad-soft:#3D1B18; --ok:#5CC98A; --ok-soft:#173524; --warn:#E3A63C; --warn-soft:#3A2C10;}
-*{box-sizing:border-box}
-body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.55;margin:0}
-a{color:var(--accent)}
-:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .wrap{max-width:1120px;margin:0 auto;padding-inline:20px}
-h1,h2,h3{font-family:var(--cond);text-wrap:balance;margin:0;letter-spacing:-.01em}
-.mono{font-family:var(--mono)}
-.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}
+h1,h2,h3{letter-spacing:-.01em}
 nav.top{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-block:18px}
 .logo{font-family:var(--cond);font-weight:700;font-size:22px;color:var(--ink);text-decoration:none;display:flex;align-items:center;gap:8px}
 .logo .dot{width:10px;height:10px;border-radius:2px;background:var(--accent);display:inline-block}
@@ -37,7 +17,7 @@ nav.top{display:flex;align-items:center;justify-content:space-between;gap:16px;p
 .navlinks a{color:var(--muted);text-decoration:none}
 .navlinks a:hover{color:var(--ink)}
 @media (max-width:720px){.navlinks .hide-sm{display:none}}
-.btn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--panel);color:var(--ink);padding:11px 18px;border-radius:8px;font-weight:600;font-size:15px;text-decoration:none;cursor:pointer;font-family:inherit}
+.btn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--field);background:var(--panel);color:var(--ink);padding:11px 18px;border-radius:8px;font-weight:600;font-size:15px;text-decoration:none;cursor:pointer;font-family:inherit}
 .btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
 .btn.sm{padding:7px 12px;font-size:14px}
 .hero{display:grid;gap:40px;grid-template-columns:1fr;padding-block:40px 64px;align-items:center}
