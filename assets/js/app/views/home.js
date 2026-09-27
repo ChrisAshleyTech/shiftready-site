@@ -65,7 +65,7 @@ export function render(){
   return `<div class="home-grid">
     <div class="stack lg">
       <section class="panel pad hero-card"><span class="eyebrow">${h(hero.k)}</span><h1 style="font-size:var(--fs-2xl)">${hero.t}</h1><p class="lead">${hero.p}</p>
-        ${hero.prog ? `<div class="progress-line">${meter(Math.round(hero.prog.done / hero.prog.n * 100), "Tickets closed")}</div>` : ""}
+        ${hero.prog ? `<div class="progress-line">${meter(Math.round(hero.prog.done / hero.prog.n * 100), "Tickets closed", true)}</div>` : ""}
         <div class="btns">${hero.a}</div></section>
       ${week}
     </div>

@@ -1,0 +1,9 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Viewport frame</title>
+<style>body{margin:0;background:#888;display:flex;gap:16px;padding:8px}iframe{border:0;background:#fff;flex:none}</style></head>
+<body><script>
+// Renders a page at exact viewport widths (headless Chrome enforces a ~500px minimum window).
+// Usage: frame.html?w=390&h=1400&src=/tests/seed.html%3Fs%3Dmon%26to%3D%2523/home
+const q = new URLSearchParams(location.search);
+for (const w of (q.get("w") || "390").split(",")) { const f = document.createElement("iframe"); f.width = w; f.height = q.get("h") || 1400; f.src = q.get("src"); f.title = w + "px"; document.body.append(f); }
+</script></body></html>

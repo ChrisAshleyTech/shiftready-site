@@ -47,7 +47,8 @@ export function userPills(u){
   return p.join("");
 }
 export const checksHtml = checks => `<div class="checks">${checks.map(c=>`<div class="check ${c.pass?"pass":"fail"}"><span class="mk" aria-hidden="true">${c.pass?"✓":"✗"}</span><span><span class="sr-only">${c.pass?"Passed: ":"Missed: "}</span>${h(c.label)}${c.detail?`<div class="why">${h(c.detail)}</div>`:""}</span><span class="pts">${c.pass?c.pts:0}/${c.pts}</span></div>`).join("")}</div>`;
-export const meter = (p, label) => `<div class="meter ${p==null?"":p>=85?"ok":p>=65?"":p>=45?"warn":"bad"}" role="img" aria-label="${h(label)}: ${p==null?"not started":p+"%"}"><span style="width:${p??0}%"></span></div>`;
+// Score meters are toned by result; progress meters (neutral) always use the accent.
+export const meter = (p, label, neutral) => `<div class="meter ${neutral||p==null?"":p>=85?"ok":p>=65?"":p>=45?"warn":"bad"}" role="img" aria-label="${h(label)}: ${p==null?"not started":p+"%"}"><span style="width:${p??0}%"></span></div>`;
 export const userName = id => (S.users[id] ? U(id).name : id);
 
 // ---------- Toasts ----------

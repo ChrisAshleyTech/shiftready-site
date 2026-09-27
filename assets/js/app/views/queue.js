@@ -76,7 +76,8 @@ function ticket(id){
   else if (!active) s += `<div class="callout warn spread"><span>Another ticket is active. Make this one active before you work on it, so your changes are logged against it.</span><button class="btn" data-a="resume" data-tid="${id}">Make this the active ticket</button></div>`;
   else s += working(id);
 
-  s += hints(id);
+  // Working tickets place hints between the actions and closing (see working()).
+  if (closed || ts.status === "new" || !active) s += hints(id);
   return s + `</article>`;
 }
 
@@ -88,6 +89,7 @@ function working(id){
       <div class="control-row"><div class="field" style="flex:0 1 240px"><label for="esc-${id}">Escalate to</label><select id="esc-${id}"><option>Security team</option><option>Account owner</option><option>Requester's manager</option></select></div><button class="btn" data-a="escalate" data-tid="${id}">Escalate</button></div>
       ${ts.esc.length ? `<p class="muted" style="font-size:14px">Escalated to: ${ts.esc.map(h).join(", ")}</p>` : ""}
     </section>
+    ${hints(id)}
     <section class="sec" aria-labelledby="ct-h"><h3 id="ct-h">Close ticket</h3>
       ${t.question ? `<div class="field"><label for="ans-${id}">Answer for the auditor</label><input type="text" id="ans-${id}" value="${h(ts.answer || "")}" aria-describedby="ans-help-${id}"><span class="help" id="ans-help-${id}">Usernames (first.last) separated by commas, or "none".</span></div>` : ""}
       <div class="field"><label for="note-${id}">Resolution notes <span class="muted">(optional)</span></label><textarea id="note-${id}" placeholder="What you did and why">${h(ts.note || "")}</textarea></div>

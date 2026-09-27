@@ -50,7 +50,7 @@ function consequences(tab){
   if (S.shift !== "thu") {
     const open = T.filter(t => !S.tickets[t.id].checks).length;
     return `<section class="panel pad stack" aria-labelledby="cq-h"><h2 id="cq-h" style="font-size:var(--fs-lg)">What Monday will cause</h2>
-      <p class="muted">Consequences are revealed when the Thursday shift starts. Thirteen of Monday's decisions can come back as incidents or requests.${open ? ` Finish the ${plural(open, "open ticket", "open tickets")} first.` : ""}</p></section>`;
+      <p class="muted">Consequences are revealed when the Thursday shift starts. ${CONSEQ.length} of Monday's decisions can come back as incidents or requests.${open ? ` Finish the ${plural(open, "open ticket", "open tickets")} first.` : ""}</p></section>`;
   }
   const items = CONSEQ.map((c, i) => {
     const bad = S.report[i] && S.report[i].bad, L = CONSEQ_LINKS[c.key], mon = TK[L.mon], mts = S.tickets[L.mon];
