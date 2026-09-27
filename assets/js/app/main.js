@@ -12,8 +12,9 @@ import * as queue from "./views/queue.js";
 import * as directory from "./views/directory.js";
 import * as reference from "./views/reference.js";
 const soon = { render: () => `<div class="page-h"><h1>Coming soon</h1><p>This page is being built.</p></div>` };
- const results = soon; const report = soon;
+ const report = soon;
 import * as grc from "./views/grc.js";
+import * as results from "./views/results.js";
 
 const VIEWS = {
   home: { view: home, title: "Home" },
