@@ -8,7 +8,7 @@ import { ui, toast, num, plural } from "./ui.js";
 import { render, go } from "./main.js";
 import { ask as tutorAsk } from "./views/tutor.js";
 import { tutorIsOpen } from "./views/queue.js";
-const saveName = () => {};
+import { saveName } from "./views/report.js";
 
 const val = id => (document.getElementById(id) || {}).value;
 const focusSoon = sel => requestAnimationFrame(() => { const el = document.querySelector(sel); if (el) { if (!el.hasAttribute("tabindex") && !/^(A|BUTTON|INPUT|SELECT|TEXTAREA)$/.test(el.tagName)) el.setAttribute("tabindex", "-1"); el.focus(); el.scrollIntoView({ block: "nearest" }); } });
