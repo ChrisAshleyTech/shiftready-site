@@ -9,9 +9,10 @@ import { h, num, pct, ui } from "./ui.js";
 import { actions } from "./actions.js";
 import * as home from "./views/home.js";
 import * as queue from "./views/queue.js";
+import * as directory from "./views/directory.js";
 import * as reference from "./views/reference.js";
 const soon = { render: () => `<div class="page-h"><h1>Coming soon</h1><p>This page is being built.</p></div>` };
- const directory = soon; const results = soon; const report = soon;
+ const results = soon; const report = soon;
 import * as grc from "./views/grc.js";
 
 const VIEWS = {
