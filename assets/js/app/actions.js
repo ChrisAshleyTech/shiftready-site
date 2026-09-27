@@ -6,8 +6,8 @@ import { TK } from "../engine/tickets.js";
 import { GK, gCollect, gSubmit } from "../engine/grc.js";
 import { ui, toast, num, plural } from "./ui.js";
 import { render, go } from "./main.js";
-const tutorAsk = () => {};
-const tutorIsOpen = () => false;
+import { ask as tutorAsk } from "./views/tutor.js";
+import { tutorIsOpen } from "./views/queue.js";
 const saveName = () => {};
 
 const val = id => (document.getElementById(id) || {}).value;
