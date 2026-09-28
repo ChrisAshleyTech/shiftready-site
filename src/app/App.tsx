@@ -26,11 +26,12 @@ import Grc from "./pages/Grc";
 import Soon from "./pages/Soon";
 import Home from "./pages/Home";
 import Queue from "./pages/Queue";
+import Directory from "./pages/Directory";
 
 const PAGES: Record<string, { C: ComponentType<{ r: Route }>; title: string }> = {
   home: { C: Home, title: "Home" },
   queue: { C: Queue, title: "Ticket queue" },
-  directory: { C: Soon, title: "Directory" },
+  directory: { C: Directory, title: "Directory" },
   policy: { C: Reference, title: "Policy & matrix" },
   hr: { C: Reference, title: "HR feed" },
   log: { C: Reference, title: "Audit log" },
