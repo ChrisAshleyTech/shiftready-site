@@ -6,3 +6,4 @@ Thumbs.db
 *.log
 test-results/
 playwright-report/
+scripts/.demo/

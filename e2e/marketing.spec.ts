@@ -28,24 +28,36 @@ test("pricing: toggle, badges, coming-soon labels and waitlist tier selection", 
 
 test.describe("with motion", () => {
   test.use({ reducedMotion: "no-preference" });
-  test("the pause button stops the looping demo", async ({ page }) => {
+  test("hero video autoplays muted and looping, and the pause button stops it", async ({ page }) => {
     await page.goto("/");
-    const step = page.getByText(/^Step \d of 7:/);
-    await expect(step).toBeVisible();
-    const pause = page.getByRole("button", { name: "Pause animations" }).first();
-    await pause.click();
-    await expect(page.getByRole("button", { name: "Play animations" }).first()).toHaveAttribute("aria-pressed", "true");
-    const frozen = await step.innerText();
-    await page.waitForTimeout(4500);
-    await expect(step).toHaveText(frozen);
+    const v = page.locator("[data-hero-video]");
+    await expect(v).toHaveJSProperty("muted", true);
+    await expect(v).toHaveJSProperty("loop", true);
+    await expect.poll(() => v.evaluate((el: HTMLVideoElement) => !el.paused)).toBe(true);
+    await page.getByRole("button", { name: "Pause animations" }).first().click();
+    await expect.poll(() => v.evaluate((el: HTMLVideoElement) => el.paused)).toBe(true);
+    await page.getByRole("button", { name: "Play animations" }).first().click();
+    await expect.poll(() => v.evaluate((el: HTMLVideoElement) => !el.paused)).toBe(true);
   });
 });
 
-test("reduced motion: demo shows the finished ticket and there is nothing to pause", async ({ page }) => {
+test("reduced motion: a still image replaces the video, with an opt-in play button and a text description", async ({ page }) => {
   await page.goto("/"); // config sets reducedMotion: "reduce"
-  await expect(page.getByText("Step 7 of 7: Graded on outcome and process")).toBeVisible();
+  await expect(page.locator("[data-hero-still]")).toBeVisible();
+  await expect(page.locator("[data-hero-video]")).toHaveCount(0);
   await expect(page.getByRole("button", { name: /Pause animations/ })).toHaveCount(0);
-  await expect(page.locator("dd").filter({ hasText: "131" }).first()).toBeVisible(); // count-up shows the final value
+  await expect(page.locator("dd").filter({ hasText: "131" }).first()).toBeVisible();
+  await page.getByText("Video description").click();
+  await expect(page.locator("#demo-desc")).toContainText("Caused by your Monday shift");
+  await page.getByRole("button", { name: "Play the walkthrough" }).click();
+  await expect(page.locator("[data-hero-video]")).toHaveJSProperty("controls", true);
+});
+
+test("demo video files stay under 5 MB", async ({ request }) => {
+  for (const f of ["/video/demo.mp4", "/video/demo.webm", "/video/demo-poster.webp", "/video/demo-poster.jpg"]) {
+    const r = await request.get(f); expect(r.ok(), f).toBe(true);
+    expect((await r.body()).length, f).toBeLessThan(5 * 1024 * 1024);
+  }
 });
 
 test("landing: sections in order and photo credits", async ({ page }) => {

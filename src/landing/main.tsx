@@ -14,7 +14,7 @@ import { Photo, WaitlistBand } from "@/marketing/sections";
 import { Pricing } from "@/marketing/Pricing";
 import { INDUSTRIES } from "@/marketing/catalog";
 import { cn } from "@/lib/utils";
-import { TicketDemo } from "./TicketDemo";
+import { HeroVideo } from "./HeroVideo";
 import "@/index.css";
 
 const CAPABILITIES: { icon: typeof UsersRound; tint: string; title: string; text: string; early?: boolean }[] = [
@@ -76,7 +76,7 @@ function Landing() {
               </Reveal>
             </div>
             <Reveal from="right" delay={0.1}>
-              <TicketDemo />
+              <HeroVideo />
               <div className="mt-3 flex justify-end"><PauseButton /></div>
             </Reveal>
           </div>
