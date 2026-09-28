@@ -1,12 +1,9 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import App from "./App";
 import "@/index.css";
 
-// Placeholder while the redesign is built step by step.
 createRoot(document.getElementById("root")!).render(
-  <StrictMode>
-    <main className="grid min-h-svh place-items-center p-6 text-center">
-      <div><h1 className="text-3xl font-semibold">ShiftReady</h1><p className="text-muted-foreground mt-2">app: being rebuilt.</p></div>
-    </main>
-  </StrictMode>,
+  <StrictMode><TooltipProvider delayDuration={300}><App /></TooltipProvider></StrictMode>,
 );
