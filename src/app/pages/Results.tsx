@@ -1,6 +1,7 @@
 // Shift results: per-ticket scores with hint penalties, Solo vs Assisted, and the
 // Monday-to-Thursday consequence timeline.
-import { ArrowRight, ShieldCheck, Siren } from "lucide-react";
+import { ArrowRight, ListChecks, ShieldCheck, Siren } from "lucide-react";
+import { IllusWeek } from "@/components/brand/illustrations";
 import { S } from "@/engine/store.js";
 import { T, TK } from "@/engine/tickets.js";
 import { CONSEQ, THU_T } from "@/engine/thursday.js";
@@ -22,9 +23,10 @@ function Consequences() {
   if (S.shift !== "thu") {
     const open = T.filter((t: any) => !S.tickets[t.id].checks).length;
     return (
-      <Card className="gap-2 p-5">
-        <h2 className="text-lg font-semibold">What Monday will cause</h2>
-        <p className="text-sm text-muted-foreground">Consequences are revealed when the Thursday shift starts. {CONSEQ.length} of Monday's decisions can come back as incidents or requests.{open ? ` Finish the ${plural(open, "open ticket", "open tickets")} first.` : ""}</p>
+      <Card className="grid items-center gap-5 rounded-3xl p-6 sm:grid-cols-[auto_1fr]">
+        <IllusWeek className="h-28 w-auto" />
+        <div className="space-y-2"><h2 className="text-xl font-bold">What Monday will cause</h2>
+        <p className="text-sm text-muted-foreground">Consequences are revealed when the Thursday shift starts. {CONSEQ.length} of Monday's decisions can come back as incidents or requests.{open ? ` Finish the ${plural(open, "open ticket", "open tickets")} first.` : ""}</p></div>
       </Card>
     );
   }
@@ -82,7 +84,7 @@ export default function Results({ r }: { r: Route }) {
   ];
   return (
     <>
-      <PageHeader title="Shift results" sub="Every ticket's grade after hint penalties. You pay for the highest hint tier you opened: nudge −10%, policy clause −25%, exact steps −50%.">
+      <PageHeader icon={ListChecks} tint="bg-hue-green/15 text-ok" title="Shift results" sub="Every ticket's grade after hint penalties. You pay for the highest hint tier you opened: nudge −10%, policy clause −25%, exact steps −50%.">
         {thu && (
           <nav aria-label="Shift" className="inline-flex rounded-lg border bg-muted/40 p-1">
             {([["mon", "Monday"], ["thu", "Thursday"]] as const).map(([k, l]) => (
@@ -94,8 +96,8 @@ export default function Results({ r }: { r: Route }) {
       <div className="space-y-8">
         <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-5">
           {tiles.map(([k, v, d]) => (
-            <Card key={k} className="gap-1 p-4"><span className="text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">{k}</span>
-              <span className="font-mono text-2xl tabular-nums">{v}</span><span className="text-xs text-muted-foreground">{d}</span></Card>))}
+            <Card key={k} className="lift gap-1 rounded-2xl p-5"><span className="text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">{k}</span>
+              <span className="text-3xl font-extrabold tabular-nums text-primary-strong">{v}</span><span className="text-xs text-muted-foreground">{d}</span></Card>))}
         </div>
         <Consequences />
         <section aria-labelledby="tt-h" className="space-y-3">

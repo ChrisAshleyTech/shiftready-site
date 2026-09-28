@@ -7,7 +7,7 @@ import { ticketTitle } from "@/engine/report.js";
 import { Card } from "@/components/ui/card";
 import { ChartContainer, type ChartConfig } from "@/components/ui/chart";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { cn } from "@/lib/utils";
+import { IllusChart } from "@/components/brand/illustrations";
 
 const nf = new Intl.NumberFormat("en-US", { maximumFractionDigits: 1 });
 const pct = (n: number | null | undefined) => (n == null ? "–" : n + "%");
@@ -22,7 +22,6 @@ export function band(d: any) {
   const [label, tone] = p >= 90 && share <= 0.1 ? ["Ready for a real queue", "ok"] : p >= 75 && share <= 0.25 ? ["Nearly ready", "ok"] : p >= 60 ? ["Developing", "warn"] : ["Early practice", "bad"];
   return { label, tone, note: d.thu && d.thu.done === d.thu.n ? "Based on the full week." : "Based on Monday only. The Thursday shift isn't finished." };
 }
-const TONE: Record<string, string> = { ok: "bg-ok/12 text-ok border-ok/30", warn: "bg-warn/12 text-warn border-warn/30", bad: "bg-bad/12 text-bad border-bad/30", neutral: "bg-muted text-muted-foreground border-border" };
 
 function Tile({ k, v, d }: { k: string; v: string; d: string }) {
   return <Card className="gap-1 p-4"><span className="text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">{k}</span><span className="font-mono text-2xl tabular-nums">{v}</span><span className="text-xs text-muted-foreground">{d}</span></Card>;
@@ -50,17 +49,18 @@ export function ReportView({ d, own = false }: { d: any; own?: boolean }) {
 
   return (
     <article aria-labelledby="rp-h" className="space-y-6">
-      <header className="relative overflow-hidden rounded-2xl border bg-card p-6 md:p-8">
-        <div aria-hidden className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,var(--border)_1px,transparent_1px),linear-gradient(to_bottom,var(--border)_1px,transparent_1px)] bg-[size:32px_32px] opacity-40 [mask-image:radial-gradient(ellipse_at_top_right,black,transparent_70%)]" />
+      {/* Fixed deep blue-to-violet so white text stays >= 6:1 in both themes. */}
+      <header className="relative grid items-center gap-6 overflow-hidden rounded-3xl bg-gradient-to-br from-[#1d4ed8] via-[#2563eb] to-[#6d28d9] p-6 text-white shadow-xl shadow-primary/20 md:grid-cols-[1fr_auto] md:p-9">
         <div className="relative space-y-3">
-          <p className="flex items-center gap-2 font-mono text-xs uppercase tracking-[0.12em] text-primary"><ShieldCheck className="size-3.5" aria-hidden />ShiftReady readiness report</p>
-          <h1 id="rp-h" tabIndex={-1} data-page-title className="text-3xl font-semibold md:text-4xl">{d.name || "IAM analyst readiness"}</h1>
-          <p className="text-muted-foreground">IAM Ops track · Pacific Crest Logistics simulation · {date}</p>
+          <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.14em] text-white/85"><ShieldCheck className="size-4" aria-hidden />ShiftReady readiness report</p>
+          <h1 id="rp-h" tabIndex={-1} data-page-title className="text-3xl font-extrabold md:text-5xl">{d.name || "IAM analyst readiness"}</h1>
+          <p className="text-white/90">IAM Ops track · Pacific Crest Logistics simulation · {date}</p>
           <div className="flex flex-wrap items-center gap-3 pt-1">
-            <span className={cn("rounded-lg border px-3 py-1.5 text-sm font-semibold", TONE[b.tone])}>{b.label}</span>
-            <span className="text-sm text-muted-foreground">{b.note}</span>
+            <span className="rounded-lg bg-white px-3 py-1.5 text-sm font-bold text-[#1d4ed8]">{b.label}</span>
+            <span className="text-sm text-white/90">{b.note}</span>
           </div>
         </div>
+        <div className="relative hidden rounded-3xl bg-white/95 p-4 md:block"><IllusChart className="h-36 w-auto" /></div>
       </header>
       <section aria-label="Headline numbers" className="grid grid-cols-2 gap-3 lg:grid-cols-5">
         <Tile k="Week score" v={pct(d.week)} d="After hint penalties" />

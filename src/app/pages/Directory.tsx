@@ -1,6 +1,6 @@
 // Directory console: searchable, sortable account table with an account detail panel.
 import { useRef, useState } from "react";
-import { ArrowDown, ArrowUp, ChevronLeft, Search, ShieldAlert } from "lucide-react";
+import { Users, ArrowDown, ArrowUp, ChevronLeft, Search, ShieldAlert } from "lucide-react";
 import { S, U } from "@/engine/store.js";
 import { ROLES, ALL_GROUPS, fmtDay } from "@/engine/company.js";
 import { TK } from "@/engine/tickets.js";
@@ -13,6 +13,7 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { commit, ui, lastTxt, plural, focusSoon, type Route } from "../sim";
 import { doAct } from "../actions";
+import { IllusSearch } from "@/components/brand/illustrations";
 import { PageHeader, UserTags, SectionLabel, Empty } from "../components/bits";
 
 const STATUS: [string, string][] = [["all", "All statuses"], ["enabled", "Enabled"], ["disabled", "Disabled"], ["locked", "Locked"], ["prehire", "Pre-hire"], ["contractor", "Contractors"], ["service", "Service accounts"]];
@@ -121,7 +122,7 @@ export default function Directory({ r }: { r: Route }) {
   const clear = () => { ui.dirQ = ""; ui.dirDept = "All"; ui.dirStatus = "all"; commit(); focusSoon("#dir-q"); };
   return (
     <>
-      <PageHeader title="Directory" sub={`Pacific Crest's identity directory: ${Object.keys(S.users).length} accounts. Search, filter, then open an account to change it.`} />
+      <PageHeader icon={Users} tint="bg-hue-violet/12 text-[color:var(--hue-violet)] dark:text-violet-300" title="Directory" sub={`Pacific Crest's identity directory: ${Object.keys(S.users).length} accounts. Search, filter, then open an account to change it.`} />
       <div className={cn("grid gap-4", sel && "xl:grid-cols-[minmax(0,1fr)_440px]")}>
         <div className={cn("min-w-0 space-y-3", sel && "hidden xl:block")}>
           <div role="search" className="grid gap-3 sm:grid-cols-[2fr_1fr_1fr]">
@@ -159,7 +160,7 @@ export default function Directory({ r }: { r: Route }) {
                 </TableBody>
               </Table>
             </div>
-          ) : <Empty title="No accounts match">Try a shorter search, or <button className="text-primary underline" onClick={clear}>clear the filters</button>.</Empty>}
+          ) : <Empty art={IllusSearch} title="No accounts match">Try a shorter search, or <button className="text-primary underline" onClick={clear}>clear the filters</button>.</Empty>}
         </div>
         {sel && <div className="xl:sticky xl:top-20 xl:max-h-[calc(100svh-6rem)] xl:overflow-y-auto"><Detail key={sel} id={sel} /></div>}
       </div>

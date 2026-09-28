@@ -1,5 +1,7 @@
 // Reference pages: runbook policy and access matrix, HR feed, audit log.
 import { useEffect } from "react";
+import { BookOpenText, ScrollText, Workflow } from "lucide-react";
+import { IllusShield } from "@/components/brand/illustrations";
 import { S } from "@/engine/store.js";
 import { ROLES, SOD, HR_FEED, fmtDay } from "@/engine/company.js";
 import { POLICIES } from "@/engine/policy.js";
@@ -42,7 +44,7 @@ function Policy({ r }: { r: Route }) {
   useEffect(() => { if (c) document.getElementById("pol-" + c)?.scrollIntoView({ block: "center" }); }, [c]);
   return (
     <>
-      <PageHeader title="Policy & access matrix" sub="The runbook every ticket is graded against. Check it before you guess." />
+      <PageHeader icon={BookOpenText} title="Policy & access matrix" sub="The runbook every ticket is graded against. Check it before you guess." />
       <div className="space-y-8">
         <Card className="gap-3 p-5 md:p-6">
           <SectionLabel>Runbook policies</SectionLabel>
@@ -65,7 +67,7 @@ function HR() {
   const rows = (S.shift === "thu" ? [{ type: "Return from leave", who: "Rachel Adams", detail: "Leave ended early. Returns today.", when: 3 }] : []).concat(HR_FEED);
   return (
     <>
-      <PageHeader title="HR feed" sub="Workday is the source of truth for joiners, movers and leavers. When a ticket and HR disagree, HR wins." />
+      <PageHeader icon={Workflow} tint="bg-hue-amber/15 text-warn" title="HR feed" sub="Workday is the source of truth for joiners, movers and leavers. When a ticket and HR disagree, HR wins." />
       <div className="overflow-x-auto rounded-lg border">
         <Table>
           <caption className="sr-only">HR events</caption>
@@ -88,7 +90,7 @@ function Log() {
   const noTicket = S.log.filter((e: any) => !e.ticket).length;
   return (
     <>
-      <PageHeader title="Audit log" sub="Every change is recorded with the ticket it was made under. Auditors sample this, and so will you on the GRC desk." />
+      <PageHeader icon={ScrollText} tint="bg-hue-pink/12 text-bad" title="Audit log" sub="Every change is recorded with the ticket it was made under. Auditors sample this, and so will you on the GRC desk." />
       {noTicket > 0 && <div className="mb-4 rounded-lg border border-warn/30 bg-warn/10 px-4 py-3 text-sm"><b>{plural(noTicket, "change has", "changes have")} no ticket.</b> Changes made without an active ticket are exceptions under control APD-03.</div>}
       {S.log.length ? (
         <div className="overflow-x-auto rounded-lg border">
@@ -106,7 +108,7 @@ function Log() {
             </TableBody>
           </Table>
         </div>
-      ) : <Empty title="No changes yet">Start a ticket in the <a className="text-primary underline" href="#/queue">queue</a>. Every change you make appears here.</Empty>}
+      ) : <Empty art={IllusShield} title="No changes yet">Start a ticket in the <a className="text-primary underline" href="#/queue">queue</a>. Every change you make appears here.</Empty>}
     </>
   );
 }

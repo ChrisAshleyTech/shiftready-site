@@ -1,5 +1,5 @@
 // Small shared pieces: status tags, grade checks, meters, page headers.
-import type { ReactNode } from "react";
+import type { ComponentType, ReactNode } from "react";
 import { Check, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { finalScore, isAssisted, hintsUsed } from "@/engine/state.js";
@@ -72,12 +72,16 @@ export function Meter({ value, label, neutral }: { value: number | null; label: 
   );
 }
 
-export function PageHeader({ title, sub, children }: { title: ReactNode; sub?: ReactNode; children?: ReactNode }) {
+// Page header with an optional coloured icon badge.
+export function PageHeader({ title, sub, children, icon: Icon, tint = "bg-primary/12 text-primary-strong" }: { title: ReactNode; sub?: ReactNode; children?: ReactNode; icon?: ComponentType<{ className?: string }>; tint?: string }) {
   return (
-    <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
-      <div className="min-w-0">
-        <h1 tabIndex={-1} data-page-title className="text-2xl font-semibold md:text-3xl">{title}</h1>
+    <div className="mb-7 flex flex-wrap items-end justify-between gap-4">
+      <div className="flex min-w-0 items-start gap-4">
+        {Icon && <span className={cn("hidden size-12 shrink-0 place-items-center rounded-2xl sm:grid", tint)}><Icon className="size-6" aria-hidden /></span>}
+        <div className="min-w-0">
+        <h1 tabIndex={-1} data-page-title className="text-2xl font-extrabold md:text-3xl">{title}</h1>
         {sub && <p className="mt-1 max-w-[70ch] text-muted-foreground">{sub}</p>}
+        </div>
       </div>
       {children}
     </div>
@@ -93,10 +97,12 @@ export function SectionLabel({ children, id }: { children: ReactNode; id?: strin
   return <h3 id={id} className="font-sans text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">{children}</h3>;
 }
 
-export function Empty({ title, children }: { title: string; children?: ReactNode }) {
+// Empty state with an optional illustration.
+export function Empty({ title, children, art: Art }: { title: string; children?: ReactNode; art?: ComponentType<{ className?: string }> }) {
   return (
-    <div className="rounded-xl border border-dashed border-border px-6 py-12 text-center">
-      <p className="font-display text-lg font-semibold">{title}</p>
+    <div className="rounded-3xl border-2 border-dashed border-primary/20 bg-card px-6 py-10 text-center">
+      {Art && <Art className="mx-auto mb-4 h-32 w-auto" />}
+      <p className="font-display text-xl font-bold">{title}</p>
       {children && <div className="mt-1 text-sm text-muted-foreground">{children}</div>}
     </div>
   );

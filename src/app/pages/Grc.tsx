@@ -2,6 +2,8 @@
 // in v1, so inputs keep the ids and names it expects.
 import { Fragment, useRef, useState } from "react";
 import { toast } from "sonner";
+import { ClipboardCheck } from "lucide-react";
+import { IllusChart } from "@/components/brand/illustrations";
 import { S } from "@/engine/store.js";
 import { save } from "@/engine/state.js";
 import { G, GK, gQs, gTotals, gCollect, gSubmit } from "@/engine/grc.js";
@@ -102,7 +104,7 @@ export default function Grc({ r }: { r: Route }) {
   );
   return (
     <>
-      <PageHeader title="GRC audit desk" sub="You're the IT auditor for Pacific Crest's Q3 SOX cycle. Test the access controls, judge what you find, and write it up. Task 4 audits your own IAM shift.">{tabs}</PageHeader>
+      <PageHeader icon={ClipboardCheck} tint="bg-hue-sky/15 text-info" title="GRC audit desk" sub="You're the IT auditor for Pacific Crest's Q3 SOX cycle. Test the access controls, judge what you find, and write it up. Task 4 audits your own IAM shift.">{tabs}</PageHeader>
       {controls ? (
         <div className="space-y-6">
           <div className="overflow-x-auto rounded-lg border"><table className="w-full text-sm"><caption className="sr-only">Controls in scope</caption>
@@ -129,7 +131,7 @@ export default function Grc({ r }: { r: Route }) {
                   <span className="col-start-2 flex gap-1">{gs.checks ? <><Tag tone="ok">Submitted</Tag><Tag className="font-mono">{gs.score}/{gs.max}</Tag></> : <Tag>{lk ? "Locked" : "Open"}</Tag>}</span>
                 </a>); })}
             </nav>
-            <div className={cn(!sel && "hidden lg:block")}>{sel ? <Task key={sel} id={sel} /> : <Empty title="Pick a task">Work them in order. Later tasks build on earlier findings.</Empty>}</div>
+            <div className={cn(!sel && "hidden lg:block")}>{sel ? <Task key={sel} id={sel} /> : <Empty art={IllusChart} title="Pick a task">Work them in order. Later tasks build on earlier findings.</Empty>}</div>
           </div>
         </>
       )}

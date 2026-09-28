@@ -1,6 +1,6 @@
 // Ticket queue: list, ticket detail with tiered hints, and the guided tutor.
 import { useEffect, useRef, useState, type FormEvent } from "react";
-import { ArrowRight, Bot, ChevronLeft, Lightbulb, MessageCircleQuestion, Phone, Send, UserRound } from "lucide-react";
+import { Inbox, ArrowRight, Bot, ChevronLeft, Lightbulb, MessageCircleQuestion, Phone, Send, UserRound } from "lucide-react";
 import { S, U } from "@/engine/store.js";
 import { TK } from "@/engine/tickets.js";
 import { CONSEQ, curTickets } from "@/engine/thursday.js";
@@ -19,6 +19,7 @@ import * as A from "../actions";
 import { ask, KIND_TERMS, kindOf, termLabel } from "../tutor";
 import { PageHeader, Pri, Status, Mode, Score, Tag, UserTags, Checks, Html, SectionLabel, Empty } from "../components/bits";
 import { MatrixTable, SodTable } from "./Reference";
+import { IllusQueue } from "@/components/brand/illustrations";
 
 const useWide = () => {
   const q = "(min-width: 1536px)"; // Tailwind 2xl: wide enough for list + ticket + docked tutor
@@ -259,7 +260,7 @@ export default function Queue({ r }: { r: Route }) {
 
   return (
     <>
-      <PageHeader title={ui.view === "mon" && thu ? "Monday queue (review)" : thu ? "Thursday queue" : "Monday queue"}
+      <PageHeader icon={Inbox} title={ui.view === "mon" && thu ? "Monday queue (review)" : thu ? "Thursday queue" : "Monday queue"}
         sub={`${closedN} of ${list.length} closed. Work the P1s first. Start a ticket before changing accounts, so the audit log ties your changes to it.`}>
         {thu && (
           <div role="group" aria-label="Which shift" className="inline-flex rounded-lg border bg-muted/40 p-1">
@@ -282,17 +283,17 @@ export default function Queue({ r }: { r: Route }) {
           <nav aria-label="Tickets" className="space-y-2">
             {shown.length ? shown.map((t: any) => { const ts = S.tickets[t.id]; return (
               <a key={t.id} href={`#/queue/${t.id}`} aria-current={sel === t.id ? "page" : undefined}
-                className={cn("grid grid-cols-[auto_minmax(0,1fr)] gap-x-3 gap-y-1.5 rounded-lg border bg-card p-3 transition-colors hover:border-input", sel === t.id && "border-primary ring-1 ring-primary", ts.checks && "bg-muted/30")}>
+                className={cn("lift grid grid-cols-[auto_minmax(0,1fr)] gap-x-3 gap-y-1.5 rounded-xl border bg-card p-3.5 hover:border-primary/40", sel === t.id && "border-primary ring-1 ring-primary", ts.checks && "bg-muted/30")}>
                 <Pri p={t.pri} />
                 <span><span className={cn("block text-sm font-medium leading-snug", ts.checks && "text-muted-foreground")}>{t.title}</span>
                   <span className="block truncate text-xs text-muted-foreground"><span className="font-mono">{t.id}</span> · {t.from}</span></span>
                 {(ts.status !== "new" || hintsUsed(ts) > 0) && <span className="col-start-2 flex flex-wrap gap-1">{ts.status !== "new" && <Status st={ts.status} />}<Score ts={ts} /><Mode ts={ts} />
                   {!ts.checks && hintsUsed(ts) > 0 && !isAssisted(ts) && <Tag>{plural(hintsUsed(ts), "hint", "hints")}</Tag>}</span>}
-              </a>); }) : <Empty title={ui.qfilter === "open" ? "No open tickets" : "No closed tickets yet"}>{ui.qfilter === "open" ? "Nice work." : "Close a ticket and it shows up here."}</Empty>}
+              </a>); }) : <Empty art={IllusQueue} title={ui.qfilter === "open" ? "No open tickets" : "No closed tickets yet"}>{ui.qfilter === "open" ? "Nice work." : "Close a ticket and it shows up here."}</Empty>}
           </nav>
         </div>
         <div className={cn("min-w-0", !sel && "hidden lg:block")}>
-          {sel ? <Ticket key={sel} id={sel} wide={wide} /> : <Empty title="Pick a ticket">Priority 1 tickets are the most urgent. Open one to read it and start work.</Empty>}
+          {sel ? <Ticket key={sel} id={sel} wide={wide} /> : <Empty art={IllusQueue} title="Pick a ticket">Priority 1 tickets are the most urgent. Open one to read it and start work.</Empty>}
         </div>
         {docked && (
           <aside className="sticky top-20 hidden h-[calc(100svh-13rem)] min-h-[28rem] self-start 2xl:block">
