@@ -1,74 +1,85 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
-/* ShiftReady "ops console" theme. Dark is the default; light is opt-in (data-theme="light").
-   Contrast, dark: body text 15:1, muted text ≥ 7:1, status text ≥ 7:1 on card, field borders
-   and focus ring ≥ 3:1 against the page (WCAG 2.2 AA 1.4.3 / 1.4.11). */
+/* ShiftReady "Bright and Bold" theme. Light is the default; dark is opt-in (data-theme="dark").
+   Contrast, light: body text 16.8:1, muted text >= 7:1, white on primary 5.2:1, status text on its
+   12% tint >= 4.7:1, field borders 3.5:1. Dark: body 16:1, muted 8:1, status on tint >= 5.3:1. */
 :root {
+  color-scheme: light;
+  --background: #f6f8fc;
+  --foreground: #0f172a;
+  --card: #ffffff;
+  --card-foreground: #0f172a;
+  --popover: #ffffff;
+  --popover-foreground: #0f172a;
+  --elevated: #ffffff;
+  --primary: #2563eb;
+  --primary-foreground: #ffffff;
+  --primary-strong: #1d4ed8;
+  --secondary: #eef2f8;
+  --secondary-foreground: #0f172a;
+  --muted: #eef2f8;
+  --muted-foreground: #475569;
+  --accent: #e8effd;
+  --accent-foreground: #0f172a;
+  --destructive: #b91c1c;
+  --border: #e2e8f0;
+  --input: #7c8aa0;
+  --ring: #2563eb;
+  --ok: #166534;
+  --warn: #92400e;
+  --bad: #b91c1c;
+  --info: #1d4ed8;
+  /* Decorative brand hues for tiles and illustrations (never used for text). */
+  --hue-blue: #2563eb;
+  --hue-sky: #38bdf8;
+  --hue-violet: #7c3aed;
+  --hue-amber: #f59e0b;
+  --hue-green: #22c55e;
+  --hue-pink: #ec4899;
+  --chart-1: #2563eb;
+  --chart-2: #7c3aed;
+  --chart-3: #f59e0b;
+  --chart-4: #ec4899;
+  --chart-5: #22c55e;
+  --radius: 0.875rem;
+  --shadow-lift: 0 1px 2px rgb(15 23 42 / 0.06), 0 12px 28px -10px rgb(37 99 235 / 0.28);
+}
+:root[data-theme="dark"] {
   color-scheme: dark;
-  --background: #0b0e12;
-  --foreground: #e7ecf2;
-  --card: #11161c;
-  --card-foreground: #e7ecf2;
-  --popover: #141a21;
-  --popover-foreground: #e7ecf2;
-  --elevated: #171e26;
-  --primary: #34d3c0;
-  --primary-foreground: #04201d;
-  --secondary: #1b232c;
-  --secondary-foreground: #e7ecf2;
-  --muted: #1a2129;
-  --muted-foreground: #9aa6b2;
-  --accent: #1d2630;
-  --accent-foreground: #e7ecf2;
+  --background: #0b1020;
+  --foreground: #e8edf7;
+  --card: #121a2e;
+  --card-foreground: #e8edf7;
+  --popover: #152038;
+  --popover-foreground: #e8edf7;
+  --elevated: #182440;
+  --primary: #60a5fa;
+  --primary-foreground: #06142e;
+  --primary-strong: #93c5fd;
+  --secondary: #1a2540;
+  --secondary-foreground: #e8edf7;
+  --muted: #18223a;
+  --muted-foreground: #a3b1c9;
+  --accent: #1c2a4a;
+  --accent-foreground: #e8edf7;
   --destructive: #f87171;
-  --border: #232b35;
-  --input: #5a6675;
-  --ring: #34d3c0;
+  --border: #24304a;
+  --input: #6b7a99;
+  --ring: #60a5fa;
   --ok: #4ade80;
   --warn: #fbbf24;
   --bad: #f87171;
-  --info: #7cb4ff;
-  --chart-1: #34d3c0;
-  --chart-2: #7cb4ff;
+  --info: #93c5fd;
+  --chart-1: #60a5fa;
+  --chart-2: #a78bfa;
   --chart-3: #fbbf24;
-  --chart-4: #f87171;
-  --chart-5: #c4b5fd;
-  --radius: 0.625rem;
-}
-:root[data-theme="light"] {
-  color-scheme: light;
-  --background: #f5f7f9;
-  --foreground: #0e141b;
-  --card: #ffffff;
-  --card-foreground: #0e141b;
-  --popover: #ffffff;
-  --popover-foreground: #0e141b;
-  --elevated: #ffffff;
-  --primary: #0b6e6e;
-  --primary-foreground: #ffffff;
-  --secondary: #eef1f4;
-  --secondary-foreground: #0e141b;
-  --muted: #eef1f4;
-  --muted-foreground: #55616d;
-  --accent: #e6ebef;
-  --accent-foreground: #0e141b;
-  --destructive: #b42318;
-  --border: #dde2e8;
-  --input: #7c8b99;
-  --ring: #0b6e6e;
-  --ok: #17692f;
-  --warn: #8a5a09;
-  --bad: #b42318;
-  --info: #1d5fb8;
-  --chart-1: #0b6e6e;
-  --chart-2: #1d5fb8;
-  --chart-3: #8a5a09;
-  --chart-4: #b42318;
-  --chart-5: #6d4bd1;
+  --chart-4: #f472b6;
+  --chart-5: #4ade80;
+  --shadow-lift: 0 1px 2px rgb(0 0 0 / 0.4), 0 14px 30px -12px rgb(0 0 0 / 0.7);
 }
 
-@custom-variant dark (&:where(:root:not([data-theme="light"]) *));
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
 
 @theme inline {
   --color-background: var(--background);
@@ -78,6 +89,13 @@
   --color-popover: var(--popover);
   --color-popover-foreground: var(--popover-foreground);
   --color-elevated: var(--elevated);
+  --color-primary-strong: var(--primary-strong);
+  --color-hue-blue: var(--hue-blue);
+  --color-hue-sky: var(--hue-sky);
+  --color-hue-violet: var(--hue-violet);
+  --color-hue-amber: var(--hue-amber);
+  --color-hue-green: var(--hue-green);
+  --color-hue-pink: var(--hue-pink);
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
   --color-secondary: var(--secondary);
@@ -103,8 +121,8 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
-  --font-sans: "IBM Plex Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
-  --font-display: "IBM Plex Sans Condensed", "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-display: "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, "Cascadia Mono", Menlo, Consolas, monospace;
 }
 
@@ -112,7 +130,7 @@
   * { @apply border-border; }
   html { -webkit-text-size-adjust: 100%; }
   body { @apply bg-background text-foreground font-sans antialiased; font-size: 16px; line-height: 1.55; }
-  h1, h2, h3, h4 { @apply font-display tracking-tight; text-wrap: balance; }
+  h1, h2, h3, h4 { @apply font-display font-bold tracking-tight; text-wrap: balance; }
   :focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
   [tabindex="-1"]:focus { outline: none; }
   @media (prefers-reduced-motion: reduce) {
@@ -123,4 +141,11 @@
 @media print {
   :root { --background: #fff; --card: #fff; --foreground: #000; --muted-foreground: #444; --border: #bbb; color-scheme: light; }
   [data-slot="sidebar"], [data-slot="sidebar-trigger"], header.sticky, section[aria-label="Toaster"] { display: none !important; }
+}
+
+@layer utilities {
+  /* Hover lift for interactive cards; no movement under reduced motion. */
+  .lift { transition: transform 200ms cubic-bezier(.22,1,.36,1), box-shadow 200ms, border-color 200ms; }
+  .lift:hover { transform: translateY(-3px); box-shadow: var(--shadow-lift); }
+  @media (prefers-reduced-motion: reduce) { .lift:hover { transform: none; } }
 }
