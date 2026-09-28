@@ -121,16 +121,16 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
-  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
-  --font-display: "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-sans: "Source Sans 3", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-display: "Figtree", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, "Cascadia Mono", Menlo, Consolas, monospace;
 }
 
 @layer base {
   * { @apply border-border; }
   html { -webkit-text-size-adjust: 100%; }
-  body { @apply bg-background text-foreground font-sans antialiased; font-size: 16px; line-height: 1.55; }
-  h1, h2, h3, h4 { @apply font-display font-bold tracking-tight; text-wrap: balance; }
+  body { @apply bg-background text-foreground font-sans antialiased; font-size: 17px; line-height: 1.6; }
+  h1, h2, h3, h4 { @apply font-display font-bold; letter-spacing: -0.015em; line-height: 1.15; text-wrap: balance; }
   :focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
   [tabindex="-1"]:focus { outline: none; }
   @media (prefers-reduced-motion: reduce) {
@@ -154,4 +154,16 @@
   0% { transform: translate3d(0, 0, 0) scale(1); }
   50% { transform: translate3d(6%, 4%, 0) scale(1.08); }
   100% { transform: translate3d(-4%, 8%, 0) scale(0.96); }
+}
+
+/* Type scale (Figtree headings, Source Sans 3 body). Use these for page-level headings so the
+   hierarchy stays consistent: display 56/60, h1 40/46, h2 32/38, h3 22/28, lead 20/30, meta 14/20. */
+@layer components {
+  .t-display { font-family: var(--font-display); font-weight: 800; font-size: clamp(2.5rem, 5.2vw, 3.5rem); line-height: 1.07; letter-spacing: -0.025em; }
+  .t-h1 { font-family: var(--font-display); font-weight: 800; font-size: clamp(2rem, 3.6vw, 2.5rem); line-height: 1.15; letter-spacing: -0.02em; }
+  .t-h2 { font-family: var(--font-display); font-weight: 700; font-size: clamp(1.625rem, 2.8vw, 2rem); line-height: 1.19; letter-spacing: -0.015em; }
+  .t-h3 { font-family: var(--font-display); font-weight: 700; font-size: 1.375rem; line-height: 1.27; }
+  .t-lead { font-size: 1.25rem; line-height: 1.5; color: var(--muted-foreground); }
+  .t-eyebrow { font-family: var(--font-display); font-size: 0.8125rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--primary-strong); }
+  .t-meta { font-size: 0.875rem; line-height: 1.43; color: var(--muted-foreground); }
 }
