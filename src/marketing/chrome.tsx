@@ -15,7 +15,7 @@ export const Brand = () => <a href="/" className="flex items-center gap-2.5 text
 
 const NAV = [{ href: "/#features", label: "Features" }, { href: "/#how", label: "How it works" }, { href: "/pricing/", label: "Pricing" }, { href: "/#faq", label: "FAQ" }];
 
-export function SiteHeader({ current }: { current?: string }) {
+export function SiteHeader({ current }: { current?: string }) { // current: nav key of this page
   const { theme, setTheme } = useTheme();
   return (
     <header className="sticky top-0 z-40 border-b border-border/60 bg-background/80 backdrop-blur-md supports-[backdrop-filter]:bg-background/65">
@@ -49,7 +49,7 @@ export function SiteFooter() {
   return (
     <footer className="border-t bg-card">
       <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-4 py-10 text-sm text-muted-foreground md:px-6">
-        <div className="space-y-2"><Brand /><p>© 2026 ShiftReady. Pacific Crest Logistics is a fictional company.</p></div>
+        <div className="space-y-2"><Brand /><p>© 2026 ShiftReady. All companies and people in ShiftReady scenarios are fictional.</p></div>
         <nav aria-label="Footer" className="flex flex-wrap gap-5 font-semibold">
           <a className="hover:text-primary" href="/app/">Open the app</a><a className="hover:text-primary" href="/pricing/">Pricing</a><a className="hover:text-primary" href="/#faq">FAQ</a><a className="hover:text-primary" href="/#waitlist">Waitlist</a>
         </nav>
@@ -77,7 +77,7 @@ export function Waitlist() {
       const r = await fetch(FORM_ENDPOINT, { method: "POST", headers: { Accept: "application/json", "Content-Type": "application/json" },
         body: JSON.stringify({ email, tier: value, role: (f.elements.namedItem("role") as HTMLSelectElement).value }) });
       if (!r.ok) throw new Error();
-      setMsg("You're on the list. Watch for one email when it opens."); f.reset();
+      setMsg("Added to the waitlist. One notification per release."); f.reset();
     } catch { setMsg("That didn't go through. Check your connection and try again."); }
   };
   const select = "h-12 w-full rounded-xl border border-input bg-background px-3 text-[15px]";
@@ -85,13 +85,13 @@ export function Waitlist() {
     <form onSubmit={submit} noValidate className="space-y-4">
       <div className="space-y-1.5"><Label htmlFor="email" className="text-[15px]">Email</Label>
         <Input id="email" name="email" type="email" autoComplete="email" required aria-invalid={err || undefined} aria-describedby="formmsg" className="h-12 rounded-xl text-[15px]" /></div>
-      <div className="space-y-1.5"><Label htmlFor="tier" className="text-[15px]">I'm interested in</Label>
+      <div className="space-y-1.5"><Label htmlFor="tier" className="text-[15px]">Plan of interest</Label>
         <select id="tier" name="tier" value={value} onChange={e => setPicked(e.target.value as WaitlistTier)} className={select}>
           {WAITLIST_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
         </select></div>
-      <div className="space-y-1.5"><Label htmlFor="role" className="text-[15px]">Where are you now?</Label>
+      <div className="space-y-1.5"><Label htmlFor="role" className="text-[15px]">Current role</Label>
         <select id="role" name="role" className={select}>
-          {["Career changer into IAM", "Help desk / IT support", "IAM or security analyst", "Auditor / GRC", "Hiring manager or team lead", "Educator or bootcamp"].map(o => <option key={o}>{o}</option>)}
+          {["Service desk or IT support", "IAM analyst or engineer", "Security operations", "GRC, audit or compliance", "Team lead or manager", "Training provider", "Moving into identity and access"].map(o => <option key={o}>{o}</option>)}
         </select></div>
       <Button type="submit" size="lg" className="h-12 w-full text-base font-bold">Join the waitlist</Button>
       <p id="formmsg" role="status" className={cn("min-h-6 text-sm", err ? "text-bad" : "text-muted-foreground")}>{msg}</p>

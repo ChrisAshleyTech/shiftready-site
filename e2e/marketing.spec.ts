@@ -3,7 +3,7 @@ import { test, expect } from "@playwright/test";
 
 test("pricing: toggle, badges, coming-soon labels and waitlist tier selection", async ({ page }) => {
   await page.goto("/pricing/");
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Start free. Go Pro when you're ready.");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Start free. Upgrade for every company, track and lab.");
   await expect(page.getByText("Most complete")).toBeVisible();
   await expect(page.getByText("$15", { exact: true })).toBeVisible();
   await page.getByRole("radio", { name: /Yearly/ }).click();
@@ -12,13 +12,14 @@ test("pricing: toggle, badges, coming-soon labels and waitlist tier selection", 
   await expect(page.getByText("save 28%")).toBeVisible();
   await expect(page.getByText("$169", { exact: true })).toBeVisible();
   await expect(page.getByText("save 30%")).toBeVisible();
-  await expect(page.getByText("Included free during early access")).toHaveCount(2);
-  expect(await page.getByText("Coming soon", { exact: true }).count()).toBeGreaterThanOrEqual(4);
+  await expect(page.getByText("Pro features are included free during early access.")).toBeVisible();
+  expect(await page.getByText("Early access", { exact: true }).count()).toBeGreaterThanOrEqual(3);
+  await expect(page.getByText(/Okta|AWS|Active Directory/)).toHaveCount(0);
   await expect(page.getByRole("link", { name: "Start free" }).last()).toHaveAttribute("href", "/app/");
   await page.getByRole("button", { name: "Join Pro + Labs waitlist" }).click();
   await expect(page.locator("#tier")).toHaveValue("labs-yearly");
   await expect(page.locator("#email")).toBeFocused();
-  await page.getByRole("button", { name: "Join the pack waitlist" }).click();
+  await page.getByRole("button", { name: "Join the lab pack waitlist" }).click();
   await expect(page.locator("#tier")).toHaveValue("pack");
   await page.locator("#email").fill("not-an-email");
   await page.getByRole("button", { name: "Join the waitlist" }).click();
@@ -50,9 +51,22 @@ test("reduced motion: demo shows the finished ticket and there is nothing to pau
 test("landing: sections in order and photo credits", async ({ page }) => {
   await page.goto("/");
   const ids = await page.locator("main section[id], main section[aria-labelledby]").evaluateAll(els => els.map(e => e.id || e.getAttribute("aria-labelledby")));
-  expect(ids).toEqual(["hero-h", "features", "people-h", "how", "stories-h", "pricing", "faq", "waitlist"]);
-  await expect(page.getByRole("heading", { name: "Learner stories coming soon" })).toBeVisible();
+  expect(ids).toEqual(["hero-h", "capabilities", "aud-h", "industries", "how", "pricing", "faq", "waitlist"]);
   await expect(page.locator("figcaption").filter({ hasText: "Unsplash" })).toHaveCount(4);
   const overflow = await page.setViewportSize({ width: 390, height: 844 }).then(() => page.evaluate(() => document.documentElement.scrollWidth > innerWidth));
   expect(overflow).toBe(false);
 });
+
+// Enterprise copy rules for every marketing page: third person, no personal content or
+// testimonials, no "Coming soon" (early access only), no unlisted platforms.
+for (const path of ["/", "/pricing/", "/tracks/", "/industries/", "/labs/", "/resources/"]) {
+  test(`copy rules: ${path}`, async ({ page }) => {
+    const res = await page.goto(path);
+    expect(res?.status()).toBe(200);
+    const text = await page.locator("body").innerText();
+    expect(text).not.toMatch(/(We|we|We're|we're|We'll|we'll|Our|our|I|I'm|I've|me|my)/);
+    expect(text).not.toMatch(/founder|Christopher|Ashley|testimonial|learner stories|built by/i);
+    expect(text).not.toMatch(/coming soon/i);
+    expect(text).not.toMatch(/Okta|AWS|Active Directory/);
+  });
+}

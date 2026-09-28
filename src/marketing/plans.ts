@@ -1,6 +1,6 @@
 // Pricing (display only, no payments). Paid tiers join the waitlist with the chosen tier.
 export type Billing = "monthly" | "yearly";
-export type Status = "live" | "soon" | "early";
+export type Status = "live" | "early";
 export type Feature = { text: string; status: Status };
 export type Tier = {
   id: "free" | "pro" | "labs";
@@ -13,32 +13,33 @@ export type Tier = {
   features: Feature[];
 };
 
+// Only features that exist ("live") or are in active development ("early").
 export const TIERS: Tier[] = [
-  { id: "free", name: "Free", blurb: "Everything you need to work your first shift.", monthly: 0, yearly: 0, cta: "Start free",
+  { id: "free", name: "Free", blurb: "The complete Pacific Crest Logistics scenario.", monthly: 0, yearly: 0, cta: "Start free",
     features: [
-      { text: "Pacific Crest Logistics", status: "live" },
-      { text: "Both shifts: Monday and Thursday, with consequences", status: "live" },
+      { text: "Pacific Crest Logistics (logistics)", status: "live" },
+      { text: "Monday and Thursday shifts, with downstream consequences", status: "live" },
       { text: "GRC audit track", status: "live" },
       { text: "Basic hints", status: "live" },
     ] },
-  { id: "pro", name: "Pro", blurb: "Every company, every track, and the full coaching layer.", monthly: 15, yearly: 129, cta: "Join Pro waitlist",
+  { id: "pro", name: "Pro", blurb: "Every industry scenario, every track and full coaching.", monthly: 15, yearly: 129, cta: "Join Pro waitlist",
     features: [
       { text: "Everything in Free", status: "live" },
-      { text: "All 5 industry companies: Healthcare, Aerospace/Defense, Banking, SaaS, Retail", status: "soon" },
-      { text: "PAM track", status: "soon" },
-      { text: "Full hints and tutor", status: "early" },
-      { text: "Readiness report", status: "early" },
+      { text: "Industry companies: Harbor Health Network, Meridian Aerospace, Coastline Credit Union, Brightpath SaaS, Sunset Retail Group", status: "early" },
+      { text: "PAM track", status: "early" },
+      { text: "Full hints and guided tutor", status: "live" },
+      { text: "Shareable readiness report", status: "live" },
     ] },
-  { id: "labs", name: "Pro + Labs", blurb: "Practise the same scenarios in real consoles.", monthly: 20, yearly: 169, cta: "Join Pro + Labs waitlist", badge: "Most complete",
+  { id: "labs", name: "Pro + Labs", blurb: "The same scenarios, practised in a Microsoft Entra tenant.", monthly: 20, yearly: 169, cta: "Join Pro + Labs waitlist", badge: "Most complete",
     features: [
       { text: "Everything in Pro", status: "live" },
-      { text: "Platform packs: Entra ID, Okta, AWS, Active Directory", status: "soon" },
+      { text: "Entra ID lab: seed a tenant, work the tickets, grade a read-only export", status: "early" },
     ] },
 ];
 
-export const ADDON = { name: "Single platform pack", price: 39, blurb: "One platform pack (Entra ID, Okta, AWS or Active Directory), one-time purchase. Includes 12 months of updates.", cta: "Join the pack waitlist" };
+export const ADDON = { name: "Entra ID lab pack", price: 39, blurb: "The Entra ID lab as a one-time purchase. Includes 12 months of updates.", cta: "Join the lab pack waitlist" };
 
-export const STATUS_LABEL: Record<Status, string> = { live: "", soon: "Coming soon", early: "Included free during early access" };
+export const PRO_FOOTNOTE = "Pro features are included free during early access.";
 
 /** Whole-percent saving of yearly over 12 monthly payments. */
 export const yearlySaving = (t: Tier) => (t.monthly ? Math.round((1 - t.yearly / (t.monthly * 12)) * 100) : 0);
@@ -46,12 +47,12 @@ export const perMonthYearly = (t: Tier) => Math.round((t.yearly / 12) * 100) / 1
 
 // ---------- Waitlist tier selection (shared between the pricing buttons and the form) ----------
 export const WAITLIST_OPTIONS = [
-  { value: "updates", label: "Just updates about the free version" },
+  { value: "updates", label: "Release updates only" },
   { value: "pro-monthly", label: "Pro, monthly ($15/mo)" },
   { value: "pro-yearly", label: "Pro, yearly ($129/yr)" },
   { value: "labs-monthly", label: "Pro + Labs, monthly ($20/mo)" },
   { value: "labs-yearly", label: "Pro + Labs, yearly ($169/yr)" },
-  { value: "pack", label: "Single platform pack ($39 one-time)" },
+  { value: "pack", label: "Entra ID lab pack ($39 one-time)" },
 ] as const;
 export type WaitlistTier = (typeof WAITLIST_OPTIONS)[number]["value"];
 
