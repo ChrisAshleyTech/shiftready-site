@@ -1,7 +1,7 @@
 // App shell: 21st Animated Sidebar, top bar with shift context and score, active-ticket bar.
 import { useEffect, useRef, type ComponentType } from "react";
 import {
-  BookOpenText, ClipboardCheck, FileBarChart2, Home, Inbox, ListChecks, Moon, PanelLeft,
+  BookOpenText, ClipboardCheck, FileBarChart2, Home as HomeIcon, Inbox, ListChecks, Moon, PanelLeft,
   ScrollText, Sun, Users, Workflow, ArrowLeft,
 } from "lucide-react";
 import {
@@ -24,9 +24,10 @@ import { Logo } from "./components/Logo";
 import Reference from "./pages/Reference";
 import Grc from "./pages/Grc";
 import Soon from "./pages/Soon";
+import Home from "./pages/Home";
 
 const PAGES: Record<string, { C: ComponentType<{ r: Route }>; title: string }> = {
-  home: { C: Soon, title: "Home" },
+  home: { C: Home, title: "Home" },
   queue: { C: Soon, title: "Ticket queue" },
   directory: { C: Soon, title: "Directory" },
   policy: { C: Reference, title: "Policy & matrix" },
@@ -42,7 +43,7 @@ function Nav({ r }: { r: Route }) {
   const gt = gTotals();
   const groups = [
     { label: "Shift", items: [
-      { k: "home", label: "Home", icon: Home },
+      { k: "home", label: "Home", icon: HomeIcon },
       { k: "queue", label: "Ticket queue", icon: Inbox, badge: open || null },
       { k: "directory", label: "Directory", icon: Users },
     ]},

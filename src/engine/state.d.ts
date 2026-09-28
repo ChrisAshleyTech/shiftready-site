@@ -1,0 +1,19 @@
+// Loose types for state.js: the engine stays plain JS and is covered by tests/*.test.js.
+export declare const HINT_TIERS: any;
+export declare const KEY: any;
+export declare const act: any;
+export declare const clockStr: any;
+export declare const closeTicket: any;
+export declare const finalScore: any;
+export declare const fresh: any;
+export declare const hintCost: any;
+export declare const hintsUsed: any;
+export declare const init: any;
+export declare const isAssisted: any;
+export declare const logIt: any;
+export declare const resetAll: any;
+export declare const revealHint: any;
+export declare const round1: any;
+export declare const save: any;
+export declare const tact: any;
+export declare const totals: any;
