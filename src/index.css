@@ -149,3 +149,9 @@
   .lift:hover { transform: translateY(-3px); box-shadow: var(--shadow-lift); }
   @media (prefers-reduced-motion: reduce) { .lift:hover { transform: none; } }
 }
+
+@keyframes drift {
+  0% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(6%, 4%, 0) scale(1.08); }
+  100% { transform: translate3d(-4%, 8%, 0) scale(0.96); }
+}
