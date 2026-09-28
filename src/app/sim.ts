@@ -31,7 +31,7 @@ export const ui = {
 
 // ---------- Hash router ----------
 export type Route = { name: string; id: string | null; query: URLSearchParams };
-export const ROUTES = ["home", "queue", "directory", "policy", "hr", "log", "results", "report", "grc"] as const;
+export const ROUTES = ["home", "queue", "directory", "groups", "policy", "hr", "log", "results", "report", "grc", "labs"] as const;
 function parse(): Route {
   const [path, q = ""] = location.hash.replace(/^#\/?/, "").split("?");
   const parts = path.split("/").filter(Boolean).map(decodeURIComponent);

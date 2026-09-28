@@ -13,6 +13,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import { commit, ui, num, plural, type Route } from "../sim";
 import * as A from "../actions";
@@ -162,7 +163,6 @@ function Working({ id }: { id: string }) {
         </div>
         {ts.esc.length > 0 && <p className="text-sm text-muted-foreground">Escalated to: {ts.esc.join(", ")}</p>}
       </section>
-      <Hints id={id} />
       <section aria-labelledby="ct-h" className="space-y-3">
         <SectionLabel id="ct-h">Close ticket</SectionLabel>
         {t.question && <div className="space-y-1.5"><Label htmlFor={`ans-${id}`}>Answer for the auditor</Label>
@@ -197,6 +197,24 @@ function Grade({ id }: { id: string }) {
   );
 }
 
+// Everything logged under this ticket, plus approval and escalation state.
+function Activity({ id }: { id: string }) {
+  const ts = S.tickets[id], log = S.log.filter((e: any) => e.ticket === id).slice().reverse();
+  return (
+    <div className="space-y-4">
+      <dl className="grid grid-cols-[max-content_1fr] gap-x-6 gap-y-1.5 text-[15px]">
+        <dt className="text-muted-foreground">Status</dt><dd><Status st={ts.status} /></dd>
+        <dt className="text-muted-foreground">Approval</dt><dd>{ts.approval || "Not requested"}</dd>
+        <dt className="text-muted-foreground">Escalated to</dt><dd>{ts.esc.length ? ts.esc.join(", ") : "Not escalated"}</dd>
+      </dl>
+      {log.length ? (
+        <ol className="space-y-2">{log.map((e: any) => (
+          <li key={e.n} className="rounded-lg border px-4 py-2.5 text-sm"><span className="font-mono text-xs text-muted-foreground">{e.t}{e.target ? " · " + e.target : ""}</span><p>{e.d}</p></li>))}</ol>
+      ) : <p className="text-muted-foreground">No activity yet. Start work to make this the active ticket.</p>}
+    </div>
+  );
+}
+
 function Ticket({ id, wide }: { id: string; wide: boolean }) {
   const t = TK[id], ts = S.tickets[id], active = S.active === id, closed = !!ts.checks;
   return (
@@ -210,34 +228,43 @@ function Ticket({ id, wide }: { id: string; wide: boolean }) {
         <h2 id="t-h" data-panel-focus className="text-2xl font-semibold">{t.title}</h2>
         <p className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground"><span>{t.type}</span><span>From: {t.from}</span><span>Via: {t.channel}</span><span>Opened {t.opened}</span></p>
       </header>
-      <ConsequenceNote id={id} />
-      <Html className="max-w-[68ch] space-y-2 [&_.mono]:font-mono [&_.mono]:text-sm" html={t.body} />
-      {t.caller && (
-        <div className="flex gap-3 rounded-lg border bg-muted/40 p-4 text-sm">
-          <Phone className="mt-0.5 size-4 shrink-0 text-muted-foreground" aria-hidden />
-          <div><p className="mb-1 text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">Caller-provided identity details</p>
-            Employee ID <span className="font-mono">{t.caller.empId}</span> · Manager named: {t.caller.mgr}
-            <p className="mt-1 text-xs text-muted-foreground">Policy: compare both against the directory before any credential change.</p></div>
-        </div>
-      )}
-      {t.users.length > 0 && (
-        <section className="space-y-2"><SectionLabel>Related accounts</SectionLabel>
-          <div className="flex flex-wrap gap-2">{t.users.map((u: string) => (
-            <a key={u} href={`#/directory/${encodeURIComponent(u)}`} className="inline-flex items-center gap-2 rounded-lg border bg-card px-3 py-2 text-sm hover:border-input">
-              <UserRound className="size-4 text-muted-foreground" aria-hidden />{U(u).name}<UserTags u={U(u)} /><ArrowRight className="size-3.5 text-muted-foreground" aria-hidden /></a>))}</div>
-        </section>
-      )}
-      {closed ? <><Grade id={id} /><Hints id={id} /></>
-        : ts.status === "new" ? <>
-            <section className="space-y-2"><Button size="lg" onClick={() => A.startWork(id)}>Start work</Button>
-              <p className="text-sm text-muted-foreground">Starting makes this your active ticket. Changes you make in the Directory are logged against it.</p></section>
-            <Hints id={id} /></>
-        : !active ? <>
-            <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-warn/40 bg-warn/10 p-4 text-sm">
-              <span>Another ticket is active. Make this one active before you work on it, so your changes are logged against it.</span>
-              <Button variant="outline" onClick={() => A.resume(id)}>Make this the active ticket</Button></div>
-            <Hints id={id} /></>
-        : <Working key={id} id={id} />}
+      <Tabs defaultValue="details">
+        <TabsList>
+          <TabsTrigger value="details">Details</TabsTrigger>
+          <TabsTrigger value="activity">Activity ({S.log.filter((e: any) => e.ticket === id).length})</TabsTrigger>
+          <TabsTrigger value="hints" id={`hints-tab-${id}`}>Hints{hintsUsed(ts) ? ` (${hintsUsed(ts)} used)` : ""}</TabsTrigger>
+        </TabsList>
+        <TabsContent value="details" className="space-y-6 pt-5">
+          <ConsequenceNote id={id} />
+          <Html className="max-w-[68ch] space-y-2 [&_.mono]:font-mono [&_.mono]:text-sm" html={t.body} />
+          {t.caller && (
+            <div className="flex gap-3 rounded-lg border bg-muted/40 p-4 text-sm">
+              <Phone className="mt-0.5 size-4 shrink-0 text-muted-foreground" aria-hidden />
+              <div><p className="mb-1 text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">Caller-provided identity details</p>
+                Employee ID <span className="font-mono">{t.caller.empId}</span> · Manager named: {t.caller.mgr}
+                <p className="mt-1 text-xs text-muted-foreground">Policy: compare both against the directory before any credential change.</p></div>
+            </div>
+          )}
+          {t.users.length > 0 && (
+            <section className="space-y-2"><SectionLabel>Related accounts</SectionLabel>
+              <div className="flex flex-wrap gap-2">{t.users.map((u: string) => (
+                <a key={u} href={`#/directory/${encodeURIComponent(u)}`} className="inline-flex items-center gap-2 rounded-lg border bg-card px-3 py-2 text-sm hover:border-input">
+                  <UserRound className="size-4 text-muted-foreground" aria-hidden />{U(u).name}<UserTags u={U(u)} /><ArrowRight className="size-3.5 text-muted-foreground" aria-hidden /></a>))}</div>
+            </section>
+          )}
+          {closed ? <Grade id={id} />
+            : ts.status === "new" ? (
+                <section className="space-y-2"><Button size="lg" onClick={() => A.startWork(id)}>Start work</Button>
+                  <p className="text-sm text-muted-foreground">Starting makes this the active ticket. Changes made in the directory are logged against it.</p></section>)
+            : !active ? (
+                <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-warn/40 bg-warn/10 p-4 text-sm">
+                  <span>Another ticket is active. Make this one active before working on it, so changes are logged against it.</span>
+                  <Button variant="outline" onClick={() => A.resume(id)}>Make this the active ticket</Button></div>)
+            : <Working key={id} id={id} />}
+        </TabsContent>
+        <TabsContent value="activity" className="pt-5"><Activity id={id} /></TabsContent>
+        <TabsContent value="hints" className="pt-5"><Hints id={id} /></TabsContent>
+      </Tabs>
     </Card>
   );
 }
