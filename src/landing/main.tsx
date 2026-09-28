@@ -1,152 +1,187 @@
-// Landing page. Copy carried over from v1; hero adapted from the 21st Financial Hero.
-import { StrictMode, useState, type FormEvent } from "react";
+// Landing page, "Bright and Bold". Section order: hero, skills strip, features, people, how it
+// works, learner stories (placeholder), pricing, FAQ, waitlist. Copy carried over from v1 where
+// it existed. Photos: Unsplash License (credits in the captions and the README).
+import { StrictMode, type ReactNode } from "react";
 import { createRoot } from "react-dom/client";
-import { ClipboardCheck, Inbox, Repeat2 } from "lucide-react";
-import { HeroFinancial } from "@/components/ui/hero-financial";
+import { ArrowRight, Bot, ClipboardCheck, FileBarChart2, Inbox, Lightbulb, MessageSquareQuote, Repeat2 } from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Logo } from "@/app/components/Logo";
+import { AnimatedBackdrop, CountUp, MotionPauseProvider, PauseButton, Reveal } from "@/components/brand/motion";
+import { IllusChart, IllusShield, IllusWeek } from "@/components/brand/illustrations";
+import { SkillsStrip } from "@/components/brand/SkillsStrip";
+import { SiteHeader, SiteFooter, Waitlist } from "@/marketing/chrome";
+import { Pricing } from "@/marketing/Pricing";
 import { cn } from "@/lib/utils";
+import { TicketDemo } from "./TicketDemo";
 import "@/index.css";
 
-// Set this to your form endpoint when deployed (e.g. a Formspree or Tally endpoint URL).
-const FORM_ENDPOINT = "";
+const Eyebrow = ({ children, className }: { children: ReactNode; className?: string }) => <p className={cn("text-sm font-bold uppercase tracking-[0.14em] text-primary", className)}>{children}</p>;
 
-const Brand = () => <a href="#top" className="flex items-center gap-2.5 font-display text-lg font-semibold"><Logo className="size-7" />ShiftReady</a>;
-const Eyebrow = ({ children }: { children: string }) => <p className="font-mono text-xs uppercase tracking-[0.14em] text-primary">{children}</p>;
-const H2 = ({ children }: { children: string }) => <h2 className="mt-3 max-w-[22ch] text-3xl font-semibold md:text-4xl">{children}</h2>;
-const Chip = ({ children, live }: { children: string; live?: boolean }) =>
-  <span className={cn("rounded-md border px-2 py-0.5 text-xs font-medium", live ? "border-ok/30 bg-ok/12 text-ok" : "border-border bg-muted text-muted-foreground")}>{children}</span>;
-
-function Waitlist() {
-  const [msg, setMsg] = useState("");
-  const [err, setErr] = useState(false);
-  const submit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const f = e.currentTarget, email = (f.elements.namedItem("email") as HTMLInputElement).value.trim();
-    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { setErr(true); setMsg("Enter a valid email address, like name@example.com."); (f.elements.namedItem("email") as HTMLInputElement).focus(); return; }
-    setErr(false);
-    if (!FORM_ENDPOINT) { setMsg("Preview only: the waitlist connects once the form endpoint is set."); return; }
-    setMsg("Joining…");
-    try {
-      const r = await fetch(FORM_ENDPOINT, { method: "POST", headers: { Accept: "application/json", "Content-Type": "application/json" }, body: JSON.stringify({ email, role: (f.elements.namedItem("role") as HTMLSelectElement).value }) });
-      if (!r.ok) throw new Error();
-      setMsg("You're on the list. Watch for one email when early access opens."); f.reset();
-    } catch { setMsg("That didn't go through. Check your connection and try again."); }
-  };
+function Photo({ name, alt, credit, profile, className, sizes = "(min-width: 1024px) 50vw, 100vw" }: { name: string; alt: string; credit: string; profile: string; className?: string; sizes?: string }) {
   return (
-    <form onSubmit={submit} noValidate className="space-y-4">
-      <div className="space-y-1.5"><Label htmlFor="email">Work or personal email</Label>
-        <Input id="email" name="email" type="email" autoComplete="email" required aria-invalid={err || undefined} aria-describedby="formmsg" className="h-11" /></div>
-      <div className="space-y-1.5"><Label htmlFor="role">Where are you now?</Label>
-        <select id="role" name="role" className="h-11 w-full rounded-md border border-input bg-background px-3 text-sm">
-          {["Career changer into IAM", "Help desk / IT support", "IAM or security analyst", "Auditor / GRC", "Hiring manager or team lead", "Educator or bootcamp"].map(o => <option key={o}>{o}</option>)}
-        </select></div>
-      <Button type="submit" size="lg" className="w-full">Join the waitlist</Button>
-      <p id="formmsg" role="status" className={cn("min-h-6 text-sm", err ? "text-bad" : "text-muted-foreground")}>{msg}</p>
-    </form>
+    <figure className={cn("relative overflow-hidden rounded-3xl", className)}>
+      <img src={`/img/photos/${name}-1600.webp`} srcSet={`/img/photos/${name}-800.webp 800w, /img/photos/${name}-1600.webp 1600w`} sizes={sizes}
+        alt={alt} loading="lazy" decoding="async" className="size-full object-cover" />
+      <figcaption className="absolute bottom-3 right-3 rounded-full bg-black/60 px-2.5 py-1 text-[11px] text-white backdrop-blur">
+        Photo: <a className="underline" href={profile} target="_blank" rel="noopener">{credit}</a> / Unsplash
+      </figcaption>
+    </figure>
   );
 }
 
+const FEATURES = [
+  { icon: Inbox, tint: "bg-hue-blue/12 text-primary-strong", title: "A real ticket queue", text: "Joiners, movers, leavers, lockouts, access requests, SoD conflicts, a fake CFO on the phone and an MFA-fatigue attack, at one company with 131 accounts." },
+  { icon: Repeat2, tint: "bg-hue-pink/12 text-bad", title: "Monday comes back Thursday", text: "Leave a stale account enabled and an attacker uses it. Disable the wrong service account and backups fail. Your next shift is built from your last one." },
+  { icon: ClipboardCheck, tint: "bg-hue-violet/12 text-[color:var(--hue-violet)] dark:text-violet-300", title: "Audit your own work", text: "Switch to the GRC desk and test the controls you just operated, including the audit log of your own shift." },
+  { icon: Lightbulb, tint: "bg-hue-amber/15 text-warn", title: "Hints that cost points", text: "A nudge, the policy clause, or the exact steps. Each tier costs part of the ticket's score, and exact steps marks it Assisted." },
+  { icon: Bot, tint: "bg-hue-sky/15 text-info", title: "A tutor that won't cheat for you", text: "Ask about terms, people and roles, or what you've done so far. It asks the right questions instead of giving answers." },
+  { icon: FileBarChart2, tint: "bg-hue-green/15 text-ok", title: "A report you can share", text: "Scores, skills, consequences and Solo vs Assisted on every ticket, in one link a hiring manager can open." },
+];
+
+const STEPS = [
+  ["Take a ticket", "Pick up requests from HR feeds, phone calls, alerts and access reviews.", "bg-hue-blue"],
+  ["Work the console", "Enable, disable, reset, change groups and job info, set expiry, revoke sessions, escalate.", "bg-hue-violet"],
+  ["Get graded", "Scored on the result and the process, with the NIST control behind each decision.", "bg-hue-pink"],
+  ["Live with it", "Thursday's queue is built from your Monday. Then audit the whole week as the GRC tester.", "bg-hue-amber"],
+];
+
+const FAQ = [
+  ["Who is this for?", "Career changers and help desk techs moving into IAM, current analysts who want reps, and hiring managers who want to see how someone handles a real queue."],
+  ["Do I need my own lab tenant?", "No. The simulator runs in your browser. Platform packs for your own Entra, Okta, AWS and Active Directory labs are coming for people who want to practise in the real consoles."],
+  ["What does it cost?", "The free plan covers Pacific Crest Logistics, both shifts and the GRC track. Pro and Pro + Labs are on a waitlist; see pricing for what's included."],
+  ["Is Pacific Crest a real company?", "No. Pacific Crest Logistics and everyone in it are fictional."],
+];
+
 function Landing() {
   return (
-    <div id="top">
+    <MotionPauseProvider>
       <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-card focus:px-4 focus:py-2">Skip to content</a>
-      <HeroFinancial
-        logo={<Brand />}
-        nav={[{ href: "#how", label: "How it works" }, { href: "#tracks", label: "Tracks" }, { href: "#founder", label: "Founder" }, { href: "#faq", label: "FAQ" }]}
-        cta={{ href: "/app/", label: "Try the free Monday shift" }}
-        secondary={{ href: "#waitlist", label: "Join the waitlist" }}
-        pill={{ tag: "Free", text: "The Monday shift runs in your browser. No sign-up." }}
-        title={<>Work a real IAM shift <br className="hidden sm:block" />before your first day.</>}
-        lead="Take the ticket queue at a 150-person company. Onboard, offboard, reset, deny, escalate. Then audit your own work. What you miss on Monday comes back on Thursday."
-        proof={<ul className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm text-muted-foreground">{[["20", "Monday tickets"], ["13", "consequences that can hit Thursday"], ["10", "audit tasks"]].map(([n, l]) => <li key={l}><b className="font-mono font-medium text-foreground">{n}</b> {l}</li>)}</ul>}
-        image={{ src: "/img/app-queue.jpg", width: 2160, height: 1350, alt: "The ShiftReady ticket queue: a fake-CFO ticket graded 10 out of 10 because the caller's employee ID didn't match the directory, no credentials were changed, and it was escalated to Security." }}
-      />
-
-      <main id="main" tabIndex={-1} className="mx-auto max-w-7xl px-4 outline-none md:px-6">
-        <section id="different" className="scroll-mt-20 border-b py-20">
-          <Eyebrow>Why it's different</Eyebrow><H2>Other labs teach features. This teaches the job.</H2>
-          <p className="mt-4 max-w-[62ch] text-lg text-muted-foreground">Most IAM training walks you through one setting at a time. Real IAM work is a queue: messy requests, approvals, people in a hurry, and decisions that have consequences.</p>
-          <div className="mt-10 grid gap-4 md:grid-cols-3">
-            {[[Inbox, "A real queue", "Tickets, not tutorials", "Joiners, movers, leavers, lockouts, access requests, SoD conflicts, a fake CFO on the phone, and an MFA-fatigue attack, all at one company with 131 accounts."],
-              [Repeat2, "Consequences", "Monday comes back Thursday", "Leave a stale account enabled and an attacker uses it. Disable the wrong service account and backups fail. Your next shift is built from your last one."],
-              [ClipboardCheck, "Do it, then audit it", "Audit your own work", "Switch to the GRC desk and test the controls you just operated, including the audit log of your own shift. No other platform makes you do both sides."]]
-              .map(([Icon, k, t, d]: any) => (
-                <div key={t} className="rounded-xl border bg-card p-6">
-                  <Icon className="size-5 text-primary" aria-hidden />
-                  <p className="mt-4 font-mono text-xs text-primary">{k}</p>
-                  <h3 className="mt-1 text-xl font-semibold">{t}</h3>
-                  <p className="mt-2 text-muted-foreground">{d}</p>
-                </div>))}
+      <SiteHeader />
+      <main id="main" tabIndex={-1} className="outline-none">
+        {/* Hero */}
+        <section aria-labelledby="hero-h" className="relative overflow-hidden">
+          <AnimatedBackdrop />
+          <div className="relative mx-auto grid max-w-7xl items-center gap-12 px-4 pb-16 pt-14 md:px-6 lg:grid-cols-[1.05fr_1fr] lg:pb-24 lg:pt-20">
+            <div className="space-y-7">
+              <Reveal><span className="inline-flex items-center gap-2 rounded-full border border-primary/25 bg-card/80 py-1 pl-1 pr-3 text-sm font-semibold shadow-sm backdrop-blur">
+                <span className="rounded-full bg-primary px-2.5 py-0.5 text-xs font-bold uppercase tracking-wider text-primary-foreground">Free</span>
+                The Monday shift runs in your browser. No sign-up.</span></Reveal>
+              <Reveal delay={0.05}><h1 id="hero-h" className="text-5xl font-extrabold leading-[1.02] sm:text-6xl xl:text-7xl">
+                Work a real <span className="bg-gradient-to-r from-primary to-[color:var(--hue-violet)] bg-clip-text text-transparent dark:from-sky-300 dark:to-violet-300">IAM shift</span> before your first day.</h1></Reveal>
+              <Reveal delay={0.1}><p className="max-w-xl text-xl leading-relaxed text-muted-foreground">Take the ticket queue at a 150-person company. Onboard, offboard, reset, deny, escalate. Then audit your own work. What you miss on Monday comes back on Thursday.</p></Reveal>
+              <Reveal delay={0.15} className="flex flex-wrap gap-3">
+                <Button asChild size="lg" className="h-14 rounded-xl px-7 text-lg font-bold shadow-lg shadow-primary/30"><a href="/app/">Start the free Monday shift <ArrowRight /></a></Button>
+                <Button asChild size="lg" variant="outline" className="h-14 rounded-xl border-2 border-primary/40 bg-card/70 px-7 text-lg font-bold"><a href="/pricing/">See pricing</a></Button>
+              </Reveal>
+              <Reveal delay={0.2}>
+                <dl className="grid max-w-xl grid-cols-2 gap-4 sm:grid-cols-4">
+                  {[[20, "Monday tickets"], [13, "consequences"], [10, "audit tasks"], [131, "accounts"]].map(([n, l]) => (
+                    <div key={l} className="rounded-2xl border bg-card/80 p-3 backdrop-blur">
+                      <dt className="text-xs font-semibold text-muted-foreground">{l}</dt>
+                      <dd className="text-3xl font-extrabold text-primary-strong"><CountUp value={n as number} /></dd>
+                    </div>))}
+                </dl>
+              </Reveal>
+            </div>
+            <Reveal from="right" delay={0.1} className="relative">
+              <TicketDemo />
+              <div className="mt-3 flex justify-end"><PauseButton /></div>
+            </Reveal>
           </div>
         </section>
 
-        <section id="how" className="scroll-mt-20 border-b py-20">
-          <Eyebrow>How it works</Eyebrow><H2>One company. A full week.</H2>
-          <ol className="mt-10 grid gap-px overflow-hidden rounded-xl border bg-border md:grid-cols-4">
-            {[["Take a ticket", "Pick up requests from HR feeds, phone calls, alerts and access reviews."],
-              ["Work the console", "Enable, disable, reset, change groups and job info, set expiry, revoke sessions, escalate."],
-              ["Get graded", "Scored on the result and the process, with the NIST control behind each decision. Hints help, and cost points."],
-              ["Live with it", "Thursday's queue is built from your Monday. Then audit the whole week as the GRC tester."]]
-              .map(([t, d], i) => (
-                <li key={t} className="bg-card p-6">
-                  <span className="font-mono text-sm text-primary">{String(i + 1).padStart(2, "0")}</span>
-                  <h3 className="mt-2 text-lg font-semibold">{t}</h3>
-                  <p className="mt-1 text-muted-foreground">{d}</p>
-                </li>))}
+        {/* Skills strip */}
+        <section aria-label="Platforms and frameworks" className="mx-auto max-w-7xl px-4 py-10 md:px-6"><SkillsStrip /></section>
+
+        {/* Features */}
+        <section id="features" aria-labelledby="features-h" className="scroll-mt-20 mx-auto max-w-7xl px-4 py-20 md:px-6">
+          <Reveal className="mx-auto max-w-3xl text-center"><Eyebrow>Why it's different</Eyebrow>
+            <h2 id="features-h" className="mt-3 text-4xl md:text-5xl">Other labs teach features. This teaches the job.</h2>
+            <p className="mt-4 text-lg text-muted-foreground">Real IAM work is a queue: messy requests, approvals, people in a hurry, and decisions that have consequences.</p></Reveal>
+          <ul className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {FEATURES.map((f, i) => (
+              <Reveal as="li" key={f.title} delay={(i % 3) * 0.08} className="lift rounded-3xl border bg-card p-7">
+                <span className={cn("grid size-14 place-items-center rounded-2xl", f.tint)}><f.icon className="size-7" aria-hidden /></span>
+                <h3 className="mt-5 text-xl">{f.title}</h3>
+                <p className="mt-2 text-muted-foreground">{f.text}</p>
+              </Reveal>))}
+          </ul>
+        </section>
+
+        {/* People */}
+        <section aria-labelledby="people-h" className="bg-card py-20">
+          <div className="mx-auto grid max-w-7xl items-center gap-12 px-4 md:px-6 lg:grid-cols-2">
+            <Reveal from="left"><Photo name="service-desk" className="aspect-[4/5] max-h-[640px] shadow-2xl" alt="A smiling service desk analyst wearing a headset, working at a computer with colleagues behind her."
+              credit="BaljkanN 4" profile="https://unsplash.com/@baljkann4" /></Reveal>
+            <Reveal from="right" className="space-y-6">
+              <Eyebrow>Built for the people on the desk</Eyebrow>
+              <h2 id="people-h" className="text-4xl md:text-5xl">Get the reps before the stakes are real.</h2>
+              <p className="text-lg text-muted-foreground">Help desk techs moving into IAM, career changers, and analysts who want practice all hit the same wall: you can't learn judgment from a settings page. ShiftReady gives you a queue, a directory and consequences, then shows you exactly where you slipped.</p>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <Photo name="mentoring" className="aspect-[3/2]" sizes="(min-width: 1024px) 25vw, 50vw" alt="A mentor points at a laptop screen while explaining something to a colleague." credit="Centre for Ageing Better" profile="https://unsplash.com/@ageing_better" />
+                <Photo name="engineers" className="aspect-[3/2]" sizes="(min-width: 1024px) 25vw, 50vw" alt="Two engineers working side by side at computers in a bright office." credit="Tim van der Kuip" profile="https://unsplash.com/@timmykp" />
+              </div>
+            </Reveal>
+          </div>
+        </section>
+
+        {/* How it works */}
+        <section id="how" aria-labelledby="how-h" className="scroll-mt-20 mx-auto max-w-7xl px-4 py-20 md:px-6">
+          <div className="grid items-center gap-10 lg:grid-cols-[1fr_auto]">
+            <Reveal><Eyebrow>How it works</Eyebrow><h2 id="how-h" className="mt-3 text-4xl md:text-5xl">One company. A full week.</h2></Reveal>
+            <IllusWeek className="hidden h-36 lg:block" />
+          </div>
+          <ol className="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-4">
+            {STEPS.map(([t, d, c], i) => (
+              <Reveal as="li" key={t} delay={i * 0.08} className="lift relative rounded-3xl border bg-card p-7">
+                <span className={cn("grid size-12 place-items-center rounded-full text-lg font-extrabold text-white", c)} aria-hidden>{i + 1}</span>
+                <h3 className="mt-5 text-xl"><span className="sr-only">Step {i + 1}: </span>{t}</h3>
+                <p className="mt-2 text-muted-foreground">{d}</p>
+              </Reveal>))}
           </ol>
+          <Reveal className="mt-10"><Photo name="team-room" className="aspect-[21/8] shadow-xl" sizes="100vw" alt="A team of analysts working at rows of computers in an open office."
+            credit="RUT MIIT" profile="https://unsplash.com/@rutmiit" /></Reveal>
         </section>
 
-        <section id="tracks" className="scroll-mt-20 border-b py-20">
-          <Eyebrow>Tracks</Eyebrow><H2>Start with IAM. Grow into the roles around it.</H2>
-          <div className="mt-10 grid gap-4 md:grid-cols-2">
-            {[["IAM Ops", true, "Service desk IAM analyst. Two shifts, 20+ tickets, consequences between them.", ["JML", "MFA", "SoD", "Social engineering", "Incidents"]],
-              ["GRC Audit", true, "IT auditor. Test controls, rate deficiencies, review a SOC 2 report, write the finding.", ["SOX ITGC", "Sampling", "SOC 2", "Risk"]],
-              ["PAM", false, "Privileged access admin. Just-in-time admin requests, the vault, emergency accounts, session review.", ["JIT", "Break-glass", "Rotation"]],
-              ["Platform packs", false, "Run the same scenarios in your own Entra ID, Active Directory, Okta and AWS labs, with scripts that load the company and grade your work.", ["Entra ID", "AD", "Okta", "AWS"]]]
-              .map(([t, live, d, tags]: any) => (
-                <div key={t} className="flex flex-col gap-3 rounded-xl border bg-card p-6">
-                  <div className="flex items-center justify-between"><h3 className="text-xl font-semibold">{t}</h3><Chip live={live}>{live ? "Live" : "Coming"}</Chip></div>
-                  <p className="text-muted-foreground">{d}</p>
-                  <div className="flex flex-wrap gap-1.5">{tags.map((x: string) => <Chip key={x}>{x}</Chip>)}</div>
-                </div>))}
-          </div>
+        {/* Learner stories (placeholder, no invented quotes) */}
+        <section aria-labelledby="stories-h" className="mx-auto max-w-7xl px-4 pb-20 md:px-6">
+          <Reveal className="grid items-center gap-8 rounded-3xl border-2 border-dashed border-primary/30 bg-primary/5 p-8 md:grid-cols-[auto_1fr_auto] md:p-12">
+            <span className="grid size-16 place-items-center rounded-2xl bg-primary text-primary-foreground"><MessageSquareQuote className="size-8" aria-hidden /></span>
+            <div><h2 id="stories-h" className="text-3xl">Learner stories coming soon</h2>
+              <p className="mt-2 text-lg text-muted-foreground">We're collecting stories from early learners. There are no testimonials here yet because we won't publish quotes that aren't real. Try the free shift and tell us how it went.</p></div>
+            <Button asChild size="lg" className="h-12 font-bold"><a href="#waitlist">Share yours</a></Button>
+          </Reveal>
         </section>
 
-        <section id="founder" className="scroll-mt-20 grid gap-8 border-b py-20 md:grid-cols-[1fr_1.3fr]">
-          <div><Eyebrow>Founder</Eyebrow><p className="mt-4 font-display text-3xl font-semibold leading-tight">"I spent 16 years auditing access. I built the simulator I wish new analysts had."</p></div>
-          <div className="space-y-4 text-muted-foreground">
-            <p><b className="text-foreground">Christopher Ashley</b> has 16 years in audit and compliance, testing the controls that decide who gets access to what. Every ticket in ShiftReady is modeled on the failures auditors find in real companies: late terminations, copied access, approvals that shouldn't count.</p>
-            <div className="flex flex-wrap gap-1.5">{["16 years audit & compliance", "CompTIA Security+", "B.S. Cybersecurity", "Entra ID · AWS IAM labs"].map(x => <Chip key={x}>{x}</Chip>)}</div>
-          </div>
+        {/* Pricing */}
+        <section id="pricing" aria-labelledby="pricing-h" className="scroll-mt-20 relative overflow-hidden bg-card px-4 py-20 md:px-6">
+          <div className="relative mx-auto max-w-7xl"><Pricing /></div>
         </section>
 
-        <section id="faq" className="scroll-mt-20 border-b py-20">
-          <Eyebrow>Questions</Eyebrow><H2>Before you start</H2>
-          <Accordion type="single" collapsible className="mt-8 max-w-3xl">
-            {[["Who is this for?", "Career changers and help desk techs moving into IAM, current analysts who want reps, and hiring managers who want to see how someone handles a real queue."],
-              ["Do I need my own lab tenant?", "No. The simulator runs in your browser. Platform packs for your own Entra, Okta and AWS labs are coming for people who want to practice in the real consoles."],
-              ["What does it cost?", "The Monday shift is free. Pricing for the full tracks goes to the waitlist first, with a founding-member price for early signups."],
-              ["Is Pacific Crest a real company?", "No. Pacific Crest Logistics and everyone in it are fictional."]]
-              .map(([q, a]) => <AccordionItem key={q} value={q}><AccordionTrigger className="text-base">{q}</AccordionTrigger><AccordionContent className="text-base text-muted-foreground">{a}</AccordionContent></AccordionItem>)}
+        {/* FAQ */}
+        <section id="faq" aria-labelledby="faq-h" className="scroll-mt-20 mx-auto grid max-w-7xl gap-10 px-4 py-20 md:px-6 lg:grid-cols-[1fr_1.4fr]">
+          <Reveal className="space-y-4"><Eyebrow>Questions</Eyebrow><h2 id="faq-h" className="text-4xl md:text-5xl">Before you start</h2>
+            <IllusShield className="h-44" /></Reveal>
+          <Accordion type="single" collapsible>
+            {FAQ.map(([q, a]) => <AccordionItem key={q} value={q}><AccordionTrigger className="text-lg font-bold">{q}</AccordionTrigger><AccordionContent className="text-base text-muted-foreground">{a}</AccordionContent></AccordionItem>)}
           </Accordion>
         </section>
 
-        <section id="waitlist" className="scroll-mt-20 py-20">
-          <div className="grid gap-10 rounded-2xl border bg-card p-6 md:grid-cols-2 md:p-10">
-            <div><Eyebrow>Early access</Eyebrow><H2>Get the full week when it opens.</H2>
-              <p className="mt-4 text-muted-foreground">Join the waitlist for the PAM track, platform packs and founding-member pricing. One email when it's ready. No spam.</p></div>
-            <Waitlist />
-          </div>
+        {/* Waitlist */}
+        <section id="waitlist" aria-labelledby="wl-h" className="scroll-mt-20 px-4 pb-24 md:px-6">
+          <Reveal className="relative mx-auto grid max-w-6xl gap-10 overflow-hidden rounded-[2rem] bg-primary p-8 text-primary-foreground md:grid-cols-2 md:p-14">
+            <div className="relative space-y-4">
+              <Eyebrow className="text-primary-foreground/85">Early access</Eyebrow>
+              <h2 id="wl-h" className="text-4xl">Get the full week when it opens.</h2>
+              <p className="text-lg text-primary-foreground/90">Join the waitlist for Pro, Pro + Labs or a platform pack. One email when it's ready. No spam, and no commitment to buy.</p>
+              <IllusChart className="h-40" />
+            </div>
+            <div className="relative rounded-2xl bg-card p-6 text-card-foreground shadow-2xl"><Waitlist /></div>
+          </Reveal>
         </section>
       </main>
-      <footer className="mx-auto flex max-w-7xl flex-wrap justify-between gap-3 border-t px-4 py-8 text-sm text-muted-foreground md:px-6">
-        <span>© 2026 ShiftReady. Pacific Crest Logistics is a fictional company.</span><span>Built for people breaking into IAM.</span>
-      </footer>
-    </div>
+      <SiteFooter />
+    </MotionPauseProvider>
   );
 }
 

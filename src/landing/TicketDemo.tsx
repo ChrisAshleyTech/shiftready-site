@@ -74,6 +74,7 @@ export function TicketDemo() {
             </AnimatePresence>
           </div>
 
+          <div className="min-h-[8.75rem]">{/* reserved so the card never changes height */}
           <AnimatePresence>
             {s === 6 && (
               <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="rounded-xl border-2 border-ok/40 bg-ok/8 p-3">
@@ -84,6 +85,7 @@ export function TicketDemo() {
               </motion.div>
             )}
           </AnimatePresence>
+          </div>
         </div>
       </div>
       <div aria-hidden className="mt-3 flex items-center gap-1.5">
