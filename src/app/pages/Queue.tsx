@@ -135,7 +135,7 @@ function ConsequenceNote({ id }: { id: string }) {
   return (
     <div className="rounded-lg border border-bad/40 bg-bad/10 p-4 text-sm">
       <p className="mb-1 text-[11px] font-semibold uppercase tracking-[0.1em] text-bad">Caused by your Monday shift</p>
-      {c.cause} <a href={`#/queue/${CONSEQ_LINKS[key].mon}`} onClick={() => { ui.view = "mon"; }} className="text-primary underline">See the Monday ticket</a>
+      {c.cause} <a href={`#/queue/${CONSEQ_LINKS[key].mon}`} onClick={() => { ui.view = "mon"; }} className="font-semibold text-primary-strong underline">See the Monday ticket</a>
     </div>
   );
 }

@@ -1,0 +1,58 @@
+// Landing and pricing: pricing display and waitlist tier selection, motion controls, reduced motion.
+import { test, expect } from "@playwright/test";
+
+test("pricing: toggle, badges, coming-soon labels and waitlist tier selection", async ({ page }) => {
+  await page.goto("/pricing/");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Start free. Go Pro when you're ready.");
+  await expect(page.getByText("Most complete")).toBeVisible();
+  await expect(page.getByText("$15", { exact: true })).toBeVisible();
+  await page.getByRole("radio", { name: /Yearly/ }).click();
+  await expect(page.getByRole("radio", { name: /Yearly/ })).toHaveAttribute("aria-checked", "true");
+  await expect(page.getByText("$129", { exact: true })).toBeVisible();
+  await expect(page.getByText("save 28%")).toBeVisible();
+  await expect(page.getByText("$169", { exact: true })).toBeVisible();
+  await expect(page.getByText("save 30%")).toBeVisible();
+  await expect(page.getByText("Included free during early access")).toHaveCount(2);
+  expect(await page.getByText("Coming soon", { exact: true }).count()).toBeGreaterThanOrEqual(4);
+  await expect(page.getByRole("link", { name: "Start free" }).last()).toHaveAttribute("href", "/app/");
+  await page.getByRole("button", { name: "Join Pro + Labs waitlist" }).click();
+  await expect(page.locator("#tier")).toHaveValue("labs-yearly");
+  await expect(page.locator("#email")).toBeFocused();
+  await page.getByRole("button", { name: "Join the pack waitlist" }).click();
+  await expect(page.locator("#tier")).toHaveValue("pack");
+  await page.locator("#email").fill("not-an-email");
+  await page.getByRole("button", { name: "Join the waitlist" }).click();
+  await expect(page.locator("#formmsg")).toContainText("valid email");
+});
+
+test.describe("with motion", () => {
+  test.use({ reducedMotion: "no-preference" });
+  test("the pause button stops the looping demo", async ({ page }) => {
+    await page.goto("/");
+    const step = page.getByText(/^Step \d of 7:/);
+    await expect(step).toBeVisible();
+    const pause = page.getByRole("button", { name: "Pause animations" }).first();
+    await pause.click();
+    await expect(page.getByRole("button", { name: "Play animations" }).first()).toHaveAttribute("aria-pressed", "true");
+    const frozen = await step.innerText();
+    await page.waitForTimeout(4500);
+    await expect(step).toHaveText(frozen);
+  });
+});
+
+test("reduced motion: demo shows the finished ticket and there is nothing to pause", async ({ page }) => {
+  await page.goto("/"); // config sets reducedMotion: "reduce"
+  await expect(page.getByText("Step 7 of 7: Graded on outcome and process")).toBeVisible();
+  await expect(page.getByRole("button", { name: /Pause animations/ })).toHaveCount(0);
+  await expect(page.locator("dd").filter({ hasText: "131" }).first()).toBeVisible(); // count-up shows the final value
+});
+
+test("landing: sections in order and photo credits", async ({ page }) => {
+  await page.goto("/");
+  const ids = await page.locator("main section[id], main section[aria-labelledby]").evaluateAll(els => els.map(e => e.id || e.getAttribute("aria-labelledby")));
+  expect(ids).toEqual(["hero-h", "features", "people-h", "how", "stories-h", "pricing", "faq", "waitlist"]);
+  await expect(page.getByRole("heading", { name: "Learner stories coming soon" })).toBeVisible();
+  await expect(page.locator("figcaption").filter({ hasText: "Unsplash" })).toHaveCount(4);
+  const overflow = await page.setViewportSize({ width: 390, height: 844 }).then(() => page.evaluate(() => document.documentElement.scrollWidth > innerWidth));
+  expect(overflow).toBe(false);
+});

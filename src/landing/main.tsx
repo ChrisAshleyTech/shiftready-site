@@ -169,11 +169,11 @@ function Landing() {
 
         {/* Waitlist */}
         <section id="waitlist" aria-labelledby="wl-h" className="scroll-mt-20 px-4 pb-24 md:px-6">
-          <Reveal className="relative mx-auto grid max-w-6xl gap-10 overflow-hidden rounded-[2rem] bg-primary p-8 text-primary-foreground md:grid-cols-2 md:p-14">
+          <Reveal className="relative mx-auto grid max-w-6xl gap-10 overflow-hidden rounded-[2rem] bg-gradient-to-br from-[#1d4ed8] via-[#2563eb] to-[#6d28d9] text-white p-8 md:grid-cols-2 md:p-14">
             <div className="relative space-y-4">
-              <Eyebrow className="text-primary-foreground/85">Early access</Eyebrow>
+              <Eyebrow className="text-white">Early access</Eyebrow>
               <h2 id="wl-h" className="text-4xl">Get the full week when it opens.</h2>
-              <p className="text-lg text-primary-foreground/90">Join the waitlist for Pro, Pro + Labs or a platform pack. One email when it's ready. No spam, and no commitment to buy.</p>
+              <p className="text-lg text-white">Join the waitlist for Pro, Pro + Labs or a platform pack. One email when it's ready. No spam, and no commitment to buy.</p>
               <IllusChart className="h-40" />
             </div>
             <div className="relative rounded-2xl bg-card p-6 text-card-foreground shadow-2xl"><Waitlist /></div>

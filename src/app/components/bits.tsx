@@ -12,7 +12,7 @@ const TONES: Record<Tone, string> = {
   warn: "border-transparent bg-warn/12 text-warn",
   bad: "border-transparent bg-bad/12 text-bad",
   info: "border-transparent bg-info/12 text-info",
-  primary: "border-transparent bg-primary/12 text-primary",
+  primary: "border-transparent bg-primary/12 text-primary-strong",
   solid: "border-transparent bg-foreground text-background",
 };
 export function Tag({ tone = "neutral", className, children, title }: { tone?: Tone; className?: string; children: ReactNode; title?: string }) {

@@ -48,8 +48,8 @@ function Detail({ id }: { id: string }) {
   return (
     <Card className="gap-6 p-5 md:p-6">
       <a href="#/directory" className="inline-flex items-center gap-1 text-sm font-medium text-primary xl:hidden"><ChevronLeft className="size-4" />Directory</a>
-      {at ? <div className="rounded-lg border border-primary/40 bg-primary/10 px-4 py-3 text-sm">Changes are logged against <a className="font-mono text-primary underline" href={`#/queue/${at.id}`}>{at.id}</a>: {at.title}</div>
-        : <div className="flex gap-3 rounded-lg border border-warn/40 bg-warn/10 px-4 py-3 text-sm"><ShieldAlert className="mt-0.5 size-4 shrink-0 text-warn" aria-hidden /><span><b>No active ticket.</b> Changes you make now won't be tied to a ticket, and auditors will flag them. <a className="text-primary underline" href="#/queue">Start a ticket first</a>.</span></div>}
+      {at ? <div className="rounded-lg border border-primary/40 bg-primary/10 px-4 py-3 text-sm">Changes are logged against <a className="font-mono font-semibold text-primary-strong underline" href={`#/queue/${at.id}`}>{at.id}</a>: {at.title}</div>
+        : <div className="flex gap-3 rounded-lg border border-warn/40 bg-warn/10 px-4 py-3 text-sm"><ShieldAlert className="mt-0.5 size-4 shrink-0 text-warn" aria-hidden /><span><b>No active ticket.</b> Changes you make now won't be tied to a ticket, and auditors will flag them. <a className="font-semibold text-primary-strong underline" href="#/queue">Start a ticket first</a>.</span></div>}
       <header className="space-y-2">
         <div className="flex flex-wrap gap-1"><UserTags u={u} /></div>
         <h2 id="u-h" data-panel-focus className="text-2xl font-semibold">{u.name}</h2>

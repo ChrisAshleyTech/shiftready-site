@@ -49,7 +49,7 @@ function Task({ id }: { id: string }) {
           <dl className="mt-2 grid grid-cols-[max-content_1fr] gap-x-4 gap-y-1 text-sm">{g.evidence.map(([k, v]: string[]) => <Fragment key={k}><dt className="text-muted-foreground">{k}</dt><dd>{v}</dd></Fragment>)}</dl>
         </div>
       )}
-      {lk ? <div className="rounded-lg border border-warn/30 bg-warn/10 p-4 text-sm">{lk} <a className="text-primary underline" href="#/queue">Go to the queue</a></div>
+      {lk ? <div className="rounded-lg border border-warn/30 bg-warn/10 p-4 text-sm">{lk} <a className="font-semibold text-primary-strong underline" href="#/queue">Go to the queue</a></div>
         : done ? (
           <>
             <section className="space-y-2"><SectionLabel>Grade</SectionLabel><div className="font-mono text-3xl">{gs.score}/{gs.max}</div><Checks checks={gs.checks} /></section>
@@ -125,7 +125,7 @@ export default function Grc({ r }: { r: Route }) {
             <nav aria-label="Audit tasks" className={cn("space-y-2", sel && "hidden lg:block")}>
               {G.map((g: any, i: number) => { const gs = S.grc[g.id] || {}; const lk = g.lock && g.lock(); return (
                 <a key={g.id} href={`#/grc/${g.id}`} aria-current={sel === g.id ? "page" : undefined}
-                  className={cn("grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 rounded-lg border bg-card p-3 hover:border-input", sel === g.id && "border-primary ring-1 ring-primary", gs.checks && "opacity-80")}>
+                  className={cn("grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 rounded-lg border bg-card p-3 hover:border-input", sel === g.id && "border-primary ring-1 ring-primary", gs.checks && "bg-muted/40")}>
                   <span className="font-mono text-xs text-muted-foreground">{String(i + 1).padStart(2, "0")}</span>
                   <span><span className="block text-sm font-medium">{g.title}</span><span className="block text-xs text-muted-foreground"><span className="font-mono">{g.ctrl}</span> · {g.kind === "table" ? g.rows.length + " items to test" : "Judgment"}</span></span>
                   <span className="col-start-2 flex gap-1">{gs.checks ? <><Tag tone="ok">Submitted</Tag><Tag className="font-mono">{gs.score}/{gs.max}</Tag></> : <Tag>{lk ? "Locked" : "Open"}</Tag>}</span>

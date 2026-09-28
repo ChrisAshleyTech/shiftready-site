@@ -32,8 +32,8 @@ function Page() {
           </Accordion>
         </section>
         <section id="waitlist" aria-labelledby="wl-h" className="scroll-mt-20 px-4 pb-24 md:px-6">
-          <div className="mx-auto grid max-w-5xl gap-10 rounded-3xl bg-primary p-8 text-primary-foreground md:grid-cols-2 md:p-12">
-            <div><h2 id="wl-h" className="text-3xl">Join the waitlist</h2><p className="mt-3 text-primary-foreground/90">Choose the plan you're interested in. One email when it opens, no spam, and no commitment to buy.</p></div>
+          <div className="mx-auto grid max-w-5xl gap-10 rounded-3xl bg-gradient-to-br from-[#1d4ed8] via-[#2563eb] to-[#6d28d9] text-white p-8 md:grid-cols-2 md:p-12">
+            <div><h2 id="wl-h" className="text-3xl">Join the waitlist</h2><p className="mt-3 text-white">Choose the plan you're interested in. One email when it opens, no spam, and no commitment to buy.</p></div>
             <div className="rounded-2xl bg-card p-6 text-card-foreground shadow-xl"><Waitlist /></div>
           </div>
         </section>
