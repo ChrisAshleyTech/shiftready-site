@@ -11,7 +11,7 @@ export default defineConfig({
   resolve: { alias: { "@": r("./src") } },
   build: {
     rollupOptions: {
-      input: { landing: r("./index.html"), app: r("./app/index.html"), report: r("./report/index.html") },
+      input: { landing: r("./index.html"), app: r("./app/index.html"), report: r("./report/index.html"), pricing: r("./pricing/index.html") },
     },
   },
   test: { environment: "jsdom", include: ["tests/**/*.test.{js,ts}"] },
