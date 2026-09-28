@@ -1,49 +1,15 @@
 // Shared marketing chrome for the landing and pricing pages: header, footer, waitlist form.
 import { useState, useSyncExternalStore, type FormEvent } from "react";
-import { ArrowRight, Menu, Moon, Sun } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { Logo } from "@/app/components/Logo";
-import { useTheme } from "@/lib/theme";
+import { MegaNav, Brand } from "./MegaNav";
 import { cn } from "@/lib/utils";
 import { FORM_ENDPOINT } from "./config";
 import { WAITLIST_OPTIONS, getChosenTier, subscribeTier, type WaitlistTier } from "./plans";
 
-export const Brand = () => <a href="/" className="flex items-center gap-2.5 text-xl font-extrabold tracking-tight"><Logo className="size-8" />ShiftReady</a>;
-
-const NAV = [{ href: "/#features", label: "Features" }, { href: "/#how", label: "How it works" }, { href: "/pricing/", label: "Pricing" }, { href: "/#faq", label: "FAQ" }];
-
-export function SiteHeader({ current }: { current?: string }) { // current: nav key of this page
-  const { theme, setTheme } = useTheme();
-  return (
-    <header className="sticky top-0 z-40 border-b border-border/60 bg-background/80 backdrop-blur-md supports-[backdrop-filter]:bg-background/65">
-      <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 md:px-6">
-        <Brand />
-        <nav aria-label="Main" className="hidden items-center gap-7 text-[15px] font-semibold text-muted-foreground md:flex">
-          {NAV.map(n => <a key={n.href} href={n.href} aria-current={current === n.href ? "page" : undefined} className="transition-colors hover:text-primary aria-[current=page]:text-primary">{n.label}</a>)}
-        </nav>
-        <div className="flex items-center gap-2">
-          <Button variant="ghost" size="icon" aria-label={theme === "dark" ? "Switch to light theme" : "Switch to dark theme"} onClick={() => setTheme(theme === "dark" ? "light" : "dark")}>
-            {theme === "dark" ? <Sun /> : <Moon />}
-          </Button>
-          <Button asChild className="hidden font-bold sm:inline-flex"><a href="/app/">Start free <ArrowRight /></a></Button>
-          <Sheet>
-            <SheetTrigger asChild><Button variant="outline" size="icon" className="md:hidden" aria-label="Open menu"><Menu /></Button></SheetTrigger>
-            <SheetContent side="left" className="w-72">
-              <SheetHeader><SheetTitle className="text-left"><Brand /></SheetTitle></SheetHeader>
-              <nav aria-label="Main" className="flex flex-col gap-1 px-4">
-                {NAV.map(n => <a key={n.href} href={n.href} className="rounded-lg px-3 py-3 font-semibold hover:bg-muted">{n.label}</a>)}
-                <Button asChild className="mt-4 font-bold"><a href="/app/">Start free</a></Button>
-              </nav>
-            </SheetContent>
-          </Sheet>
-        </div>
-      </div>
-    </header>
-  );
-}
+export { Brand } from "./MegaNav";
+export function SiteHeader({ current }: { current?: string }) { return <MegaNav current={current} />; }
 
 export function SiteFooter() {
   return (
@@ -51,7 +17,7 @@ export function SiteFooter() {
       <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-4 py-10 text-sm text-muted-foreground md:px-6">
         <div className="space-y-2"><Brand /><p>© 2026 ShiftReady. All companies and people in ShiftReady scenarios are fictional.</p></div>
         <nav aria-label="Footer" className="flex flex-wrap gap-5 font-semibold">
-          <a className="hover:text-primary" href="/app/">Open the app</a><a className="hover:text-primary" href="/pricing/">Pricing</a><a className="hover:text-primary" href="/#faq">FAQ</a><a className="hover:text-primary" href="/#waitlist">Waitlist</a>
+          <a className="hover:text-primary-strong" href="/tracks/">Tracks</a><a className="hover:text-primary-strong" href="/industries/">Industries</a><a className="hover:text-primary-strong" href="/labs/">Platform labs</a><a className="hover:text-primary-strong" href="/pricing/">Pricing</a><a className="hover:text-primary-strong" href="/resources/">Resources</a><a className="hover:text-primary-strong" href="/app/">Open the app</a>
         </nav>
       </div>
     </footer>

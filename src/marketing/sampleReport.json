@@ -1,0 +1,248 @@
+{
+ "v": 1,
+ "name": "Sample learner",
+ "date": "2026-10-08",
+ "week": 93,
+ "mon": {
+  "pct": 92,
+  "sc": 154.1,
+  "mx": 167,
+  "done": 20,
+  "n": 20,
+  "solo": 19,
+  "assisted": 1
+ },
+ "thu": {
+  "pct": 100,
+  "sc": 28,
+  "mx": 28,
+  "done": 4,
+  "n": 4,
+  "solo": 4,
+  "assisted": 0
+ },
+ "grc": null,
+ "caused": 2,
+ "prevented": 11,
+ "hints": 4,
+ "skills": [
+  [
+   "verify",
+   97
+  ],
+  [
+   "jml",
+   84
+  ],
+  [
+   "access",
+   100
+  ],
+  [
+   "incident",
+   91
+  ],
+  [
+   "hygiene",
+   100
+  ]
+ ],
+ "tickets": [
+  [
+   "REQ0018841",
+   90,
+   9,
+   0,
+   1,
+   "jml"
+  ],
+  [
+   "INC0041207",
+   80,
+   8,
+   0,
+   1,
+   "verify"
+  ],
+  [
+   "INC0041209",
+   80,
+   8,
+   0,
+   1,
+   "verify"
+  ],
+  [
+   "INC0041212",
+   81,
+   9,
+   1,
+   1,
+   "verify"
+  ],
+  [
+   "REQ0018850",
+   90,
+   9,
+   0,
+   1,
+   "jml"
+  ],
+  [
+   "REQ0018852",
+   40,
+   8,
+   0,
+   1,
+   "jml"
+  ],
+  [
+   "REQ0018855",
+   60,
+   6,
+   0,
+   2,
+   "access"
+  ],
+  [
+   "REQ0018858",
+   80,
+   8,
+   0,
+   1,
+   "access"
+  ],
+  [
+   "INC0041220",
+   100,
+   10,
+   0,
+   2,
+   "verify"
+  ],
+  [
+   "REQ0018861",
+   80,
+   8,
+   0,
+   1,
+   "hygiene"
+  ],
+  [
+   "TSK0007712",
+   120,
+   12,
+   0,
+   1,
+   "hygiene"
+  ],
+  [
+   "INC0041231",
+   110,
+   11,
+   0,
+   1,
+   "incident"
+  ],
+  [
+   "REQ0018866",
+   60,
+   6,
+   0,
+   2,
+   "access"
+  ],
+  [
+   "REQ0018870",
+   50,
+   10,
+   3,
+   1,
+   "jml"
+  ],
+  [
+   "REQ0018873",
+   50,
+   5,
+   0,
+   2,
+   "access"
+  ],
+  [
+   "REQ0018876",
+   70,
+   7,
+   0,
+   1,
+   "access"
+  ],
+  [
+   "REQ0018879",
+   70,
+   7,
+   0,
+   1,
+   "jml"
+  ],
+  [
+   "REQ0018881",
+   90,
+   9,
+   0,
+   1,
+   "access"
+  ],
+  [
+   "REQ0018884",
+   60,
+   6,
+   0,
+   1,
+   "access"
+  ],
+  [
+   "INC0041240",
+   80,
+   11,
+   0,
+   1,
+   "incident"
+  ],
+  [
+   "REQ0018910",
+   50,
+   5,
+   0,
+   2,
+   "access",
+   "Access request: WMS Admin for Aisha Brown"
+  ],
+  [
+   "REQ0018912",
+   70,
+   7,
+   0,
+   1,
+   "jml",
+   "Early return from leave: Rachel Adams"
+  ],
+  [
+   "INC0041326",
+   110,
+   11,
+   0,
+   1,
+   "incident",
+   "Sam Okafor's mailbox sent 300 phishing emails"
+  ],
+  [
+   "REQ0018921",
+   50,
+   5,
+   0,
+   1,
+   "jml",
+   "Transferred employee still pulling Sales leads"
+  ]
+ ]
+}

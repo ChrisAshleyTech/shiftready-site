@@ -59,10 +59,12 @@ test("landing: sections in order and photo credits", async ({ page }) => {
 
 // Enterprise copy rules for every marketing page: third person, no personal content or
 // testimonials, no "Coming soon" (early access only), no unlisted platforms.
-for (const path of ["/", "/pricing/", "/tracks/", "/industries/", "/labs/", "/resources/"]) {
+const PAGES: [string, RegExp][] = [["/", /Identity and access skills/], ["/pricing/", /Start free. Upgrade/], ["/tracks/", /Role-based tracks/], ["/industries/", /Six industries/], ["/labs/", /real identity platform/], ["/resources/", /How ShiftReady works/]];
+for (const [path, h1] of PAGES) {
   test(`copy rules: ${path}`, async ({ page }) => {
     const res = await page.goto(path);
     expect(res?.status()).toBe(200);
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText(h1);
     const text = await page.locator("body").innerText();
     expect(text).not.toMatch(/(We|we|We're|we're|We'll|we'll|Our|our|I|I'm|I've|me|my)/);
     expect(text).not.toMatch(/founder|Christopher|Ashley|testimonial|learner stories|built by/i);
@@ -70,3 +72,30 @@ for (const path of ["/", "/pricing/", "/tracks/", "/industries/", "/labs/", "/re
     expect(text).not.toMatch(/Okta|AWS|Active Directory/);
   });
 }
+
+test("mega-nav: dropdowns open, arrow keys move, Escape closes and returns focus", async ({ page }) => {
+  await page.goto("/");
+  const tracks = page.getByRole("button", { name: "Tracks" });
+  await tracks.click();
+  await expect(tracks).toHaveAttribute("aria-expanded", "true");
+  await expect(page.getByRole("link", { name: /GRC Audit/ })).toBeVisible();
+  await expect(page.getByRole("link", { name: /PAM/ }).first()).toContainText("Early access");
+  await page.keyboard.press("ArrowDown");
+  await expect(page.locator("[data-menu-item]").first()).toBeFocused();
+  await page.keyboard.press("Escape");
+  await expect(tracks).toHaveAttribute("aria-expanded", "false");
+  await expect(tracks).toBeFocused();
+  await page.getByRole("button", { name: "Platform labs" }).click();
+  await expect(page.locator("[data-menu-item]")).toHaveCount(1);
+  await page.getByRole("button", { name: "Industries" }).click();
+  await expect(page.locator("[data-menu-item]")).toHaveCount(6);
+  await page.mouse.click(5, 600);
+  await expect(page.locator("[data-menu-item]")).toHaveCount(0);
+});
+
+test("resources: the sample report link opens a decoded report", async ({ page, context }) => {
+  await page.goto("/resources/");
+  const href = await page.getByRole("link", { name: /View the sample report/ }).getAttribute("href");
+  const p = await context.newPage(); await p.goto(href!);
+  await expect(p.getByRole("heading", { level: 1 })).toHaveText("Sample learner");
+});

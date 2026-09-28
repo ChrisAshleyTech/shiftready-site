@@ -1,7 +1,7 @@
 // Shared marketing sections: credited photo, waitlist band.
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
-import { Waitlist } from "./chrome";
+import { Waitlist, SiteHeader, SiteFooter } from "./chrome";
 
 export function Photo({ name, alt, credit, profile, className, sizes = "(min-width: 1024px) 50vw, 100vw" }: { name: string; alt: string; credit: string; profile: string; className?: string; sizes?: string }) {
   return (
@@ -28,5 +28,31 @@ export function WaitlistBand({ children }: { children?: ReactNode }) {
         <div className="rounded-2xl bg-card p-6 text-card-foreground shadow-2xl"><Waitlist /></div>
       </div>
     </section>
+  );
+}
+
+// Standard hero for marketing sub-pages.
+export function PageHero({ eyebrow, title, lead, children }: { eyebrow: string; title: string; lead: string; children?: ReactNode }) {
+  return (
+    <section aria-labelledby="page-h" className="border-b bg-card">
+      <div className="mx-auto max-w-7xl space-y-5 px-4 py-16 md:px-6 md:py-20">
+        <p className="t-eyebrow">{eyebrow}</p>
+        <h1 id="page-h" className="t-display max-w-4xl">{title}</h1>
+        <p className="t-lead max-w-3xl">{lead}</p>
+        {children}
+      </div>
+    </section>
+  );
+}
+
+// Page frame shared by the marketing sub-pages.
+export function MarketingFrame({ current, children }: { current: string; children: ReactNode }) {
+  return (
+    <>
+      <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-card focus:px-4 focus:py-2">Skip to content</a>
+      <SiteHeader current={current} />
+      <main id="main" tabIndex={-1} className="outline-none">{children}<WaitlistBand /></main>
+      <SiteFooter />
+    </>
   );
 }
