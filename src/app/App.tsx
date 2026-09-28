@@ -28,6 +28,7 @@ import Home from "./pages/Home";
 import Queue from "./pages/Queue";
 import Directory from "./pages/Directory";
 import Results from "./pages/Results";
+import Report from "./pages/Report";
 
 const PAGES: Record<string, { C: ComponentType<{ r: Route }>; title: string }> = {
   home: { C: Home, title: "Home" },
@@ -37,7 +38,7 @@ const PAGES: Record<string, { C: ComponentType<{ r: Route }>; title: string }> =
   hr: { C: Reference, title: "HR feed" },
   log: { C: Reference, title: "Audit log" },
   results: { C: Results, title: "Shift results" },
-  report: { C: Soon, title: "Readiness report" },
+  report: { C: Report, title: "Readiness report" },
   grc: { C: Grc, title: "GRC audit desk" },
 };
 
