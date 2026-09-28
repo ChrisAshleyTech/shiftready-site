@@ -1,0 +1,121 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+/* ShiftReady "ops console" theme. Dark is the default; light is opt-in (data-theme="light").
+   Contrast, dark: body text 15:1, muted text ≥ 7:1, status text ≥ 7:1 on card, field borders
+   and focus ring ≥ 3:1 against the page (WCAG 2.2 AA 1.4.3 / 1.4.11). */
+:root {
+  color-scheme: dark;
+  --background: #0b0e12;
+  --foreground: #e7ecf2;
+  --card: #11161c;
+  --card-foreground: #e7ecf2;
+  --popover: #141a21;
+  --popover-foreground: #e7ecf2;
+  --elevated: #171e26;
+  --primary: #34d3c0;
+  --primary-foreground: #04201d;
+  --secondary: #1b232c;
+  --secondary-foreground: #e7ecf2;
+  --muted: #1a2129;
+  --muted-foreground: #9aa6b2;
+  --accent: #1d2630;
+  --accent-foreground: #e7ecf2;
+  --destructive: #f87171;
+  --border: #232b35;
+  --input: #5a6675;
+  --ring: #34d3c0;
+  --ok: #4ade80;
+  --warn: #fbbf24;
+  --bad: #f87171;
+  --info: #7cb4ff;
+  --chart-1: #34d3c0;
+  --chart-2: #7cb4ff;
+  --chart-3: #fbbf24;
+  --chart-4: #f87171;
+  --chart-5: #c4b5fd;
+  --radius: 0.625rem;
+}
+:root[data-theme="light"] {
+  color-scheme: light;
+  --background: #f5f7f9;
+  --foreground: #0e141b;
+  --card: #ffffff;
+  --card-foreground: #0e141b;
+  --popover: #ffffff;
+  --popover-foreground: #0e141b;
+  --elevated: #ffffff;
+  --primary: #0b6e6e;
+  --primary-foreground: #ffffff;
+  --secondary: #eef1f4;
+  --secondary-foreground: #0e141b;
+  --muted: #eef1f4;
+  --muted-foreground: #55616d;
+  --accent: #e6ebef;
+  --accent-foreground: #0e141b;
+  --destructive: #b42318;
+  --border: #dde2e8;
+  --input: #7c8b99;
+  --ring: #0b6e6e;
+  --ok: #1e7a3c;
+  --warn: #8a5a09;
+  --bad: #b42318;
+  --info: #1d5fb8;
+  --chart-1: #0b6e6e;
+  --chart-2: #1d5fb8;
+  --chart-3: #8a5a09;
+  --chart-4: #b42318;
+  --chart-5: #6d4bd1;
+}
+
+@custom-variant dark (&:where(:root:not([data-theme="light"]) *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-elevated: var(--elevated);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-ok: var(--ok);
+  --color-warn: var(--warn);
+  --color-bad: var(--bad);
+  --color-info: var(--info);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --font-sans: "IBM Plex Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-display: "IBM Plex Sans Condensed", "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "Cascadia Mono", Menlo, Consolas, monospace;
+}
+
+@layer base {
+  * { @apply border-border; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { @apply bg-background text-foreground font-sans antialiased; font-size: 16px; line-height: 1.55; }
+  h1, h2, h3, h4 { @apply font-display tracking-tight; text-wrap: balance; }
+  :focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+  [tabindex="-1"]:focus { outline: none; }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+  }
+}
