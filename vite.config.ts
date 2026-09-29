@@ -1,6 +1,7 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
+import { seo } from "./seo.plugin";
 import { fileURLToPath } from "node:url";
 import { readFileSync } from "node:fs";
 
@@ -14,7 +15,7 @@ const siteHeaders = Object.fromEntries(
 
 // Multi-page build keeps the public URLs: / (landing), /app/ (simulator), /report/ (shared report).
 export default defineConfig({
-  plugins: [react(), tailwindcss()],
+  plugins: [react(), tailwindcss(), seo()],
   resolve: { alias: { "@": r("./src") } },
   build: {
     rollupOptions: {

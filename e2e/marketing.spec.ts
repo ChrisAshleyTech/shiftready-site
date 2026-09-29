@@ -138,3 +138,21 @@ test("footer: legal links and the non-affiliation disclaimer on every marketing 
     await expect(footer).toContainText("ShiftReady is not affiliated with or endorsed by NIST, ISO, AICPA, the PCI Security Standards Council, Microsoft, Okta or Amazon. Framework names are used for identification only.");
   }
 });
+
+const ALL_PAGES = ["/", "/app/", "/report/", "/pricing/", "/tracks/", "/industries/", "/labs/", "/resources/", "/privacy/", "/terms/"];
+test("meta: unique title and description, Open Graph, Twitter card, icons and manifest on every page", async ({ request }) => {
+  const titles = new Set<string>(), descs = new Set<string>();
+  for (const p of ALL_PAGES) {
+    const html = await (await request.get(p)).text();
+    const title = html.match(/<title>([^<]*)<\/title>/)?.[1] ?? "";
+    const desc = html.match(/<meta name="description" content="([^"]*)"/)?.[1] ?? "";
+    expect(title, p).not.toBe(""); expect(desc.length, p).toBeGreaterThan(20);
+    titles.add(title); descs.add(desc);
+    for (const tag of ['rel="canonical"', 'property="og:title"', 'property="og:description"', 'property="og:image"', 'name="twitter:card" content="summary_large_image"', 'rel="apple-touch-icon"', 'rel="manifest"', 'rel="icon"'])
+      expect(html, `${p}: ${tag}`).toContain(tag);
+  }
+  expect(titles.size).toBe(ALL_PAGES.length);
+  expect(descs.size).toBe(ALL_PAGES.length);
+  for (const f of ["/og/shiftready-og.png", "/favicon.ico", "/favicon.svg", "/apple-touch-icon.png", "/icon-192.png", "/icon-512.png", "/icon-maskable-512.png", "/site.webmanifest"])
+    expect((await request.get(f)).ok(), f).toBe(true);
+});
