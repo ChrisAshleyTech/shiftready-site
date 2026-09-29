@@ -9,6 +9,8 @@ import { go, type Route } from "../sim";
 import { PageHeader, Tag, UserTags, SectionLabel, Empty } from "../components/bits";
 import { DetailPanel } from "../components/DetailPanel";
 import { IllusSearch } from "@/components/brand/illustrations";
+import { AppIcon } from "@/packs/appIcons";
+import { company } from "../company";
 
 const kindOf = (g: string) => g.startsWith("ROLE-") ? "Privileged role" : g.startsWith("SVC-") ? "Service" : REQUESTABLE.includes(g) ? "Requestable" : Object.values(ROLES).some((gs: any) => gs.includes(g)) ? "Birthright" : "Restricted";
 const rolesGranting = (g: string) => Object.entries(ROLES).filter(([, gs]: any) => gs.includes(g)).map(([k]) => k.replace("|", " / "));
@@ -20,7 +22,7 @@ function Panel({ g }: { g: string }) {
   const m = members(g), log = S.log.filter((e: any) => typeof e.d === "string" && e.d.endsWith(" " + g)).slice().reverse();
   const k = kindOf(g);
   return (
-    <DetailPanel labelId="g-h" title={<span className="font-mono">{g}</span>} subtitle={`${m.length} members`} badges={<Tag tone={TONE[k]}>{k}</Tag>} onClose={() => go("#/groups")}>
+    <DetailPanel labelId="g-h" title={<span className="flex items-center gap-2"><AppIcon icon={company().appIcon(g)} className="size-7" /><span className="font-mono">{g}</span></span>} subtitle={`${m.length} members`} badges={<Tag tone={TONE[k]}>{k}</Tag>} onClose={() => go("#/groups")}>
       <Tabs defaultValue="overview">
         <TabsList><TabsTrigger value="overview">Overview</TabsTrigger><TabsTrigger value="members">Members</TabsTrigger><TabsTrigger value="audit">Audit log</TabsTrigger></TabsList>
         <TabsContent value="overview" className="space-y-6 pt-4">
@@ -65,7 +67,7 @@ export default function Groups({ r }: { r: Route }) {
             <TableHeader><TableRow><TableHead>Group</TableHead><TableHead>Type</TableHead><TableHead className="text-right">Members</TableHead><TableHead>SoD rules</TableHead></TableRow></TableHeader>
             <TableBody>{ALL_GROUPS.map((g: string) => (
               <TableRow key={g} data-state={sel === g ? "selected" : undefined}>
-                <TableCell><a href={`#/groups/${encodeURIComponent(g)}`} aria-current={sel === g ? "page" : undefined} className="font-mono text-sm font-semibold hover:text-primary-strong hover:underline">{g}</a></TableCell>
+                <TableCell><a href={`#/groups/${encodeURIComponent(g)}`} aria-current={sel === g ? "page" : undefined} className="inline-flex items-center gap-2 font-mono text-sm font-semibold hover:text-primary-strong hover:underline"><AppIcon icon={company().appIcon(g)} />{g}</a></TableCell>
                 <TableCell><Tag tone={TONE[kindOf(g)]}>{kindOf(g)}</Tag></TableCell>
                 <TableCell className="text-right tabular-nums">{members(g).length}</TableCell>
                 <TableCell>{sodFor(g).length || "–"}</TableCell>

@@ -8,6 +8,7 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ReportView } from "@/report/ReportView";
+import { company } from "../company";
 
 const NAME_KEY = "shiftready-report-name";
 const savedName = () => { try { return localStorage.getItem(NAME_KEY) || ""; } catch { return ""; } };
@@ -15,7 +16,8 @@ export const shareUrl = (d: any) => new URL("/report/#r=" + encodeReport(d), loc
 
 export default function Report() {
   const [name, setName] = useState(savedName);
-  const d = buildReport(name);
+  // The company id lets the shared report show the right logo. Older links without it are Pacific Crest.
+  const d = { ...buildReport(name), c: company().id };
   const url = shareUrl(d);
   const copy = async () => {
     try { await navigator.clipboard.writeText(url); toast("Link copied."); }

@@ -17,3 +17,5 @@ export declare const round1: any;
 export declare const save: any;
 export declare const tact: any;
 export declare const totals: any;
+export declare const HAS_TICKETS: boolean;
+export declare function setCompanyState(key: string, hasTickets: boolean): void;

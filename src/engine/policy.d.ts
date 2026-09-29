@@ -1,3 +1,4 @@
-// Loose types for policy.js: the engine stays plain JS and is covered by tests/*.test.js.
+// Loose types for the active company's policies (policy.js).
 export declare const POLICIES: any;
 export declare const POLICY: any;
+export declare function setPolicyData(p: any): void;

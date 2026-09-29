@@ -8,6 +8,7 @@ import { Card } from "@/components/ui/card";
 import { ChartContainer, type ChartConfig } from "@/components/ui/chart";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { IllusChart } from "@/components/brand/illustrations";
+import { brandFor } from "@/packs/brands";
 
 const nf = new Intl.NumberFormat("en-US", { maximumFractionDigits: 1 });
 const pct = (n: number | null | undefined) => (n == null ? "–" : n + "%");
@@ -35,6 +36,7 @@ export function ReportView({ d, own = false }: { d: any; own?: boolean }) {
   const skills = SKILLS.map((sk: any) => ({ skill: sk.label, short: SHORT[sk.key] || sk.label, value: (d.skills.find((x: any) => x[0] === sk.key) || [])[1] ?? null }));
   const shift = (x: any) => x ? `${x.done}/${x.n} closed · ${x.solo} solo · ${x.assisted} assisted` : "Not started";
   const date = new Date(d.date + "T12:00:00").toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+  const brand = brandFor(d.c);
   const rows = (list: any[], label: string) => list.length ? <>
     <TableRow className="hover:bg-transparent"><TableHead colSpan={4} scope="colgroup" className="bg-muted/40 text-foreground">{label}</TableHead></TableRow>
     {list.map(r => (
@@ -54,7 +56,7 @@ export function ReportView({ d, own = false }: { d: any; own?: boolean }) {
         <div className="relative space-y-3">
           <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.14em] text-white/85"><ShieldCheck className="size-4" aria-hidden />ShiftReady readiness report</p>
           <h1 id="rp-h" tabIndex={-1} data-page-title className="text-3xl font-extrabold md:text-5xl">{d.name || "IAM analyst readiness"}</h1>
-          <p className="text-white/90">IAM Ops track · Pacific Crest Logistics simulation · {date}</p>
+          <p className="flex flex-wrap items-center gap-2 text-white/90"><brand.Mark className="size-6 shrink-0 rounded-md ring-1 ring-white/50" />IAM Ops track · {brand.name} simulation · {date}</p>
           <div className="flex flex-wrap items-center gap-3 pt-1">
             <span className="rounded-lg bg-white px-3 py-1.5 text-sm font-bold text-[#1d4ed8]">{b.label}</span>
             <span className="text-sm text-white/90">{b.note}</span>

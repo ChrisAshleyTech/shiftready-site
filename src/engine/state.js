@@ -6,9 +6,12 @@ import { buildUsers, fmtDay } from "./company.js";
 import { T, TK } from "./tickets.js";
 import { buildThu, curTickets } from "./thursday.js";
 
-// Same key as the original single-file simulator, so existing progress carries over.
-export const KEY = "pcl-iam-sim-v1";
-export function fresh(){ return {users:buildUsers(),tickets:Object.fromEntries(T.map(t=>[t.id,{status:"new",esc:[]}])),log:[],active:null,clock:480,grc:{}}; }
+// Each company saves its own progress. Pacific Crest keeps the original single-file simulator's key,
+// so existing progress carries over. Companies whose tickets are still in development start with none.
+export let KEY = "pcl-iam-sim-v1";
+export let HAS_TICKETS = true;
+export function setCompanyState(key, hasTickets){ KEY = key; HAS_TICKETS = hasTickets; }
+export function fresh(){ return {users:buildUsers(),tickets:Object.fromEntries((HAS_TICKETS?T:[]).map(t=>[t.id,{status:"new",esc:[]}])),log:[],active:null,clock:480,grc:{}}; }
 function load(){ try{ const s=JSON.parse(localStorage.getItem(KEY)); if(s&&s.users&&s.tickets){ s.grc=s.grc||{}; return s; } }catch(e){} return fresh(); }
 export function save(){ try{ localStorage.setItem(KEY,JSON.stringify(S)); }catch(e){} }
 

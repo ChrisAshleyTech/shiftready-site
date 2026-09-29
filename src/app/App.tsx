@@ -22,6 +22,9 @@ import { useSim, useRoute, ui, num, pct, type Route } from "./sim";
 import { NAV, pageInfo } from "./nav";
 import { Logo } from "./components/Logo";
 import { GlobalSearch } from "./components/GlobalSearch";
+import { CompanySwitcher } from "./components/CompanySwitcher";
+import { NoTickets, CompanyOverview } from "./components/NoTickets";
+import { company } from "./company";
 import Home from "./pages/Home";
 // Other screens load on first use, so the charting library and large pages stay out of the
 // initial bundle.
@@ -46,7 +49,11 @@ const PAGES: Record<string, ComponentType<{ r: Route }>> = {
   results: Results, report: Report, grc: Grc, labs: Lab,
 };
 
+// Screens that need the company's tickets.
+const TICKET_PAGES = new Set(["queue", "results", "report", "grc", "labs"]);
+
 function badgeFor(k: string) {
+  if (!company().hasTickets) return k === "log" ? S.log.length || null : null;
   if (k === "queue") return curTickets(ui.view).filter((t: any) => !S.tickets[t.id].checks).length || null;
   if (k === "log") return S.log.length || null;
   if (k === "grc") return G.length - gTotals().done || null;
@@ -103,8 +110,9 @@ function Crumbs({ r }: { r: Route }) {
 }
 
 function TopBar({ r }: { r: Route }) {
-  const isG = r.name === "grc";
-  const list = curTickets(ui.view);
+  const c = company();
+  const isG = r.name === "grc" && c.hasTickets;
+  const list = c.hasTickets ? curTickets(ui.view) : [];
   const tt = isG ? gTotals() : totals(list);
   const isThu = S.shift === "thu" && ui.view !== "mon";
   const ctx = isG ? "Q3 SOX ITGC fieldwork" : `${isThu ? "Thursday, " + fmtDay(3) : "Monday, " + fmtDay(0)} · ${clockStr()}`;
@@ -115,19 +123,22 @@ function TopBar({ r }: { r: Route }) {
       <AnimatedSidebarTrigger className="text-muted-foreground hover:bg-muted hover:text-foreground" aria-label="Toggle navigation">
         <PanelLeft aria-hidden className="size-4" />
       </AnimatedSidebarTrigger>
-      <div className="hidden min-w-0 leading-tight md:block">
-        <div className="truncate font-display text-[13px] font-bold">Pacific Crest Logistics</div>
-        <div className="truncate text-[13px] text-muted-foreground">{ctx}</div>
+      <div className="hidden min-w-0 items-center gap-2 md:flex">
+        <c.Mark className="size-8 shrink-0" />
+        <div className="min-w-0 leading-tight">
+          <CompanySwitcher showMark={false} className="-my-1 -ml-1.5" />
+          <div className="truncate text-[13px] text-muted-foreground">{ctx}</div>
+        </div>
       </div>
       <div className="flex min-w-0 flex-1 justify-center px-1 sm:px-2"><GlobalSearch /></div>
-      <dl className="hidden items-center gap-5 xl:flex" aria-label={`${isG ? "Audit" : "Shift"} progress`}>
+      {c.hasTickets && <dl className="hidden items-center gap-5 xl:flex" aria-label={`${isG ? "Audit" : "Shift"} progress`}>
         {[[isG ? "Submitted" : "Closed", `${tt.done}/${n}`], ["Points", num(tt.sc)], ["Score", pct(tt.pct)]].map(([k, v]) => (
           <div key={k} className="flex flex-col-reverse leading-tight">
             <dt className="text-[11px] uppercase tracking-[0.08em] text-muted-foreground">{k}</dt>
             <dd className="font-mono text-sm tabular-nums">{v}</dd>
           </div>
         ))}
-      </dl>
+      </dl>}
       <Button variant="ghost" size="icon" aria-label={theme === "dark" ? "Switch to light theme" : "Switch to dark theme"} onClick={() => setTheme(theme === "dark" ? "light" : "dark")}>
         {theme === "dark" ? <Sun className="size-4" /> : <Moon className="size-4" />}
       </Button>
@@ -192,6 +203,7 @@ export default function App() {
             </a>
             <AnimatedSidebarClose className="ml-auto text-muted-foreground hover:bg-muted md:hidden"><span aria-hidden>✕</span></AnimatedSidebarClose>
           </div>
+          <div className="px-0.5 pt-2 md:hidden"><CompanySwitcher className="w-full justify-start" /></div>
         </AnimatedSidebarHeader>
         <AnimatedSidebarContent><Nav r={r} /></AnimatedSidebarContent>
         <AnimatedSidebarFooter className="border-none">
@@ -207,7 +219,9 @@ export default function App() {
         <TopBar r={r} />
         <div id="main" tabIndex={-1} className="mx-auto w-full max-w-[1480px] flex-1 px-4 py-6 outline-none md:px-6 md:py-7">
           <Crumbs r={r} />
-          <Suspense fallback={<Loading />}><P r={r} /></Suspense>
+          <Suspense fallback={<Loading />}>
+            {company().hasTickets ? <P r={r} /> : r.name === "home" ? <CompanyOverview /> : TICKET_PAGES.has(r.name) ? <NoTickets title={info.label} /> : <P r={r} />}
+          </Suspense>
         </div>
         <ActiveBar r={r} />
       </AnimatedSidebarInset>

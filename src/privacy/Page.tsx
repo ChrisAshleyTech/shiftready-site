@@ -21,7 +21,7 @@ export default function Page() {
       </section>
       <section aria-labelledby="p-local">
         <h2 id="p-local">Data stored in the browser</h2>
-        <p>Simulator progress, the theme preference and the name entered on a readiness report are stored in the browser's local storage on the device being used. This data is not sent to {LEGAL.operator}. It can be removed with "Reset progress" in the app or by clearing site data in the browser.</p>
+        <p>Simulator progress for each company, the company last worked at, the theme preference and the name entered on a readiness report are stored in the browser's local storage on the device being used. This data is not sent to {LEGAL.operator}. It can be removed with "Reset progress" in the app or by clearing site data in the browser.</p>
       </section>
       <section aria-labelledby="p-report">
         <h2 id="p-report">Readiness report links</h2>

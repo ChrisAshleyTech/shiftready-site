@@ -9,6 +9,7 @@ import { ALL_GROUPS } from "@/engine/company.js";
 import { POLICIES } from "@/engine/policy.js";
 import { NAV } from "../nav";
 import { go } from "../sim";
+import { company } from "../company";
 
 export function GlobalSearch() {
   const [open, setOpen] = useState(false);
@@ -17,7 +18,7 @@ export function GlobalSearch() {
     addEventListener("keydown", onKey); return () => removeEventListener("keydown", onKey);
   }, []);
   const pick = (hash: string) => { setOpen(false); go(hash); };
-  const tickets = T.concat(S.shift === "thu" ? THU_T : []);
+  const tickets = company().hasTickets ? T.concat(S.shift === "thu" ? THU_T : []) : [];
   return (
     <>
       <button type="button" onClick={() => setOpen(true)} aria-keyshortcuts="Control+K Meta+K"

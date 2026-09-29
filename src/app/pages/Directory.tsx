@@ -12,6 +12,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { commit, ui, lastTxt, plural, focusSoon, go, type Route } from "../sim";
+import { company } from "../company";
+import { AppIcon } from "@/packs/appIcons";
 import { doAct } from "../actions";
 import { IllusSearch } from "@/components/brand/illustrations";
 import { PageHeader, UserTags, SectionLabel, Empty } from "../components/bits";
@@ -100,7 +102,7 @@ function UserPanel({ id }: { id: string }) {
             {u.groups.length ? (
               <ul className="divide-y rounded-lg border">{u.groups.slice().sort().map((g: string) => (
                 <li key={g} className="flex items-center justify-between gap-2 py-1 pl-4 pr-1">
-                  <a href={`#/groups/${encodeURIComponent(g)}`} className="font-mono text-sm hover:text-primary-strong hover:underline">{g}</a>
+                  <a href={`#/groups/${encodeURIComponent(g)}`} className="inline-flex items-center gap-2 font-mono text-sm hover:text-primary-strong hover:underline"><AppIcon icon={company().appIcon(g)} className="size-5" />{g}</a>
                   <Button size="sm" variant="ghost" className="text-bad hover:bg-bad/10 hover:text-bad" aria-label={`Remove ${g}`} onClick={() => doAct("rmgrp", id, g)}>Remove</Button>
                 </li>))}</ul>
             ) : <p className="text-muted-foreground">No memberships.</p>}
