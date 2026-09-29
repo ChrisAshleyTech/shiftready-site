@@ -8,3 +8,6 @@ test-results/
 playwright-report/
 scripts/.demo/
 dist-ssr/
+
+# Private planning doc, never committed
+docs/HUB.md
