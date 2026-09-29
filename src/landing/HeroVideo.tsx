@@ -20,10 +20,17 @@ export function HeroVideo() {
   // Render the poster until mounted, so the pre-rendered HTML and first client render match.
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
+  // Swap the poster for the 1 MB video only after the page has loaded, so it never competes with first paint.
+  const [loaded, setLoaded] = useState(false);
+  useEffect(() => {
+    const go = () => setLoaded(true);
+    if (document.readyState === "complete") go(); else addEventListener("load", go, { once: true });
+    return () => removeEventListener("load", go);
+  }, []);
   const still = useStill();
   const [optIn, setOptIn] = useState(false);
   const video = useRef<HTMLVideoElement>(null);
-  const showVideo = mounted && (!reduce || optIn);
+  const showVideo = mounted && (optIn || (!reduce && loaded));
   useEffect(() => {
     const v = video.current; if (!v) return;
     if (still && !optIn) v.pause(); else v.play().catch(() => { /* autoplay blocked: poster stays */ });
@@ -39,7 +46,7 @@ export function HeroVideo() {
         <div className="relative aspect-[8/5] bg-muted">
           {showVideo ? (
             <video ref={video} className="size-full object-cover" muted loop playsInline autoPlay={!reduce || optIn} controls={optIn}
-              poster="/video/demo-poster.jpg" preload="metadata" aria-describedby="demo-desc" data-hero-video>
+              poster="/video/demo-poster.webp" preload="metadata" aria-describedby="demo-desc" data-hero-video>
               <source src="/video/demo.webm" type="video/webm" />
               <source src="/video/demo.mp4" type="video/mp4" />
             </video>

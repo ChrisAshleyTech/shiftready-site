@@ -25,7 +25,9 @@ export function seo(): Plugin {
         source: `User-agent: *\nAllow: /\nDisallow: /report/\nDisallow: /sim.html\n\nSitemap: ${SITE_URL}/sitemap.xml\n`,
       });
     },
-    transformIndexHtml(html, ctx) {
+    // Runs after Vite injects the bundle tags, so the stylesheet can be moved ahead of the
+    // module preloads: on a slow connection it is the only render-blocking request.
+    transformIndexHtml: { order: "post", handler(html, ctx) {
       const path = ctx.path.replace(/index\.html$/, "");
       const title = html.match(/<title>([^<]*)<\/title>/)?.[1] ?? "ShiftReady";
       const desc = html.match(/<meta name="description" content="([^"]*)"/)?.[1] ?? "";
@@ -50,7 +52,13 @@ export function seo(): Plugin {
         `<link rel="apple-touch-icon" href="/apple-touch-icon.png">`,
         `<link rel="manifest" href="/site.webmanifest">`,
       ];
+      const css = html.match(/<link rel="stylesheet"[^>]*>\n?/g) ?? [];
+      for (const l of css) html = html.replace(l, "");
+      // Preload the two text fonts, which are otherwise found only after the stylesheet is parsed.
+      const fonts = Object.keys(ctx.bundle ?? {}).filter(f => /(figtree|source-sans-3)-latin-wght-normal-.*\.woff2$/.test(f));
+      const preload = fonts.map(f => `<link rel="preload" href="/${f}" as="font" type="font/woff2" crossorigin>\n`).join("");
+      html = html.replace(/<script type="module"/, css.join("") + preload + '<script type="module"');
       return html.replace("</head>", tags.join("\n") + "\n</head>");
-    },
+    } },
   };
 }

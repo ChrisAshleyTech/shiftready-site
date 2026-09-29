@@ -25,6 +25,7 @@ function Price({ t, billing }: { t: Tier; billing: Billing }) {
 }
 
 export function Pricing({ headingLevel: H = "h2" }: { headingLevel?: "h1" | "h2" }) {
+  const Sub = H === "h1" ? "h2" : "h3";
   const [billing, setBilling] = useState<Billing>("monthly");
   return (
     <div className="space-y-10">
@@ -45,7 +46,7 @@ export function Pricing({ headingLevel: H = "h2" }: { headingLevel?: "h1" | "h2"
         {TIERS.map((t, i) => (
           <Reveal key={t.id} delay={i * 0.08} className={cn("lift relative flex flex-col gap-6 rounded-3xl border bg-card p-7", t.badge && "border-2 border-primary shadow-xl shadow-primary/15")}>
             {t.badge && <span className="absolute -top-3.5 left-7 rounded-full bg-primary px-3 py-1 font-display text-xs font-bold text-primary-foreground shadow">{t.badge}</span>}
-            <div><h3 className="t-h3">{t.name}</h3><p className="mt-1 min-h-[3.25rem] text-muted-foreground">{t.blurb}</p></div>
+            <div><Sub className="t-h3">{t.name}</Sub><p className="mt-1 min-h-[3.25rem] text-muted-foreground">{t.blurb}</p></div>
             <Price t={t} billing={billing} />
             {t.id === "free"
               ? <Button asChild size="lg" variant="outline" className="h-12 border-2 border-primary text-base font-bold text-primary-strong hover:bg-primary/5"><a href="/app/">{t.cta}</a></Button>
@@ -65,7 +66,7 @@ export function Pricing({ headingLevel: H = "h2" }: { headingLevel?: "h1" | "h2"
       <Reveal className="lift flex flex-col items-start gap-5 rounded-3xl border border-dashed bg-card p-7 md:flex-row md:items-center">
         <span className="grid size-14 shrink-0 place-items-center rounded-2xl bg-primary/12 text-primary-strong"><FlaskConical className="size-7" aria-hidden /></span>
         <div className="flex-1">
-          <h3 className="t-h3 flex flex-wrap items-center gap-2">Add-on: {ADDON.name} <EarlyAccess /></h3>
+          <Sub className="t-h3 flex flex-wrap items-center gap-2">Add-on: {ADDON.name} <EarlyAccess /></Sub>
           <p className="mt-1 text-muted-foreground">{ADDON.blurb}</p>
         </div>
         <div className="flex flex-col items-start gap-2 md:items-end">
