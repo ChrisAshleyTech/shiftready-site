@@ -111,3 +111,20 @@ test("resources: the sample report link opens a decoded report", async ({ page, 
   const p = await context.newPage(); await p.goto(href!);
   await expect(p.getByRole("heading", { level: 1 })).toHaveText("Sample learner");
 });
+
+// Security headers: every inline script is allowed by hash, and pages load with no CSP violations.
+test("security headers and CSP: no violations, inline scripts hashed", async ({ page, request }) => {
+  const res = await request.get("/");
+  const csp = res.headers()["content-security-policy"];
+  expect(csp).toContain("frame-ancestors 'none'");
+  expect(res.headers()["x-content-type-options"]).toBe("nosniff");
+  const { createHash } = await import("node:crypto");
+  for (const p of ["/", "/app/", "/report/", "/pricing/", "/tracks/", "/industries/", "/labs/", "/resources/", "/sim.html"]) {
+    const html = await (await request.get(p)).text();
+    for (const m of html.matchAll(/<script>([\s\S]*?)<\/script>/g)) expect(csp, `inline script on ${p}`).toContain("sha256-" + createHash("sha256").update(m[1]).digest("base64"));
+  }
+  const violations: string[] = [];
+  page.on("console", m => { if (/Content Security Policy|Refused to/i.test(m.text())) violations.push(m.text()); });
+  for (const p of ["/", "/pricing/", "/resources/", "/app/#/queue/INC0041220", "/app/#/report", "/report/#r=x"]) { await page.goto(p); await page.waitForTimeout(400); }
+  expect(violations).toEqual([]);
+});
