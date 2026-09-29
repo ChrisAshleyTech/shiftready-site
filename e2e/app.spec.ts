@@ -134,7 +134,7 @@ test("mobile: list/detail toggle and navigation sheet", async ({ page }) => {
   expect(overflow).toBe(false);
 });
 
-for (const [name, path] of [["landing", "/"], ["privacy", "/privacy/"], ["terms", "/terms/"], ["pricing", "/pricing/"], ["tracks", "/tracks/"], ["industries", "/industries/"], ["labs", "/labs/"], ["resources", "/resources/"], ["home", "/app/#/home"], ["queue", "/app/#/queue/INC0041220"], ["directory", "/app/#/directory/greg.foster"], ["groups", "/app/#/groups/APP-SAP-AP-Approve"], ["policy", "/app/#/policy"], ["results", "/app/#/results"], ["report", "/app/#/report"], ["grc", "/app/#/grc/G1"]] as const) {
+for (const [name, path] of [["landing", "/"], ["privacy", "/privacy/"], ["terms", "/terms/"], ["404", "/404.html"], ["pricing", "/pricing/"], ["tracks", "/tracks/"], ["industries", "/industries/"], ["labs", "/labs/"], ["resources", "/resources/"], ["home", "/app/#/home"], ["queue", "/app/#/queue/INC0041220"], ["directory", "/app/#/directory/greg.foster"], ["groups", "/app/#/groups/APP-SAP-AP-Approve"], ["policy", "/app/#/policy"], ["results", "/app/#/results"], ["report", "/app/#/report"], ["grc", "/app/#/grc/G1"]] as const) {
   for (const theme of ["dark", "light"]) {
     test(`axe: ${name} (${theme}) has no serious or critical violations`, async ({ page }) => {
       await page.goto("/app/");

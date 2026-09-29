@@ -167,3 +167,10 @@ test("sitemap.xml and robots.txt: every listed page resolves", async ({ request 
   expect(locs).not.toContain("/report/");
   for (const p of locs) expect((await request.get(p)).status(), p).toBe(200);
 });
+
+test("404 page: new style, noindex, and routes onward", async ({ page }) => {
+  await page.goto("/404.html");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("This page doesn't exist.");
+  await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", "noindex");
+  await expect(page.getByRole("link", { name: /Go to the home page/ })).toHaveAttribute("href", "/");
+});
