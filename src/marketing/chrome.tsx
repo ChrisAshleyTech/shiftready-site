@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { MegaNav, Brand } from "./MegaNav";
+import { DISCLAIMER } from "./legal";
 import { cn } from "@/lib/utils";
 import { FORM_ENDPOINT } from "./config";
 import { WAITLIST_OPTIONS, getChosenTier, subscribeTier, type WaitlistTier } from "./plans";
@@ -14,11 +15,15 @@ export function SiteHeader({ current }: { current?: string }) { return <MegaNav 
 export function SiteFooter() {
   return (
     <footer className="border-t bg-card">
-      <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-4 py-10 text-sm text-muted-foreground md:px-6">
-        <div className="space-y-2"><Brand /><p>© 2026 ShiftReady. All companies and people in ShiftReady scenarios are fictional.</p></div>
-        <nav aria-label="Footer" className="flex flex-wrap gap-5 font-semibold">
-          <a className="hover:text-primary-strong" href="/tracks/">Tracks</a><a className="hover:text-primary-strong" href="/industries/">Industries</a><a className="hover:text-primary-strong" href="/labs/">Platform labs</a><a className="hover:text-primary-strong" href="/pricing/">Pricing</a><a className="hover:text-primary-strong" href="/resources/">Resources</a><a className="hover:text-primary-strong" href="/app/">Open the app</a>
-        </nav>
+      <div className="mx-auto max-w-7xl space-y-6 px-4 py-10 text-sm text-muted-foreground md:px-6">
+        <div className="flex flex-wrap items-start justify-between gap-6">
+          <div className="space-y-2"><Brand /><p>© 2026 ShiftReady. All companies and people in ShiftReady scenarios are fictional.</p></div>
+          <nav aria-label="Footer" className="flex flex-wrap gap-x-5 gap-y-2 font-semibold">
+            {[["/tracks/", "Tracks"], ["/industries/", "Industries"], ["/labs/", "Platform labs"], ["/pricing/", "Pricing"], ["/resources/", "Resources"], ["/app/", "Open the app"], ["/privacy/", "Privacy"], ["/terms/", "Terms"]].map(([h, l]) =>
+              <a key={h} className="hover:text-primary-strong hover:underline" href={h}>{l}</a>)}
+          </nav>
+        </div>
+        <p data-disclaimer className="max-w-4xl border-t pt-4 text-[13px]">{DISCLAIMER}</p>
       </div>
     </footer>
   );

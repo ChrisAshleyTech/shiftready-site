@@ -18,7 +18,7 @@ export default defineConfig({
   resolve: { alias: { "@": r("./src") } },
   build: {
     rollupOptions: {
-      input: { landing: r("./index.html"), app: r("./app/index.html"), report: r("./report/index.html"), pricing: r("./pricing/index.html"), tracks: r("./tracks/index.html"), industries: r("./industries/index.html"), labs: r("./labs/index.html"), resources: r("./resources/index.html") },
+      input: { landing: r("./index.html"), app: r("./app/index.html"), report: r("./report/index.html"), pricing: r("./pricing/index.html"), tracks: r("./tracks/index.html"), industries: r("./industries/index.html"), labs: r("./labs/index.html"), resources: r("./resources/index.html"), privacy: r("./privacy/index.html"), terms: r("./terms/index.html") },
     },
   },
   preview: { headers: siteHeaders },

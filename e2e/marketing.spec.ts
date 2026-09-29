@@ -14,7 +14,7 @@ test("pricing: toggle, badges, coming-soon labels and waitlist tier selection", 
   await expect(page.getByText("save 30%")).toBeVisible();
   await expect(page.getByText("Pro features are included free during early access.")).toBeVisible();
   expect(await page.getByText("Early access", { exact: true }).count()).toBeGreaterThanOrEqual(3);
-  await expect(page.getByText(/Okta|AWS|Active Directory/)).toHaveCount(0);
+  await expect(page.locator("main").getByText(/Okta|AWS|Active Directory/)).toHaveCount(0);
   await expect(page.getByRole("link", { name: "Start free" }).last()).toHaveAttribute("href", "/app/");
   await page.getByRole("button", { name: "Join Pro + Labs waitlist" }).click();
   await expect(page.locator("#tier")).toHaveValue("labs-yearly");
@@ -71,17 +71,17 @@ test("landing: sections in order and photo credits", async ({ page }) => {
 
 // Enterprise copy rules for every marketing page: third person, no personal content or
 // testimonials, no "Coming soon" (early access only), no unlisted platforms.
-const PAGES: [string, RegExp][] = [["/", /Identity and access skills/], ["/pricing/", /Start free. Upgrade/], ["/tracks/", /Role-based tracks/], ["/industries/", /Six industries/], ["/labs/", /real identity platform/], ["/resources/", /How ShiftReady works/]];
+const PAGES: [string, RegExp][] = [["/", /Identity and access skills/], ["/pricing/", /Start free. Upgrade/], ["/tracks/", /Role-based tracks/], ["/industries/", /Six industries/], ["/labs/", /real identity platform/], ["/resources/", /How ShiftReady works/], ["/privacy/", /Privacy policy/], ["/terms/", /Terms of use/]];
 for (const [path, h1] of PAGES) {
   test(`copy rules: ${path}`, async ({ page }) => {
     const res = await page.goto(path);
     expect(res?.status()).toBe(200);
     await expect(page.getByRole("heading", { level: 1 })).toHaveText(h1);
-    const text = await page.locator("body").innerText();
-    expect(text).not.toMatch(/(We|we|We're|we're|We'll|we'll|Our|our|I|I'm|I've|me|my)/);
+    const text = (await page.locator("body").innerText()).replace(/ShiftReady is not affiliated with[^\n]*/g, "");
+    expect(text).not.toMatch(/\b(We|we|We're|we're|We'll|we'll|Our|our|I|I'm|I've|me|my)\b/);
     expect(text).not.toMatch(/founder|Christopher|Ashley|testimonial|learner stories|built by/i);
     expect(text).not.toMatch(/coming soon/i);
-    expect(text).not.toMatch(/Okta|AWS|Active Directory/);
+    expect(text).not.toMatch(/\bOkta\b|\bAWS\b|Active Directory/);
   });
 }
 
@@ -127,4 +127,14 @@ test("security headers and CSP: no violations, inline scripts hashed", async ({ 
   page.on("console", m => { if (/Content Security Policy|Refused to/i.test(m.text())) violations.push(m.text()); });
   for (const p of ["/", "/pricing/", "/resources/", "/app/#/queue/INC0041220", "/app/#/report", "/report/#r=x"]) { await page.goto(p); await page.waitForTimeout(400); }
   expect(violations).toEqual([]);
+});
+
+test("footer: legal links and the non-affiliation disclaimer on every marketing page", async ({ page }) => {
+  for (const p of ["/", "/pricing/", "/privacy/", "/terms/"]) {
+    await page.goto(p);
+    const footer = page.locator("footer");
+    await expect(footer.getByRole("link", { name: "Privacy" })).toHaveAttribute("href", "/privacy/");
+    await expect(footer.getByRole("link", { name: "Terms" })).toHaveAttribute("href", "/terms/");
+    await expect(footer).toContainText("ShiftReady is not affiliated with or endorsed by NIST, ISO, AICPA, the PCI Security Standards Council, Microsoft, Okta or Amazon. Framework names are used for identification only.");
+  }
 });
