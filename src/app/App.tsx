@@ -1,6 +1,6 @@
 // Admin-center shell: collapsible left nav grouped by section (21st Animated Sidebar), top bar with
 // global search and shift status, breadcrumbs, and the active-ticket bar.
-import { useEffect, useRef, type ComponentType } from "react";
+import { lazy, Suspense, useEffect, useRef, useState, type ComponentType } from "react";
 import { ArrowLeft, Moon, PanelLeft, Sun } from "lucide-react";
 import {
   AnimatedSidebar, AnimatedSidebarClose, AnimatedSidebarContent, AnimatedSidebarFooter, AnimatedSidebarGroup,
@@ -22,15 +22,24 @@ import { useSim, useRoute, ui, num, pct, type Route } from "./sim";
 import { NAV, pageInfo } from "./nav";
 import { Logo } from "./components/Logo";
 import { GlobalSearch } from "./components/GlobalSearch";
-import Reference from "./pages/Reference";
-import Grc from "./pages/Grc";
 import Home from "./pages/Home";
-import Queue from "./pages/Queue";
-import Directory from "./pages/Directory";
-import Groups from "./pages/Groups";
-import Results from "./pages/Results";
-import Report from "./pages/Report";
-import Soon from "./pages/Soon";
+// Other screens load on first use, so the charting library and large pages stay out of the
+// initial bundle.
+const Reference = lazy(() => import("./pages/Reference"));
+const Grc = lazy(() => import("./pages/Grc"));
+const Queue = lazy(() => import("./pages/Queue"));
+const Directory = lazy(() => import("./pages/Directory"));
+const Groups = lazy(() => import("./pages/Groups"));
+const Results = lazy(() => import("./pages/Results"));
+const Report = lazy(() => import("./pages/Report"));
+const Soon = lazy(() => import("./pages/Soon"));
+
+// Shown only if a screen takes more than 300 ms to load, to avoid a flash on fast connections.
+function Loading() {
+  const [show, setShow] = useState(false);
+  useEffect(() => { const t = setTimeout(() => setShow(true), 300); return () => clearTimeout(t); }, []);
+  return show ? <p role="status" className="t-meta py-10 text-center">Loading…</p> : null;
+}
 
 const PAGES: Record<string, ComponentType<{ r: Route }>> = {
   home: Home, queue: Queue, directory: Directory, groups: Groups, policy: Reference, hr: Reference, log: Reference,
@@ -155,11 +164,16 @@ export default function App() {
     const samePage = last.current.split("/")[0] === r.name;
     last.current = key;
     document.title = `${itemLabel(r) ?? info.label} · ShiftReady`;
-    requestAnimationFrame(() => {
+    if (!samePage || innerWidth < 1024) scrollTo({ top: 0 });
+    // Screens load on demand, so wait (up to ~1 s) for the heading to exist before focusing it.
+    let tries = 0, raf = 0;
+    const focus = () => {
       const el = (samePage && document.querySelector<HTMLElement>("[data-panel-focus]")) || document.querySelector<HTMLElement>("[data-page-title]");
-      el?.setAttribute("tabindex", "-1"); el?.focus({ preventScroll: true });
-      if (!samePage || innerWidth < 1024) scrollTo({ top: 0 });
-    });
+      if (el) { el.setAttribute("tabindex", "-1"); el.focus({ preventScroll: true }); return; }
+      if (++tries < 60) raf = requestAnimationFrame(focus);
+    };
+    raf = requestAnimationFrame(focus);
+    return () => cancelAnimationFrame(raf);
   }, [r.name, r.id, info.label]);
 
   return (
@@ -193,7 +207,7 @@ export default function App() {
         <TopBar r={r} />
         <div id="main" tabIndex={-1} className="mx-auto w-full max-w-[1480px] flex-1 px-4 py-6 outline-none md:px-6 md:py-7">
           <Crumbs r={r} />
-          <P r={r} />
+          <Suspense fallback={<Loading />}><P r={r} /></Suspense>
         </div>
         <ActiveBar r={r} />
       </AnimatedSidebarInset>
