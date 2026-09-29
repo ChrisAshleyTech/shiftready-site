@@ -21,7 +21,7 @@ export function GlobalSearch() {
   return (
     <>
       <button type="button" onClick={() => setOpen(true)} aria-keyshortcuts="Control+K Meta+K"
-        className="flex h-10 w-full max-w-md items-center gap-2 rounded-xl border border-input/60 bg-background px-3 text-left text-[15px] text-muted-foreground hover:border-primary/50">
+        className="flex h-10 w-full min-w-0 max-w-md items-center gap-2 rounded-xl border border-input/60 bg-background px-3 text-left text-[15px] text-muted-foreground hover:border-primary/50">
         <Search className="size-4 shrink-0" aria-hidden />
         <span className="flex-1 truncate">Search users, groups, tickets and policies</span>
         <kbd className="hidden rounded border bg-muted px-1.5 font-mono text-[11px] sm:inline">Ctrl K</kbd>

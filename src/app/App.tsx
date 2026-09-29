@@ -110,7 +110,7 @@ function TopBar({ r }: { r: Route }) {
         <div className="truncate font-display text-[13px] font-bold">Pacific Crest Logistics</div>
         <div className="truncate text-[13px] text-muted-foreground">{ctx}</div>
       </div>
-      <div className="flex flex-1 justify-center px-2"><GlobalSearch /></div>
+      <div className="flex min-w-0 flex-1 justify-center px-1 sm:px-2"><GlobalSearch /></div>
       <dl className="hidden items-center gap-5 xl:flex" aria-label={`${isG ? "Audit" : "Shift"} progress`}>
         {[[isG ? "Submitted" : "Closed", `${tt.done}/${n}`], ["Points", num(tt.sc)], ["Score", pct(tt.pct)]].map(([k, v]) => (
           <div key={k} className="flex flex-col-reverse leading-tight">
