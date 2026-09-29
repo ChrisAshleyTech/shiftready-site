@@ -7,6 +7,7 @@ import { SiteHeader, SiteFooter } from "@/marketing/chrome";
 import { WaitlistBand } from "@/marketing/sections";
 import { Pricing } from "@/marketing/Pricing";
 import "@/index.css";
+import "@/lib/analytics";
 
 const QA = [
   ["Can plans be purchased today?", "Not yet. Paid plans open from a waitlist, and no payment details are collected on this site."],

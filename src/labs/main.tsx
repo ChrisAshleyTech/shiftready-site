@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { EarlyAccess } from "@/components/brand/EarlyAccess";
 import { MarketingFrame, PageHero } from "@/marketing/sections";
 import "@/index.css";
+import "@/lib/analytics";
 
 const STEPS = [
   { icon: Server, t: "Seed a tenant", d: "A PowerShell script creates the Pacific Crest users and security groups in a Microsoft Entra tenant, tagged for easy cleanup." },

@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { EarlyAccess } from "@/components/brand/EarlyAccess";
 import { MarketingFrame, PageHero } from "@/marketing/sections";
 import "@/index.css";
+import "@/lib/analytics";
 
 const TRACKS = [
   { id: "iam-ops", name: "IAM Ops", level: "Service desk and IAM operations",

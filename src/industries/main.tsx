@@ -7,6 +7,7 @@ import { EarlyAccess } from "@/components/brand/EarlyAccess";
 import { MarketingFrame, PageHero } from "@/marketing/sections";
 import { INDUSTRIES } from "@/marketing/catalog";
 import "@/index.css";
+import "@/lib/analytics";
 
 const SYSTEMS: Record<string, string> = {
   "pacific-crest": "Salesforce, SAP (AP entry and approval, general ledger), CargoWise, warehouse management, Workday, Concur, Microsoft 365, ServiceNow",

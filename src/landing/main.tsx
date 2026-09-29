@@ -16,6 +16,7 @@ import { INDUSTRIES } from "@/marketing/catalog";
 import { cn } from "@/lib/utils";
 import { HeroVideo } from "./HeroVideo";
 import "@/index.css";
+import "@/lib/analytics";
 
 const CAPABILITIES: { icon: typeof UsersRound; tint: string; title: string; text: string; early?: boolean }[] = [
   { icon: UsersRound, tint: "bg-hue-blue/12 text-primary-strong", title: "Provisioning and lifecycle", text: "Joiner, mover, leaver and rehire requests provisioned from a role-based access matrix." },

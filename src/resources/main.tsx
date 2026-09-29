@@ -8,6 +8,7 @@ import { MarketingFrame, PageHero } from "@/marketing/sections";
 import { encodeReport } from "@/engine/report.js";
 import sample from "@/marketing/sampleReport.json";
 import "@/index.css";
+import "@/lib/analytics";
 
 const SAMPLE_URL = "/report/#r=" + encodeReport(sample);
 

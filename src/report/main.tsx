@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Logo } from "@/app/components/Logo";
 import { ReportView } from "./ReportView";
 import "@/index.css";
+import "@/lib/analytics";
 
 const read = () => decodeReport(new URLSearchParams(location.hash.slice(1)).get("r") || "");
 
