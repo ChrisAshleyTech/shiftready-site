@@ -19,4 +19,5 @@ export const pack: CompanyPack = {
     "APP-ServiceNow": "ticket", "GRP-": "group", "ROLE-": "key", "SVC-": "gear",
   }),
   load: async () => ({ company, policy }),
+  loadRecords: () => import("./finance"),
 };

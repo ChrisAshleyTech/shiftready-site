@@ -1,5 +1,11 @@
 import type { ComponentType } from "react";
 import type { AppIconKey } from "./appIcons";
+import type { Finance } from "./lib/finance";
+
+// Planted directory findings, kept for future audit tickets. Hidden from learners.
+export type IamFinding = { kind: "dormant" | "sod" | "excess" | "leaver-active"; user: string; note: string };
+// Vendors, purchase orders, invoices and metrics. Loaded only for exports and future tracks.
+export type Records = { finance: () => Finance; metricRules: (rows: Finance["metrics"]) => string[]; IAM_KEY: readonly IamFinding[] };
 
 // One fictional company. Metadata and the logo load with the app; the directory, access matrix,
 // SoD rules, HR feed and policies load only when the company is picked.
@@ -15,4 +21,5 @@ export type CompanyPack = {
   Mark: ComponentType<{ className?: string }>;
   appIcon: (group: string) => AppIconKey;
   load: () => Promise<{ company: unknown; policy: unknown }>;
+  loadRecords: () => Promise<Records>;
 };
