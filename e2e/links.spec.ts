@@ -4,7 +4,7 @@ import { test, expect, type Page } from "@playwright/test";
 const PAGES = ["/", "/pricing/", "/tracks/", "/industries/", "/labs/", "/resources/", "/privacy/", "/terms/", "/404.html"];
 const APP_ROUTES = ["home", "queue", "directory", "groups", "policy", "hr", "log", "results", "report", "grc", "labs"];
 // Sites that refuse automated requests (bot protection) but were checked by hand.
-const BOT_BLOCKED = /^https:\/\/unsplash\.com\//;
+const BOT_BLOCKED = /^https:\/\/(unsplash\.com|entra\.microsoft\.com)\//;
 
 async function linksOn(page: Page) {
   const hrefs = new Set<string>();

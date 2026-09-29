@@ -39,7 +39,7 @@ export class ExportError extends Error {}
 
 export function parseExport(text: string): LabExport {
   let data: any;
-  try { data = JSON.parse(text.replace(/^﻿/, "")); }
+  try { data = JSON.parse(text.charCodeAt(0) === 0xfeff ? text.slice(1) : text); }
   catch { throw new ExportError("This file isn't valid JSON. Upload the shiftready-lab-export.json file that Export-ShiftReadyLab.ps1 created."); }
   if (data?.schema !== "shiftready-entra-export/1")
     throw new ExportError("This isn't a ShiftReady lab export. Upload the shiftready-lab-export.json file that Export-ShiftReadyLab.ps1 created.");

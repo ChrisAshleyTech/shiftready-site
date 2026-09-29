@@ -32,7 +32,7 @@ const Directory = lazy(() => import("./pages/Directory"));
 const Groups = lazy(() => import("./pages/Groups"));
 const Results = lazy(() => import("./pages/Results"));
 const Report = lazy(() => import("./pages/Report"));
-const Soon = lazy(() => import("./pages/Soon"));
+const Lab = lazy(() => import("./pages/Lab"));
 
 // Shown only if a screen takes more than 300 ms to load, to avoid a flash on fast connections.
 function Loading() {
@@ -43,7 +43,7 @@ function Loading() {
 
 const PAGES: Record<string, ComponentType<{ r: Route }>> = {
   home: Home, queue: Queue, directory: Directory, groups: Groups, policy: Reference, hr: Reference, log: Reference,
-  results: Results, report: Report, grc: Grc, labs: Soon,
+  results: Results, report: Report, grc: Grc, labs: Lab,
 };
 
 function badgeFor(k: string) {

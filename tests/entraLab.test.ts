@@ -81,7 +81,7 @@ describe("Entra ID lab", () => {
   });
 
   test("parses a PowerShell 5.1 file with a byte-order mark, and rejects other files", () => {
-    expect(parseExport("﻿" + JSON.stringify(exportOf())).users).toHaveLength(7);
+    expect(parseExport(String.fromCharCode(0xfeff) + JSON.stringify(exportOf())).users).toHaveLength(7);
     expect(() => parseExport("not json")).toThrow(ExportError);
     expect(() => parseExport('{"schema":"other"}')).toThrow(/isn't a ShiftReady lab export/);
     const partial = exportOf(); partial.users = partial.users.slice(1);
