@@ -208,3 +208,15 @@ test("waitlist form: field-level errors on blur and submit, live re-validation, 
   await page.getByRole("button", { name: "Join the waitlist" }).click();
   await expect(page.locator("#formmsg")).toContainText("Preview only");
 });
+
+test("one primary call to action per section on every marketing page", async ({ page }) => {
+  for (const p of ["/", "/pricing/", "/tracks/", "/industries/", "/labs/", "/resources/", "/privacy/", "/terms/", "/404.html"]) {
+    await page.goto(p);
+    const counts = await page.locator("main section").evaluateAll(secs => secs.map(s => ({
+      id: s.id || s.getAttribute("aria-labelledby") || s.getAttribute("aria-label") || "",
+      n: [...s.querySelectorAll('[data-slot="button"]')].filter(b => !b.closest("section section") || b.closest("section") === s).filter(b => /(^|\s)bg-primary(\s|$)/.test(b.className)).length,
+    })));
+    for (const c of counts) expect(c.n, `${p} section ${c.id}`).toBeLessThanOrEqual(1);
+    expect(await page.locator('header [data-slot="button"].bg-primary').count(), `${p} header`).toBe(1);
+  }
+});

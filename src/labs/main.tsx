@@ -5,6 +5,7 @@ import { ArrowRight, Download, FileUp, ListChecks, Server } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { EarlyAccess } from "@/components/brand/EarlyAccess";
 import { MarketingFrame, PageHero } from "@/marketing/sections";
+import { chooseTier } from "@/marketing/plans";
 import "@/index.css";
 import "@/lib/analytics";
 
@@ -19,7 +20,8 @@ function Page() {
   return (
     <MarketingFrame current="labs">
       <PageHero eyebrow="Platform labs" title="The same scenarios, in a real identity platform." lead="Platform labs move ShiftReady tickets into a live tenant, then grade the result against the simulator's rules.">
-        <Button asChild size="lg" className="font-bold"><a href="/app/#/labs/entra">Open the Entra ID lab guide <ArrowRight /></a></Button>
+        {/* The lab guide is in development, so the primary action is joining its waitlist. */}
+        <Button asChild size="lg" className="font-bold"><a href="#waitlist" onClick={() => chooseTier("pack")}>Join the lab waitlist <ArrowRight /></a></Button>
       </PageHero>
       <section aria-labelledby="entra-h" className="mx-auto max-w-7xl px-4 py-16 md:px-6">
         <div className="rounded-3xl border bg-card p-8">

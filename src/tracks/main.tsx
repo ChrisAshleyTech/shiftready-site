@@ -41,7 +41,8 @@ function Page() {
               <p className="t-meta font-semibold">{t.level}</p>
               <h2 id={`${t.id}-h`} className="t-h1 flex flex-wrap items-center gap-3">{t.name}{t.early && <EarlyAccess />}</h2>
               <p className="t-lead">{t.lead}</p>
-              {t.cta && <Button asChild size="lg" className="mt-2 font-bold"><a href={t.cta.href}>{t.cta.label} <ArrowRight /></a></Button>}
+              {/* One primary action per page: IAM Ops (the free starting point) gets it; others are secondary. */}
+              {t.cta && <Button asChild size="lg" variant={t.id === "iam-ops" ? "default" : "outline"} className={t.id === "iam-ops" ? "mt-2 font-bold" : "mt-2 border-2 font-bold"}><a href={t.cta.href}>{t.cta.label} <ArrowRight /></a></Button>}
             </div>
             <div>
               <h3 className="t-eyebrow mb-4">{t.early ? "In development" : "What it covers"}</h3>

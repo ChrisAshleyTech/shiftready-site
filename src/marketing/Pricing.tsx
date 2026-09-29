@@ -53,7 +53,10 @@ export function Pricing({ headingLevel: H = "h2" }: { headingLevel?: "h1" | "h2"
             <Price t={t} billing={billing} />
             {t.id === "free"
               ? <Button asChild size="lg" variant="outline" className="h-12 border-2 border-primary text-base font-bold text-primary-strong hover:bg-primary/5"><a href="/app/">{t.cta}</a></Button>
-              : <Button size="lg" className="h-12 text-base font-bold" onClick={() => chooseTier(`${t.id}-${billing}` as WaitlistTier)}>{t.cta}</Button>}
+              : t.badge
+                ? <Button size="lg" className="h-12 text-base font-bold" onClick={() => chooseTier(`${t.id}-${billing}` as WaitlistTier)}>{t.cta}</Button>
+                // One primary per section: only the featured plan is filled; the others are outlined.
+                : <Button size="lg" variant="outline" className="h-12 border-2 border-primary text-base font-bold text-primary-strong hover:bg-primary/5" onClick={() => chooseTier(`${t.id}-${billing}` as WaitlistTier)}>{t.cta}</Button>}
             <ul className="space-y-3">{t.features.map(f => (
               <li key={f.text} className="flex gap-2.5 text-[15px]">
                 <Check className="mt-0.5 size-4 shrink-0 text-ok" strokeWidth={3} aria-hidden />
