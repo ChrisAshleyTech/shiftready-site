@@ -4,8 +4,8 @@
 // (WCAG 1.2.1: video-only content needs a text alternative).
 import { useEffect, useRef, useState } from "react";
 import { Play } from "lucide-react";
-import { useReducedMotion } from "motion/react";
-import { useStill } from "@/components/brand/motion";
+
+import { useStill, usePrefersReducedMotion } from "@/components/brand/motion";
 
 const STEPS = [
   "The Monday queue has one ticket left: a caller claiming to be the CFO wants MFA moved to a new phone before a wire deadline.",
@@ -16,15 +16,18 @@ const STEPS = [
 ];
 
 export function HeroVideo() {
-  const reduce = useReducedMotion();
+  const reduce = usePrefersReducedMotion();
+  // Render the poster until mounted, so the pre-rendered HTML and first client render match.
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
   const still = useStill();
   const [optIn, setOptIn] = useState(false);
   const video = useRef<HTMLVideoElement>(null);
-  const showVideo = !reduce || optIn;
+  const showVideo = mounted && (!reduce || optIn);
   useEffect(() => {
     const v = video.current; if (!v) return;
     if (still && !optIn) v.pause(); else v.play().catch(() => { /* autoplay blocked: poster stays */ });
-  }, [still, optIn]);
+  }, [still, optIn, showVideo]);
 
   return (
     <figure className="space-y-3">
@@ -47,9 +50,9 @@ export function HeroVideo() {
                 <img src="/video/demo-poster.jpg" width={1280} height={800} className="size-full object-cover" data-hero-still
                   alt="The ShiftReady Thursday queue showing an incident, Dormant account signed in from unknown IP, marked Caused by your Monday shift." />
               </picture>
-              <button type="button" onClick={() => setOptIn(true)} className="absolute bottom-4 left-4 inline-flex h-11 items-center gap-2 rounded-full bg-card/95 px-4 font-display text-sm font-bold shadow-lg ring-1 ring-border hover:bg-card">
+              {mounted && <button type="button" onClick={() => setOptIn(true)} className="absolute bottom-4 left-4 inline-flex h-11 items-center gap-2 rounded-full bg-card/95 px-4 font-display text-sm font-bold shadow-lg ring-1 ring-border hover:bg-card">
                 <Play className="size-4" aria-hidden />Play the walkthrough
-              </button>
+              </button>}
             </>
           )}
         </div>

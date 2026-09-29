@@ -1,6 +1,5 @@
 // Pricing section (display only): monthly/yearly toggle, three tiers and the add-on.
 import { useState } from "react";
-import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { Check, FlaskConical } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -11,15 +10,12 @@ import { ADDON, PRO_FOOTNOTE, TIERS, chooseTier, perMonthYearly, yearlySaving, t
 const usd = (n: number) => "$" + (Number.isInteger(n) ? n : n.toFixed(2));
 
 function Price({ t, billing }: { t: Tier; billing: Billing }) {
-  const reduce = useReducedMotion();
   const main = billing === "monthly" ? t.monthly : t.yearly;
   return (
     <div className="min-h-[5.5rem]">
       <div className="flex items-baseline gap-1">
-        <AnimatePresence mode="popLayout" initial={false}>
-          <motion.span key={`${t.id}-${billing}`} initial={reduce ? false : { y: 16, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={reduce ? undefined : { y: -16, opacity: 0 }}
-            className="font-display text-5xl font-extrabold tracking-tight">{usd(main)}</motion.span>
-        </AnimatePresence>
+        {/* Re-keyed on change so the CSS entrance animation replays (off under reduced motion). */}
+        <span key={`${t.id}-${billing}`} className="price-in font-display text-5xl font-extrabold tracking-tight">{usd(main)}</span>
         <span className="text-muted-foreground">{t.monthly === 0 ? "forever" : billing === "monthly" ? "/month" : "/year"}</span>
       </div>
       {t.monthly > 0 && billing === "yearly" && <p className="t-meta mt-1">{usd(perMonthYearly(t))}/month billed yearly · <b className="text-ok">save {yearlySaving(t)}%</b></p>}

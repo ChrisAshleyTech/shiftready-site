@@ -220,3 +220,27 @@ test("one primary call to action per section on every marketing page", async ({ 
     expect(await page.locator('header [data-slot="button"].bg-primary').count(), `${p} header`).toBe(1);
   }
 });
+
+// Pre-rendered pages must hydrate cleanly: no console errors (hydration mismatches included),
+// with and without reduced motion, and the content is present before scripts run.
+for (const rm of ["reduce", "no-preference"] as const) {
+  test.describe(`hydration (${rm})`, () => {
+    test.use({ reducedMotion: rm });
+    test("marketing pages hydrate without console errors", async ({ page }) => {
+      const errors: string[] = [];
+      // Resource failures are tracked by URL; /_vercel/insights only exists on Vercel deployments.
+      page.on("console", m => { if (m.type() === "error" && !m.text().startsWith("Failed to load resource")) errors.push(m.text()); });
+      page.on("response", r => { if (r.status() >= 400 && !r.url().includes("/_vercel/insights")) errors.push(`${r.status()} ${r.url()}`); });
+      page.on("pageerror", e => errors.push(e.message));
+      for (const p of ["/", "/pricing/", "/tracks/", "/industries/", "/labs/", "/resources/", "/privacy/", "/terms/", "/404.html"]) {
+        await page.goto(p); await page.waitForTimeout(500);
+      }
+      expect(errors.filter(e => !/_vercel\/insights/.test(e))).toEqual([]);
+    });
+  });
+}
+test("pre-rendered HTML contains the page content before JavaScript", async ({ request }) => {
+  const html = await (await request.get("/")).text();
+  expect(html).toContain('data-prerendered');
+  expect(html).toContain("Identity and access skills, built on real operations work.");
+});

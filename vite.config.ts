@@ -14,14 +14,15 @@ const siteHeaders = Object.fromEntries(
 );
 
 // Multi-page build keeps the public URLs: / (landing), /app/ (simulator), /report/ (shared report).
-export default defineConfig({
-  plugins: [react(), tailwindcss(), seo()],
+// The SSR build (for pre-rendering marketing pages) uses its own entry, so it skips the page inputs.
+export default defineConfig(({ isSsrBuild }) => ({
+  plugins: isSsrBuild ? [react()] : [react(), tailwindcss(), seo()],
   resolve: { alias: { "@": r("./src") } },
-  build: {
+  build: isSsrBuild ? {} : {
     rollupOptions: {
       input: { landing: r("./index.html"), app: r("./app/index.html"), report: r("./report/index.html"), pricing: r("./pricing/index.html"), tracks: r("./tracks/index.html"), industries: r("./industries/index.html"), labs: r("./labs/index.html"), resources: r("./resources/index.html"), privacy: r("./privacy/index.html"), terms: r("./terms/index.html"), notfound: r("./404.html") },
     },
   },
   preview: { headers: siteHeaders },
   test: { environment: "jsdom", include: ["tests/**/*.test.{js,ts}"] },
-});
+}));
