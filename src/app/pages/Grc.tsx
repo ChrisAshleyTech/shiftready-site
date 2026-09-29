@@ -12,6 +12,11 @@ import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { commit, focusSoon, type Route } from "../sim";
 import { PageHeader, Html, Checks, Tag, SectionLabel, Empty } from "../components/bits";
+import { ExportButtons } from "../components/ExportButtons";
+import { AuditPopulations } from "../components/AuditPopulations";
+import { sampleTable } from "../exportData";
+import { downloadCsv, downloadXlsx, fileName } from "../exports";
+import { company } from "../company";
 
 const CONTROLS = [
   ["APD-01", "New user provisioning", "Access is approved by the user's manager before provisioning and limited to the role's birthright groups.", "Per event · Manual · Preventive"],
@@ -43,6 +48,9 @@ function Task({ id }: { id: string }) {
         <h2 id="gt-h" data-panel-focus className="text-xl font-semibold">{g.title}</h2>
       </div>
       <Html className="prose-sm max-w-[70ch] space-y-2 [&_li]:ml-5 [&_li]:list-disc" html={g.intro} />
+      {g.kind === "table" && <ExportButtons label="Download the sample"
+        onCsv={() => downloadCsv(sampleTable(g), fileName(company().id, g.id.toLowerCase() + "-sample", "csv"))}
+        onXlsx={() => downloadXlsx([sampleTable(g)], fileName(company().id, g.id.toLowerCase() + "-sample", "xlsx"), [["Company", company().name], ["Task", `${g.ctrl}: ${g.title}`]])} />}
       {g.evidence && (
         <div className="rounded-lg border bg-muted/40 p-4">
           <SectionLabel>Evidence</SectionLabel>
@@ -122,7 +130,8 @@ export default function Grc({ r }: { r: Route }) {
         <>
           {tt.done === G.length && <div className="mb-4 rounded-lg border border-primary/30 bg-primary/10 px-4 py-3 text-sm"><b>Fieldwork complete: {tt.pct}%.</b> {tt.pct! >= 90 ? "Workpapers are review-ready." : tt.pct! >= 75 ? "Solid fieldwork. Go back over the items you missed." : "Retry the tasks you missed before sign-off."}</div>}
           <div className="grid gap-4 lg:grid-cols-[320px_minmax(0,1fr)]">
-            <nav aria-label="Audit tasks" className={cn("space-y-2", sel && "hidden lg:block")}>
+            <div className={cn("space-y-4", sel && "hidden lg:block")}>
+            <nav aria-label="Audit tasks" className="space-y-2">
               {G.map((g: any, i: number) => { const gs = S.grc[g.id] || {}; const lk = g.lock && g.lock(); return (
                 <a key={g.id} href={`#/grc/${g.id}`} aria-current={sel === g.id ? "page" : undefined}
                   className={cn("grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 rounded-lg border bg-card p-3 hover:border-input", sel === g.id && "border-primary ring-1 ring-primary", gs.checks && "bg-muted/40")}>
@@ -131,6 +140,8 @@ export default function Grc({ r }: { r: Route }) {
                   <span className="col-start-2 flex gap-1">{gs.checks ? <><Tag tone="ok">Submitted</Tag><Tag className="font-mono">{gs.score}/{gs.max}</Tag></> : <Tag>{lk ? "Locked" : "Open"}</Tag>}</span>
                 </a>); })}
             </nav>
+            <AuditPopulations className="rounded-lg border bg-card p-4" />
+            </div>
             <div className={cn(!sel && "hidden lg:block")}>{sel ? <Task key={sel} id={sel} /> : <Empty art={IllusChart} title="Pick a task">Work them in order. Later tasks build on earlier findings.</Empty>}</div>
           </div>
         </>

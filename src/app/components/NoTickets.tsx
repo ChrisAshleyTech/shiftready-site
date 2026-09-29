@@ -8,6 +8,7 @@ import { ROLES, SOD, ALL_GROUPS, HR_FEED } from "@/engine/company.js";
 import { POLICIES } from "@/engine/policy.js";
 import { company } from "../company";
 import { PageHeader, Empty } from "./bits";
+import { AuditPopulations } from "./AuditPopulations";
 
 export function NoTickets({ title }: { title: string }) {
   const c = company();
@@ -46,6 +47,7 @@ export function CompanyOverview() {
             </a></li>
           ))}
         </ul>
+        <AuditPopulations className="max-w-xl rounded-xl border bg-card p-5" />
       </div>
     </>
   );

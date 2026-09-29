@@ -14,6 +14,9 @@ import { toast } from "sonner";
 import { commit, ui, lastTxt, plural, focusSoon, go, type Route } from "../sim";
 import { company } from "../company";
 import { AppIcon } from "@/packs/appIcons";
+import { ExportButtons } from "../components/ExportButtons";
+import { accessReview } from "../exportData";
+import { downloadCsv, downloadXlsx, fileName } from "../exports";
 import { doAct } from "../actions";
 import { IllusSearch } from "@/components/brand/illustrations";
 import { PageHeader, UserTags, SectionLabel, Empty } from "../components/bits";
@@ -139,7 +142,12 @@ export default function Directory({ r }: { r: Route }) {
   const clear = () => { ui.dirQ = ""; ui.dirDept = "All"; ui.dirStatus = "all"; commit(); focusSoon("#dir-q"); };
   return (
     <>
-      <PageHeader icon={Users} tint="bg-hue-violet/12 text-[color:var(--hue-violet)] dark:text-violet-300" title="Users" sub={`${Object.keys(S.users).length} accounts in the Pacific Crest directory. Select a user to view and change the account.`} />
+      <PageHeader icon={Users} tint="bg-hue-violet/12 text-[color:var(--hue-violet)] dark:text-violet-300" title="Users" sub={`${Object.keys(S.users).length} accounts in the ${company().name} directory. Select a user to view and change the account.`}>
+        <ExportButtons label="Access review"
+          onCsv={() => downloadCsv(accessReview()[0], fileName(company().id, "access-review", "csv"))}
+          onXlsx={() => downloadXlsx(accessReview(), fileName(company().id, "access-review", "xlsx"),
+            [["Company", company().name], ["Contents", "Access review (one row per user and group), access matrix, SoD rules"], ["Directory as of", `${fmtDay(0)}, including changes made in this shift`]])} />
+      </PageHeader>
       <div className="space-y-3">
         <div role="search" className="grid gap-3 sm:grid-cols-[2fr_1fr_1fr]">
           <div className="space-y-1.5"><Label htmlFor="dir-q">Search</Label>
