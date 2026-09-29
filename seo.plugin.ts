@@ -1,14 +1,30 @@
-// Adds canonical, Open Graph, Twitter card and icon tags to every HTML page at build time, using
-// each page's own <title> and meta description as the single source of truth.
+// Build-time SEO: adds canonical, Open Graph, Twitter card and icon tags to every HTML page (using
+// each page's own <title> and meta description as the single source of truth), and emits
+// sitemap.xml and robots.txt with the same SITE_URL.
 import type { Plugin } from "vite";
 
 export const SITE_URL = (process.env.SITE_URL || "https://shiftready-site.vercel.app").replace(/\/$/, "");
 const OG_IMAGE = "/og/shiftready-og.png";
 const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;");
 
+// Public, indexable pages for sitemap.xml. /report/ (learners' shared reports) is excluded and noindex.
+export const SITEMAP = ["/", "/tracks/", "/industries/", "/labs/", "/pricing/", "/resources/", "/app/", "/privacy/", "/terms/"];
+
 export function seo(): Plugin {
   return {
     name: "shiftready-seo",
+    generateBundle() {
+      const today = new Date().toISOString().slice(0, 10);
+      const urls = SITEMAP.map(p => `  <url><loc>${SITE_URL}${p}</loc><lastmod>${today}</lastmod></url>`).join("\n");
+      this.emitFile({
+        type: "asset", fileName: "sitemap.xml",
+        source: `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`,
+      });
+      this.emitFile({
+        type: "asset", fileName: "robots.txt",
+        source: `User-agent: *\nAllow: /\nDisallow: /report/\nDisallow: /sim.html\n\nSitemap: ${SITE_URL}/sitemap.xml\n`,
+      });
+    },
     transformIndexHtml(html, ctx) {
       const path = ctx.path.replace(/index\.html$/, "");
       const title = html.match(/<title>([^<]*)<\/title>/)?.[1] ?? "ShiftReady";

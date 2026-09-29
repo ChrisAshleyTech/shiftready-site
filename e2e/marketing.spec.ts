@@ -156,3 +156,14 @@ test("meta: unique title and description, Open Graph, Twitter card, icons and ma
   for (const f of ["/og/shiftready-og.png", "/favicon.ico", "/favicon.svg", "/apple-touch-icon.png", "/icon-192.png", "/icon-512.png", "/icon-maskable-512.png", "/site.webmanifest"])
     expect((await request.get(f)).ok(), f).toBe(true);
 });
+
+test("sitemap.xml and robots.txt: every listed page resolves", async ({ request }) => {
+  const robots = await (await request.get("/robots.txt")).text();
+  expect(robots).toMatch(/Sitemap: https:\/\/.+\/sitemap\.xml/);
+  expect(robots).toContain("Disallow: /report/");
+  const xml = await (await request.get("/sitemap.xml")).text();
+  const locs = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map(m => new URL(m[1]).pathname);
+  expect(locs.length).toBeGreaterThanOrEqual(9);
+  expect(locs).not.toContain("/report/");
+  for (const p of locs) expect((await request.get(p)).status(), p).toBe(200);
+});
