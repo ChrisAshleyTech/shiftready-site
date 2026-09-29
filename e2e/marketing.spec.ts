@@ -23,7 +23,7 @@ test("pricing: toggle, badges, coming-soon labels and waitlist tier selection", 
   await expect(page.locator("#tier")).toHaveValue("pack");
   await page.locator("#email").fill("not-an-email");
   await page.getByRole("button", { name: "Join the waitlist" }).click();
-  await expect(page.locator("#formmsg")).toContainText("valid email");
+  await expect(page.locator("#email-error")).toHaveText("Enter an email address in the format name@example.com.");
 });
 
 test.describe("with motion", () => {
@@ -173,4 +173,38 @@ test("404 page: new style, noindex, and routes onward", async ({ page }) => {
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("This page doesn't exist.");
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", "noindex");
   await expect(page.getByRole("link", { name: /Go to the home page/ })).toHaveAttribute("href", "/");
+});
+
+test("waitlist form: field-level errors on blur and submit, live re-validation, honeypot", async ({ page }) => {
+  await page.goto("/pricing/");
+  const email = page.locator("#email");
+  await expect(page.getByText("Email (required)")).toBeVisible();
+  await page.getByRole("button", { name: "Join the waitlist" }).click();
+  await expect(page.locator("#email-error")).toHaveText("Enter an email address.");
+  await expect(email).toHaveAttribute("aria-invalid", "true");
+  await expect(email).toHaveAttribute("aria-describedby", "email-error");
+  await expect(email).toBeFocused();
+  await email.fill("jordan@example");
+  await expect(page.locator("#email-error")).toHaveText("Enter an email address in the format name@example.com.");
+  await email.fill("jordan@example.com");
+  await expect(page.locator("#email-error")).toHaveCount(0);
+  await expect(email).not.toHaveAttribute("aria-invalid", "true");
+  // Blur validation on a fresh field
+  await page.reload();
+  await page.locator("#email").fill("not-an-email");
+  await page.locator("#tier").focus();
+  await expect(page.locator("#email-error")).toBeVisible();
+  // Honeypot: hidden from people and assistive tech, not focusable
+  const trap = page.locator('input[name="_gotcha"]');
+  await expect(trap).toHaveAttribute("tabindex", "-1");
+  await expect(page.locator('[aria-hidden="true"]:has(input[name="_gotcha"])')).toHaveCount(1);
+  // A valid submission with the honeypot filled is dropped (success shown, nothing sent)
+  await page.locator("#email").fill("jordan@example.com");
+  await trap.evaluate((el: HTMLInputElement) => { el.value = "spam"; });
+  await page.getByRole("button", { name: "Join the waitlist" }).click();
+  await expect(page.locator("#formmsg")).toHaveText("Added to the waitlist. One notification per release.");
+  // Without the honeypot, preview mode (no endpoint configured) says so plainly
+  await page.locator("#email").fill("jordan@example.com");
+  await page.getByRole("button", { name: "Join the waitlist" }).click();
+  await expect(page.locator("#formmsg")).toContainText("Preview only");
 });
