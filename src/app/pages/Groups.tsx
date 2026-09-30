@@ -31,6 +31,7 @@ function Panel({ g }: { g: string }) {
             <dt className="text-muted-foreground">Members</dt><dd>{m.length} ({m.filter(u => u.enabled).length} enabled)</dd>
             <dt className="text-muted-foreground">Granted by role</dt><dd>{rolesGranting(g).join(", ") || "No role. Granted by exception only."}</dd>
             <dt className="text-muted-foreground">Requestable</dt><dd>{REQUESTABLE.includes(g) ? "Yes, with documented manager approval" : "No"}</dd>
+            {company().toolNote?.(g) && <><dt className="text-muted-foreground">On the job</dt><dd className="max-w-[60ch]">{company().toolNote!(g)}</dd></>}
           </dl>
           {sodFor(g).length > 0 && (
             <section className="space-y-2"><SectionLabel>Separation-of-duties rules</SectionLabel>

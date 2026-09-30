@@ -20,6 +20,8 @@ export type CompanyPack = {
   hasTickets: boolean;
   Mark: ComponentType<{ className?: string }>;
   appIcon: (group: string) => AppIconKey;
+  // "On the job": the real products a generic app usually is in this industry. Text only.
+  toolNote?: (group: string) => string | undefined;
   load: () => Promise<{ company: unknown; policy: unknown }>;
   loadRecords: () => Promise<Records>;
 };

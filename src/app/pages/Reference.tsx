@@ -52,6 +52,8 @@ function Policy({ r }: { r: Route }) {
             {POLICIES.map((p: any) => (
               <li key={p.key} id={"pol-" + p.key} className={cn("scroll-mt-24 rounded-md pl-1", c === p.key && "bg-warn/12 outline outline-6 outline-warn/12")}>
                 <b>{p.title}.</b> <Html as="span" html={p.html} />
+                {p.cite?.length > 0 && <span className="mt-0.5 block text-sm text-muted-foreground">Source: {p.cite.map((s: { label: string; href: string }, i: number) => (
+                  <span key={s.label}>{i > 0 && ", "}<a href={s.href} target="_blank" rel="noopener" className="underline underline-offset-2 hover:text-primary-strong">{s.label}<span className="sr-only"> (opens in a new tab)</span></a></span>))}</span>}
               </li>
             ))}
           </ol>
