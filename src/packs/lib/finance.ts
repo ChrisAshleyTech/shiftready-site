@@ -122,7 +122,8 @@ export function buildFinance(spec: FinanceSpec, users: Record<string, User>): Fi
         createdBy, created, status: "Active" });
     }
   }
-  const vendorsIn = (c: string, day: string) => vendors.filter(v => v.category === c && v.created <= day && v.createdBy !== spec.plant.vendorSod.user);
+  // Normal invoices are never approved by the vendor's creator (see approveFor), so only the planted vendor breaks that rule.
+  const vendorsIn = (c: string, day: string) => vendors.filter(v => v.category === c && v.created <= day);
 
   // ---------- Purchase orders ----------
   type Draft = Omit<PO, "id">;

@@ -6,6 +6,7 @@ import { Mark as HarborHealth } from "./harbor-health/mark";
 import { Mark as Meridian } from "./meridian/mark";
 import { Mark as Coastline } from "./coastline/mark";
 import { Mark as Brightpath } from "./brightpath/mark";
+import { Mark as SunsetRetail } from "./sunset-retail/mark";
 
 export type Brand = { name: string; Mark: ComponentType<{ className?: string }> };
 export const BRANDS: Record<string, Brand> = {
@@ -14,5 +15,6 @@ export const BRANDS: Record<string, Brand> = {
   "meridian": { name: "Meridian Aerospace", Mark: Meridian },
   "coastline": { name: "Coastline Credit Union", Mark: Coastline },
   "brightpath": { name: "Brightpath SaaS", Mark: Brightpath },
+  "sunset-retail": { name: "Sunset Retail Group", Mark: SunsetRetail },
 };
 export const brandFor = (id?: string | null) => BRANDS[id ?? ""] ?? BRANDS["pacific-crest"];

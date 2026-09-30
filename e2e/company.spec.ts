@@ -9,7 +9,11 @@ test("the header shows the company and its switcher; the report shows the compan
   await expect(sw).toContainText("Pacific Crest Logistics");
   await sw.click();
   await expect(page.getByRole("option", { name: /Pacific Crest Logistics/ })).toBeVisible();
-  await expect(page.getByText("More industry companies are in development.")).toBeVisible();
+  // All six companies on the site are listed, each with its logo.
+  const options = page.getByRole("option");
+  await expect(options).toHaveCount(6);
+  for (const n of ["Harbor Health Network", "Meridian Aerospace", "Coastline Credit Union", "Brightpath SaaS", "Sunset Retail Group"])
+    await expect(page.getByRole("option", { name: new RegExp(n) }).locator("svg")).toHaveCount(1);
   await page.keyboard.press("Escape");
   await expect(sw).toBeFocused();
 
@@ -34,6 +38,7 @@ const NEW = [
   { name: "Meridian Aerospace", group: "APP-PLM-CUI", note: /Teamcenter/, source: /NIST SP 800-171 Rev. 2/ },
   { name: "Coastline Credit Union", group: "APP-Core-Teller", note: /Symitar/, source: /12 CFR/ },
   { name: "Brightpath SaaS", group: "APP-CI-CD-Deploy-Prod", note: /GitHub Actions/, source: /SOC 2 CC/ },
+  { name: "Sunset Retail Group", group: "APP-POS-Cashier", note: /Xstore/, source: /PCI DSS v4.0.1/ },
 ];
 for (const c of NEW) {
   test(`${c.name}: switch, explore, and switch back without losing progress`, async ({ page }) => {

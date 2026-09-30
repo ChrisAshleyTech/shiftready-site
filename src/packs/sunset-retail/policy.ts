@@ -2,7 +2,8 @@
 // Sunset's financial systems fall under SOX section 404. PCI DSS is copyrighted by the PCI
 // Security Standards Council, so only requirement numbers appear here, with our own summaries
 // in the runbook text, and a link to the Council's document library. SOX is a public law and
-// may be quoted.
+// may be quoted. Requirement numbers checked against published v4.0.1 mappings, and the SOX
+// wording against the US Code (Sep 2026).
 import { REQUESTABLE } from "./company";
 
 const g = (x: string) => `<span class="mono">${x}</span>`;

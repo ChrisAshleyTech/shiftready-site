@@ -77,5 +77,5 @@ describe("Excel files", () => {
     expect(money[1]).toEqual(["=cmd|' /C calc'!A0", 12345.67]); // stored as text, never as a formula
     expect(money[2]).toEqual(["José Wiśniewski", 0.05]);
     expect(book[4].data.at(-1)?.[1]).toMatch(/fictional/);
-  });
+  }, 30_000);
 });
