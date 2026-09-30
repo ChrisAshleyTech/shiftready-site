@@ -21,6 +21,9 @@ import { ask, KIND_TERMS, kindOf, termLabel } from "../tutor";
 import { PageHeader, Pri, Status, Mode, Score, Tag, UserTags, Checks, Html, SectionLabel, Empty } from "../components/bits";
 import { MatrixTable, SodTable } from "./Reference";
 import { IllusQueue } from "@/components/brand/illustrations";
+import { FrameworkPanel } from "../components/FrameworkPanel";
+import { TICKET_TOPICS } from "../frameworks";
+import { path, showFrameworks } from "../paths";
 
 const useWide = () => {
   const q = "(min-width: 1536px)"; // Tailwind 2xl: wide enough for list + ticket + docked tutor
@@ -261,6 +264,7 @@ function Ticket({ id, wide }: { id: string; wide: boolean }) {
                   <span>Another ticket is active. Make this one active before working on it, so changes are logged against it.</span>
                   <Button variant="outline" onClick={() => A.resume(id)}>Make this the active ticket</Button></div>)
             : <Working key={id} id={id} />}
+          {showFrameworks() && <FrameworkPanel topics={TICKET_TOPICS[id] || []} graded={closed} />}
         </TabsContent>
         <TabsContent value="activity" className="pt-5"><Activity id={id} /></TabsContent>
         <TabsContent value="hints" className="pt-5"><Hints id={id} /></TabsContent>
@@ -298,7 +302,7 @@ export default function Queue({ r }: { r: Route }) {
         )}
       </PageHeader>
       {done && !thu && <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-primary/40 bg-primary/10 p-4 text-sm"><span><b>Monday complete.</b> Thursday's queue is built from what you did today.</span><span className="flex gap-2"><Button asChild variant="outline"><a href="#/results">Review results</a></Button><Button onClick={A.startThursday}>Start Thursday</Button></span></div>}
-      {done && thu && ui.view !== "mon" && <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-primary/40 bg-primary/10 p-4 text-sm"><span><b>Thursday complete.</b> Your readiness report is ready.</span><span className="flex gap-2"><Button asChild variant="outline"><a href="#/results">Shift results</a></Button><Button asChild><a href="#/report">Readiness report</a></Button></span></div>}
+      {done && thu && ui.view !== "mon" && <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-primary/40 bg-primary/10 p-4 text-sm"><span><b>Thursday complete.</b> {path() === "iam-grc" ? "Friday is next: audit your own week, or skip to the summary." : "Your week summary is ready."}</span><span className="flex gap-2"><Button asChild variant="outline"><a href="#/week">Week summary</a></Button>{path() === "iam-grc" ? <Button asChild><a href="#/audit">Friday audit</a></Button> : <Button asChild><a href="#/report">Readiness report</a></Button>}</span></div>}
 
       <div className={cn("grid gap-4 lg:grid-cols-[300px_minmax(0,1fr)]", docked && "2xl:grid-cols-[300px_minmax(0,1fr)_360px]")}>
         <div className={cn("min-w-0 space-y-2 lg:sticky lg:top-20 lg:max-h-[calc(100svh-6rem)] lg:overflow-y-auto lg:p-0.5", sel && "hidden lg:block")}>

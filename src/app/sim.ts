@@ -2,8 +2,11 @@
 // The engine mutates its live state `S`; after every engine call we `commit()`, which bumps a
 // version number that components subscribe to with useSim().
 import { useEffect, useState, useSyncExternalStore } from "react";
-import { init, KEY } from "@/engine/state.js";
+import { init, KEY, setCompanyState } from "@/engine/state.js";
+import { stateKey } from "./pathStore";
 
+// Pacific Crest is the default company; its progress is saved separately for each path.
+setCompanyState(stateKey(KEY), true);
 init();
 
 let version = 0;
@@ -31,7 +34,7 @@ export const ui = {
 
 // ---------- Hash router ----------
 export type Route = { name: string; id: string | null; query: URLSearchParams };
-export const ROUTES = ["home", "queue", "directory", "groups", "policy", "hr", "log", "results", "report", "grc", "labs"] as const;
+export const ROUTES = ["home", "queue", "directory", "groups", "policy", "hr", "log", "results", "week", "audit", "report", "grc", "labs", "settings"] as const;
 function parse(): Route {
   const [path, q = ""] = location.hash.replace(/^#\/?/, "").split("?");
   const parts = path.split("/").filter(Boolean).map(decodeURIComponent);

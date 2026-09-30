@@ -21,7 +21,7 @@ test("the header shows the company and its switcher; the report shows the compan
   await expect(page.locator("tbody tr").first().locator("svg")).toHaveCount(1);
 
   await page.goto("/app/#/report");
-  await expect(page.getByText(/IAM Ops track · Pacific Crest Logistics simulation/).locator("svg")).toHaveCount(1);
+  await expect(page.getByText(/IAM \+ GRC path · Pacific Crest Logistics simulation/).locator("svg")).toHaveCount(1);
 });
 
 test("on a phone, the company switcher is in the navigation drawer", async ({ page }) => {
@@ -44,8 +44,9 @@ for (const c of NEW) {
   test(`${c.name}: switch, explore, and switch back without losing progress`, async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 900 });
     await page.goto("/app/");
-    await page.evaluate(() => localStorage.clear());
+    await page.evaluate(() => { localStorage.clear(); localStorage.setItem("verdelit-path", "iam-grc"); });
     await page.goto("/app/#/queue/INC0041220");
+    await page.reload(); // a hash-only goto doesn't reload, and the path is read on load
     await page.getByRole("button", { name: "Start work" }).click();
 
     await page.getByRole("combobox", { name: "Company" }).click();

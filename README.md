@@ -2,15 +2,16 @@
 
 *Prove you can do the job before day one.* ([verdelit.com](https://verdelit.com))
 
-An IAM job simulator. Learners work a Monday service-desk shift at Pacific Crest Logistics
-(a fictional company). Thursday's queue is then built from what they did on Monday, and they
-can audit their own week on the GRC desk. Everything runs in the browser, with no backend.
+An IAM and GRC job simulator. Learners pick a path: work the Pacific Crest Logistics service desk
+(a fictional company) on Monday and Thursday, where Thursday's queue is built from Monday's
+decisions; audit their own week on Friday; or audit a simulated analyst's week as the internal
+auditor. Everything runs in the browser, with no backend.
 
 | URL | What it is |
 |---|---|
 | `/` | Landing page: hero demo, skills, features, pricing, FAQ, waitlist |
 | `/pricing/` | Pricing (display only) and the waitlist |
-| `/app/` | The app: home, ticket queue, directory, policy, HR feed, audit log, results, report, GRC desk |
+| `/app/` | The app: home, ticket queue, directory, policy, HR feed, audit log, results, week summary, week audit, SOX desk, report, settings |
 | `/report/#r=…` | Public readiness report, decoded from the link itself |
 | `/sim.html` | Redirects to `/app/#/queue` (old links and saved progress keep working) |
 
@@ -33,8 +34,37 @@ Components from 21st.dev live in `src/components/ui`:
 
 The simulation engine in `src/engine/*.js` is the original simulator's code, unchanged. The UI only
 calls it and displays what it returns. `src/app/sim.ts` bridges it to React: engine calls mutate the
-state, and `commit()` re-renders. Progress is saved in `localStorage` under `pcl-iam-sim-v1`, the
-same key since v1.
+state, and `commit()` re-renders. Progress is saved in `localStorage` per company and per path
+(see Paths). Pacific Crest on IAM + GRC keeps `pcl-iam-sim-v1`, the same key since v1.
+
+## Paths
+
+The learner picks a path on the first visit (Home) and can switch in Settings. The choice is in
+`verdelit-path`; each path saves its own progress at each company (`stateKey()` in
+`src/app/pathStore.ts`: IAM + GRC uses the company's original key, the others add `:iam` or
+`:grc`). Anyone with pre-paths progress is put on IAM + GRC and skips the picker. All three
+paths are in Free.
+
+| Path | What the learner does | Screens only in this path |
+|---|---|---|
+| IAM only | Monday, Thursday, week summary | Queue, results, week summary, lab |
+| IAM + GRC | Monday, Thursday, an optional Friday audit of their own week, framework panels | Everything |
+| GRC only | Audit Jordan Reyes' Monday-to-Thursday week as the internal auditor | Week audit, SOX desk |
+
+- **Jordan Reyes** (`src/app/audit/jordan.ts`) is a simulated IAM analyst. On first use of
+  GRC only, Jordan's week is played through the real engine: the correct playbook plus six planted
+  mistakes (`MISTAKES`). The audit log, directory and Thursday consequences are therefore genuine
+  evidence. The directory is read-only on this path.
+- **The week audit** (`src/app/audit/weekAudit.ts`) has seven tasks: walkthrough, sample
+  selection, control testing, evidence evaluation, a finding (condition, criteria, cause, effect,
+  recommendation), risk ratings and the management response. It serves both Friday (the learner's
+  own week) and GRC only (Jordan's). Answer keys are computed from the audited week's log and
+  ticket records when the audit starts, then frozen.
+- **Framework panels** (`src/app/frameworks.ts`) appear on tickets (IAM + GRC) and audit tasks.
+  While the work is open they name only control families. After grading they show the requirements.
+  NIST SP 800-53 Rev. 5 and HIPAA (45 CFR 164) text is quoted verbatim from NIST's OSCAL catalog and
+  the eCFR. ISO/IEC 27001:2022, SOC 2 and PCI DSS v4.0.1 get IDs and our own summaries only, with a
+  link to the official source.
 
 ## Images and licenses
 
@@ -115,6 +145,11 @@ Learners could edit them, so the report states that it's self-reported.
 - `tests/parity.test.js` runs the original single-file simulator (`legacy/sim-original.html`) and
   the engine through 40 seeded random scenarios, comparing full state after every action, the
   Thursday handoff, totals and GRC grading.
+- `tests/paths.test.ts` checks Jordan's week (only the planted mistakes lose points, three
+  consequences fire), the week audit's answer keys against that evidence, a clean week, grading,
+  per-path storage keys, GRC-only report links, and that only public-domain framework text is quoted.
+- `e2e/paths.spec.ts` covers the first-visit picker, GRC only end to end, switching paths without
+  losing progress, skipping and resuming Friday, the week summary, and framework panels, with axe scans.
 - `tests/engine.test.js` checks that all 35 exact-steps hints earn full marks, that a clean Monday
   fires no consequences and a careless one fires all 13, the hint penalties, and the report link.
 - `tests/demo.test.js` checks the landing-page demo's grade lines against what the engine awards.

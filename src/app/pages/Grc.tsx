@@ -17,6 +17,12 @@ import { AuditPopulations } from "../components/AuditPopulations";
 import { sampleTable } from "../exportData";
 import { downloadCsv, downloadXlsx, fileName } from "../exports";
 import { company } from "../company";
+import { path } from "../paths";
+
+// On GRC only, task 4 tests Jordan Reyes' log instead of the learner's own.
+const JORDAN: [string, string][] = [["Audit your own IAM Ops shift", "Audit Jordan's IAM Ops shift"], ["<b>your own</b> IAM Ops audit log", "<b>Jordan Reyes'</b> IAM Ops audit log"],
+  ["You find exceptions in your own work.", "You find exceptions in Jordan's work."], ["Leave your own tickets out of the sample", "Leave Jordan's tickets out of the sample"], ["Evidence snapshot of your log", "Evidence snapshot of the log"]];
+const say = (x: string) => (path() === "grc" ? JORDAN.reduce((a, [from, to]) => a.split(from).join(to), x) : x);
 
 const CONTROLS = [
   ["APD-01", "New user provisioning", "Access is approved by the user's manager before provisioning and limited to the role's birthright groups.", "Per event · Manual · Preventive"],
@@ -45,9 +51,9 @@ function Task({ id }: { id: string }) {
       <a href="#/grc" className="text-sm font-medium text-primary lg:hidden">← Audit tasks</a>
       <div className="space-y-2">
         <div className="flex gap-2"><Tag tone="primary" className="font-mono">{g.ctrl}</Tag>{done && <Tag tone="ok">Submitted</Tag>}</div>
-        <h2 id="gt-h" data-panel-focus className="text-xl font-semibold">{g.title}</h2>
+        <h2 id="gt-h" data-panel-focus className="text-xl font-semibold">{say(g.title)}</h2>
       </div>
-      <Html className="prose-sm max-w-[70ch] space-y-2 [&_li]:ml-5 [&_li]:list-disc" html={g.intro} />
+      <Html className="prose-sm max-w-[70ch] space-y-2 [&_li]:ml-5 [&_li]:list-disc" html={say(g.intro)} />
       {g.kind === "table" && <ExportButtons label="Download the sample"
         onCsv={() => downloadCsv(sampleTable(g), fileName(company().id, g.id.toLowerCase() + "-sample", "csv"))}
         onXlsx={() => downloadXlsx([sampleTable(g)], fileName(company().id, g.id.toLowerCase() + "-sample", "xlsx"), [["Company", company().name], ["Task", `${g.ctrl}: ${g.title}`]])} />}
@@ -77,17 +83,17 @@ function Task({ id }: { id: string }) {
               </div>
             )) : (
               <>
-                {g.dynamic && <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">Evidence snapshot of your log: {S.log.length} entries.
+                {g.dynamic && <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">{say("Evidence snapshot of your log")}: {S.log.length} entries.
                   <Button type="button" size="sm" variant="outline" onClick={() => { delete gs.frozen; delete gs.draft; save(); commit(); toast("Snapshot refreshed from your current log."); }}>Refresh snapshot</Button></div>}
                 {gQs(g, gs).map((q: any, i: number) => (
                   <fieldset key={i} className="space-y-1 rounded-lg border p-4">
-                    <legend className="px-1 font-medium">{q.q}</legend>
+                    <legend className="px-1 font-medium">{say(q.q)}</legend>
                     {q.num ? <><label className="sr-only" htmlFor={`g-${id}-q${i}`}>{q.short}</label><input type="number" min={0} id={`g-${id}-q${i}`} defaultValue={d[i] ?? ""} className={cn(selectCls, "w-36")} /></>
                       : q.opts.map((o: string, j: number) => (
                         <label key={j} className="flex cursor-pointer items-start gap-3 rounded-md p-2 hover:bg-muted/50">
                           <input className="mt-1 size-4 accent-[var(--primary)]" type={q.multi ? "checkbox" : "radio"} name={`g-${id}-q${i}`} value={j}
                             defaultChecked={q.multi ? (d[i] || []).includes(j) : d[i] === j} />
-                          <span className="text-sm">{o}</span>
+                          <span className="text-sm">{say(o)}</span>
                         </label>))}
                   </fieldset>
                 ))}
@@ -112,7 +118,7 @@ export default function Grc({ r }: { r: Route }) {
   );
   return (
     <>
-      <PageHeader icon={ClipboardCheck} tint="bg-hue-sky/15 text-info" title="GRC audit desk" sub="You're the IT auditor for Pacific Crest's Q3 SOX cycle. Test the access controls, judge what you find, and write it up. Task 4 audits your own IAM shift.">{tabs}</PageHeader>
+      <PageHeader icon={ClipboardCheck} tint="bg-hue-sky/15 text-info" title="GRC audit desk" sub={`You're the IT auditor for Pacific Crest's Q3 SOX cycle. Test the access controls, judge what you find, and write it up. Task 4 audits ${path() === "grc" ? "Jordan Reyes'" : "your own"} IAM shift.`}>{tabs}</PageHeader>
       {controls ? (
         <div className="space-y-6">
           <div className="overflow-x-auto rounded-lg border"><table className="w-full text-sm"><caption className="sr-only">Controls in scope</caption>
@@ -136,7 +142,7 @@ export default function Grc({ r }: { r: Route }) {
                 <a key={g.id} href={`#/grc/${g.id}`} aria-current={sel === g.id ? "page" : undefined}
                   className={cn("grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 rounded-lg border bg-card p-3 hover:border-input", sel === g.id && "border-primary ring-1 ring-primary", gs.checks && "bg-muted/40")}>
                   <span className="font-mono text-xs text-muted-foreground">{String(i + 1).padStart(2, "0")}</span>
-                  <span><span className="block text-sm font-medium">{g.title}</span><span className="block text-xs text-muted-foreground"><span className="font-mono">{g.ctrl}</span> · {g.kind === "table" ? g.rows.length + " items to test" : "Judgment"}</span></span>
+                  <span><span className="block text-sm font-medium">{say(g.title)}</span><span className="block text-xs text-muted-foreground"><span className="font-mono">{g.ctrl}</span> · {g.kind === "table" ? g.rows.length + " items to test" : "Judgment"}</span></span>
                   <span className="col-start-2 flex gap-1">{gs.checks ? <><Tag tone="ok">Submitted</Tag><Tag className="font-mono">{gs.score}/{gs.max}</Tag></> : <Tag>{lk ? "Locked" : "Open"}</Tag>}</span>
                 </a>); })}
             </nav>

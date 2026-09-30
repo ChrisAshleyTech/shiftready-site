@@ -32,7 +32,20 @@ function Tile({ k, v, d }: { k: string; v: string; d: string }) {
 const SHORT: Record<string, string> = { verify: "Verification", jml: "JML", access: "Least privilege", incident: "Incidents", hygiene: "Hygiene" };
 const chartConfig = { value: { label: "Score", color: "var(--chart-1)" } } satisfies ChartConfig;
 
+// Path names for the header. Links made before paths existed have no path.
+const PATH_NAME: Record<string, string> = { iam: "IAM only path", "iam-grc": "IAM + GRC path", grc: "GRC only path" };
+
+// GRC only: audit readiness from the audit of Jordan Reyes' week.
+export function auditBand(d: any) {
+  const a = d.audit;
+  if (a.done < a.n) return { label: "In progress", tone: "neutral", note: `${a.done} of ${a.n} audit tasks submitted so far.` };
+  const p = a.pct ?? 0;
+  const label = p >= 90 ? "Ready for audit fieldwork" : p >= 75 ? "Nearly ready" : p >= 60 ? "Developing" : "Early practice";
+  return { label, tone: p >= 75 ? "ok" : p >= 60 ? "warn" : "bad", note: "Based on the full audit of an IAM analyst's week." };
+}
+
 export function ReportView({ d, own = false }: { d: any; own?: boolean }) {
+  if (d.p === "grc") return <AuditReportView d={d} own={own} />;
   const b = band(d);
   const skills = SKILLS.map((sk: any) => ({ skill: sk.label, short: SHORT[sk.key] || sk.label, value: (d.skills.find((x: any) => x[0] === sk.key) || [])[1] ?? null }));
   const shift = (x: any) => x ? `${x.done}/${x.n} closed · ${x.solo} solo · ${x.assisted} assisted` : "Not started";
@@ -57,7 +70,7 @@ export function ReportView({ d, own = false }: { d: any; own?: boolean }) {
         <div className="relative space-y-3">
           <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.14em] text-white/85"><ShieldCheck className="size-4" aria-hidden />Verdelit readiness report</p>
           <h1 id="rp-h" tabIndex={-1} data-page-title className="text-3xl font-extrabold md:text-5xl">{d.name || "IAM analyst readiness"}</h1>
-          <p className="flex flex-wrap items-center gap-2 text-white/90"><brand.Mark className="size-6 shrink-0 rounded-md ring-1 ring-white/50" />IAM Ops track · {brand.name} simulation · {date}</p>
+          <p className="flex flex-wrap items-center gap-2 text-white/90"><brand.Mark className="size-6 shrink-0 rounded-md ring-1 ring-white/50" />{PATH_NAME[d.p] ?? "IAM Ops track"} · {brand.name} simulation · {date}</p>
           <div className="flex flex-wrap items-center gap-3 pt-1">
             <span className="rounded-lg bg-white px-3 py-1.5 text-sm font-bold text-[#1d4ed8]">{b.label}</span>
             <span className="text-sm text-white/90">{b.note}</span>
@@ -71,12 +84,13 @@ export function ReportView({ d, own = false }: { d: any; own?: boolean }) {
           </div>
         ) : <div className="relative hidden rounded-3xl bg-white/95 p-4 md:block"><IllusChart className="h-36 w-auto" /></div>}
       </header>
-      <section aria-label="Headline numbers" className="grid grid-cols-2 gap-3 lg:grid-cols-5">
+      <section aria-label="Headline numbers" className={`grid grid-cols-2 gap-3 ${d.p === "iam-grc" ? "lg:grid-cols-3 xl:grid-cols-6" : d.p === "iam" ? "lg:grid-cols-4" : "lg:grid-cols-5"}`}>
         <Tile k="Week score" v={pct(d.week)} d="After hint penalties" />
         <Tile k="Monday" v={pct(d.mon.pct)} d={shift(d.mon)} />
         <Tile k="Thursday" v={d.thu ? pct(d.thu.pct) : "–"} d={shift(d.thu)} />
         <Tile k="Consequences" v={d.caused == null ? "–" : String(d.caused)} d={d.caused == null ? "Revealed on Thursday" : `caused · ${d.prevented} prevented`} />
-        <Tile k="GRC audit" v={d.grc ? pct(d.grc.pct) : "–"} d={d.grc ? `${d.grc.done}/${d.grc.n} tasks` : "Not attempted"} />
+        {d.p === "iam-grc" && <Tile k="Friday audit" v={d.fri ? pct(d.fri.pct) : "–"} d={d.fri ? `${d.fri.done}/${d.fri.n} tasks · own week` : "Not attempted"} />}
+        {d.p !== "iam" && <Tile k={d.p ? "Q3 SOX desk" : "GRC audit"} v={d.grc ? pct(d.grc.pct) : "–"} d={d.grc ? `${d.grc.done}/${d.grc.n} tasks` : "Not attempted"} />}
       </section>
       <Card className="grid gap-6 p-5 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] md:p-6">
         <div>
@@ -112,6 +126,49 @@ export function ReportView({ d, own = false }: { d: any; own?: boolean }) {
         <h2 className="font-sans text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">How to read this</h2>
         <p><b>Solo</b> means the ticket was closed without the exact-steps hint. <b>Assisted</b> means the learner revealed the exact steps. Smaller hints (a nudge or the policy clause) cost 10% or 25% of a ticket's score, and the ticket still counts as Solo.</p>
         <p>Thursday's queue is generated from Monday's decisions. <b>Consequences caused</b> counts the Monday mistakes that came back as incidents.</p>
+        <p className="text-muted-foreground">This report was generated in the learner's own browser and isn't verified by Verdelit.{own ? "" : <> <a className="text-primary underline" href="/app/">Try the simulator yourself</a>.</>}</p>
+      </section>
+    </article>
+  );
+}
+
+function AuditReportView({ d, own }: { d: any; own: boolean }) {
+  const b = auditBand(d), a = d.audit;
+  const date = new Date(d.date + "T12:00:00").toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+  const brand = brandFor(d.c);
+  return (
+    <article aria-labelledby="rp-h" className="space-y-6">
+      <header className="relative grid items-center gap-6 overflow-hidden rounded-3xl bg-gradient-to-br from-[#1d4ed8] via-[#2563eb] to-[#6d28d9] p-6 text-white shadow-xl shadow-primary/20 md:grid-cols-[1fr_auto] md:p-9">
+        <div className="relative space-y-3">
+          <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.14em] text-white/85"><ShieldCheck className="size-4" aria-hidden />Verdelit readiness report</p>
+          <h1 id="rp-h" tabIndex={-1} data-page-title className="text-3xl font-extrabold md:text-5xl">{d.name || "IT audit readiness"}</h1>
+          <p className="flex flex-wrap items-center gap-2 text-white/90"><brand.Mark className="size-6 shrink-0 rounded-md ring-1 ring-white/50" />{PATH_NAME.grc} · {brand.name} simulation · {date}</p>
+          <div className="flex flex-wrap items-center gap-3 pt-1">
+            <span className="rounded-lg bg-white px-3 py-1.5 text-sm font-bold text-[#1d4ed8]">{b.label}</span>
+            <span className="text-sm text-white/90">{b.note}</span>
+          </div>
+        </div>
+        <div className="relative hidden rounded-3xl bg-white/95 p-4 md:block"><IllusChart className="h-36 w-auto" /></div>
+      </header>
+      <section aria-label="Headline numbers" className="grid grid-cols-2 gap-3 lg:grid-cols-3">
+        <Tile k="Audit score" v={pct(a.pct)} d={`${a.sc} of ${a.mx} points`} />
+        <Tile k="Tasks" v={`${a.done}/${a.n}`} d="Walkthrough to management response" />
+        <Tile k="Q3 SOX desk" v={d.grc ? pct(d.grc.pct) : "–"} d={d.grc ? `${d.grc.done}/${d.grc.n} extra tasks` : "Not attempted"} />
+      </section>
+      <section aria-labelledby="ra-h" className="space-y-3">
+        <h2 id="ra-h" className="font-sans text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">Every audit task</h2>
+        <div className="overflow-x-auto rounded-lg border">
+          <Table>
+            <caption className="sr-only">Audit task results</caption>
+            <TableHeader><TableRow><TableHead>Task</TableHead><TableHead className="text-right">Score</TableHead></TableRow></TableHeader>
+            <TableBody>{d.tasks.map((t: any[], i: number) => (
+              <TableRow key={t[0]}><TableCell>{i + 1}. {t[1]}</TableCell><TableCell className="text-right font-mono tabular-nums">{t[2] < 0 ? "Not submitted" : `${t[2]}/${t[3]}`}</TableCell></TableRow>))}</TableBody>
+          </Table>
+        </div>
+      </section>
+      <section className="space-y-2 rounded-xl border border-dashed p-5 text-sm">
+        <h2 className="font-sans text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">How to read this</h2>
+        <p>The learner audited a simulated IAM analyst's Monday and Thursday: a walkthrough, sample selection, control testing against the audit log and directory, evidence evaluation, a written finding, risk ratings and a review of management's response. Answers are graded against the evidence in the simulated week.</p>
         <p className="text-muted-foreground">This report was generated in the learner's own browser and isn't verified by Verdelit.{own ? "" : <> <a className="text-primary underline" href="/app/">Try the simulator yourself</a>.</>}</p>
       </section>
     </article>

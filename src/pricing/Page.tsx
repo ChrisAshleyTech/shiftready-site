@@ -7,7 +7,7 @@ import { Pricing } from "@/marketing/Pricing";
 
 const QA = [
   ["Can plans be purchased today?", "Not yet. Paid plans open from a waitlist, and no payment details are collected on this site."],
-  ["What does the free tier include?", "Pacific Crest Logistics with both shifts, Monday-to-Thursday consequences and the GRC audit track. Pro features are included free during early access."],
+  ["What does the free tier include?", "Pacific Crest Logistics on all three paths (IAM only, IAM + GRC, GRC only), with both shifts, Monday-to-Thursday consequences and the audits. Pro features are included free during early access."],
   ["What is in early access?", "Five industry companies (Harbor Health Network, Meridian Aerospace, Coastline Credit Union, Brightpath SaaS and Sunset Retail Group), the PAM track and the Entra ID lab."],
   ["What is the Entra ID lab?", "Scripts that seed a Microsoft Entra tenant with the Pacific Crest directory, a read-only export of the results, and in-browser grading of that export."],
   ["How much does yearly billing save?", "Pro is $129 a year instead of $180 (28% less). Pro + Labs is $169 instead of $240 (30% less)."],

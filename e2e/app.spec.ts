@@ -7,7 +7,8 @@ import { decodeReport } from "../src/engine/report.js";
 
 const fresh = async (page: Page, hash = "#/home") => {
   await page.goto("/app/");
-  await page.evaluate(() => { localStorage.clear(); });
+  // IAM + GRC: every screen is in the path, so these tests see the whole app.
+  await page.evaluate(() => { localStorage.clear(); localStorage.setItem("verdelit-path", "iam-grc"); });
   await page.goto("/app/" + hash);
   await page.reload();
 };
@@ -134,7 +135,7 @@ test("mobile: list/detail toggle and navigation sheet", async ({ page }) => {
   expect(overflow).toBe(false);
 });
 
-for (const [name, path] of [["landing", "/"], ["privacy", "/privacy/"], ["terms", "/terms/"], ["404", "/404.html"], ["pricing", "/pricing/"], ["tracks", "/tracks/"], ["industries", "/industries/"], ["labs", "/labs/"], ["resources", "/resources/"], ["home", "/app/#/home"], ["queue", "/app/#/queue/INC0041220"], ["directory", "/app/#/directory/greg.foster"], ["groups", "/app/#/groups/APP-SAP-AP-Approve"], ["policy", "/app/#/policy"], ["results", "/app/#/results"], ["report", "/app/#/report"], ["grc", "/app/#/grc/G1"], ["lab", "/app/#/labs"]] as const) {
+for (const [name, path] of [["landing", "/"], ["privacy", "/privacy/"], ["terms", "/terms/"], ["404", "/404.html"], ["pricing", "/pricing/"], ["tracks", "/tracks/"], ["industries", "/industries/"], ["labs", "/labs/"], ["resources", "/resources/"], ["home", "/app/#/home"], ["queue", "/app/#/queue/INC0041220"], ["directory", "/app/#/directory/greg.foster"], ["groups", "/app/#/groups/APP-SAP-AP-Approve"], ["policy", "/app/#/policy"], ["results", "/app/#/results"], ["report", "/app/#/report"], ["grc", "/app/#/grc/G1"], ["lab", "/app/#/labs"], ["settings", "/app/#/settings"], ["week", "/app/#/week"], ["friday", "/app/#/audit"]] as const) {
   for (const theme of ["dark", "light"]) {
     test(`axe: ${name} (${theme}) has no serious or critical violations`, async ({ page }) => {
       await page.goto("/app/");

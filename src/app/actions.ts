@@ -5,6 +5,8 @@ import { act, tact, closeTicket as engineClose, revealHint, resetAll, finalScore
 import { startThursday as engineStartThursday, THU_T } from "@/engine/thursday.js";
 import { TK } from "@/engine/tickets.js";
 import { commit, ui, go, num, plural, focusSoon } from "./sim";
+import { ensureJordan } from "./company";
+import { path } from "./paths";
 
 const noTicket = () => (S.active ? "" : " No active ticket, so this change isn't tied to one.");
 // Plain toasts auto-dismiss; toasts with an action stay until dismissed (WCAG 2.2.1).
@@ -56,9 +58,11 @@ export function startThursday() {
   toast(`Thursday, 8:00 AM. ${caused ? plural(caused, "Monday decision", "Monday decisions") + " came back as tickets." : "Nothing from Monday came back."} ${THU_T.length} tickets waiting.`);
 }
 
+// Resets the current path at the current company. Other paths keep their progress.
 export function resetProgress() {
   resetAll();
+  ensureJordan();
   Object.assign(ui, { confirmReset: false, view: "cur", tutor: {}, freeHints: {}, qfilter: "open" });
   go("#/home");
-  toast("Progress erased. Monday starts again.");
+  toast(path() === "grc" ? "Audit erased. Jordan's week is ready to audit again." : "Progress erased. Monday starts again.");
 }

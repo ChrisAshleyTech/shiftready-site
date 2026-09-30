@@ -19,7 +19,9 @@ import { curTickets } from "@/engine/thursday.js";
 import { TK } from "@/engine/tickets.js";
 import { G, GK, gTotals } from "@/engine/grc.js";
 import { useSim, useRoute, ui, num, pct, type Route } from "./sim";
-import { NAV, pageInfo } from "./nav";
+import { navFor, pageInfo } from "./nav";
+import { inPath, path, pathChosen, pathInfo } from "./paths";
+import { waTotals, weekAudit } from "./audit/weekAudit";
 import { Logo } from "./components/Logo";
 import { Wordmark, TAGLINE } from "@/components/brand/Verdelit";
 import { GlobalSearch } from "./components/GlobalSearch";
@@ -37,6 +39,9 @@ const Groups = lazy(() => import("./pages/Groups"));
 const Results = lazy(() => import("./pages/Results"));
 const Report = lazy(() => import("./pages/Report"));
 const Lab = lazy(() => import("./pages/Lab"));
+const WeekAudit = lazy(() => import("./pages/WeekAudit"));
+const WeekSummary = lazy(() => import("./pages/WeekSummary"));
+const Settings = lazy(() => import("./pages/Settings"));
 
 // Shown only if a screen takes more than 300 ms to load, to avoid a flash on fast connections.
 function Loading() {
@@ -47,24 +52,25 @@ function Loading() {
 
 const PAGES: Record<string, ComponentType<{ r: Route }>> = {
   home: Home, queue: Queue, directory: Directory, groups: Groups, policy: Reference, hr: Reference, log: Reference,
-  results: Results, report: Report, grc: Grc, labs: Lab,
+  results: Results, report: Report, grc: Grc, labs: Lab, audit: WeekAudit, week: WeekSummary, settings: Settings,
 };
 
 // Screens that need the company's tickets.
-const TICKET_PAGES = new Set(["queue", "results", "report", "grc", "labs"]);
+const TICKET_PAGES = new Set(["queue", "results", "week", "audit", "report", "grc", "labs"]);
 
 function badgeFor(k: string) {
   if (!company().hasTickets) return k === "log" ? S.log.length || null : null;
   if (k === "queue") return curTickets(ui.view).filter((t: any) => !S.tickets[t.id].checks).length || null;
   if (k === "log") return S.log.length || null;
   if (k === "grc") return G.length - gTotals().done || null;
+  if (k === "audit") { const t = waTotals(); return weekAudit() ? t.n - t.done || null : null; }
   return null;
 }
 
 function Nav({ r }: { r: Route }) {
   return (
     <>
-      {NAV.map(s => (
+      {navFor().map(s => (
         <AnimatedSidebarGroup key={s.label}>
           <AnimatedSidebarGroupLabel>{s.label}</AnimatedSidebarGroupLabel>
           <AnimatedSidebarGroupContent>
@@ -91,6 +97,7 @@ function itemLabel(r: Route): string | null {
   if (r.name === "groups" || r.name === "queue") return r.id;
   if (r.name === "grc") return r.id === "controls" ? "Controls and definitions" : GK[r.id]?.title ?? null;
   if (r.name === "labs") return r.id === "entra" ? "Microsoft Entra ID" : null;
+  if (r.name === "audit") return r.id === "controls" ? "Controls" : weekAudit()?.tasks.find(t => t.id === r.id)?.step ?? null;
   return null;
 }
 
@@ -113,11 +120,14 @@ function Crumbs({ r }: { r: Route }) {
 function TopBar({ r }: { r: Route }) {
   const c = company();
   const isG = r.name === "grc" && c.hasTickets;
+  // The week audit is the whole shift on GRC only, and Friday on IAM + GRC.
+  const isA = c.hasTickets && !isG && (path() === "grc" || (r.name === "audit" && !!weekAudit()));
   const list = c.hasTickets ? curTickets(ui.view) : [];
-  const tt = isG ? gTotals() : totals(list);
+  const tt = isG ? gTotals() : isA ? waTotals() : totals(list);
   const isThu = S.shift === "thu" && ui.view !== "mon";
-  const ctx = isG ? "Q3 SOX ITGC fieldwork" : `${isThu ? "Thursday, " + fmtDay(3) : "Monday, " + fmtDay(0)} · ${clockStr()}`;
-  const n = isG ? G.length : list.length;
+  const ctx = isG ? "Q3 SOX ITGC fieldwork" : path() === "grc" ? "Internal audit · Jordan Reyes' week"
+    : isA ? `Friday, ${fmtDay(4)} · audit of your week` : `${isThu ? "Thursday, " + fmtDay(3) : "Monday, " + fmtDay(0)} · ${clockStr()}`;
+  const n = isG ? G.length : isA ? waTotals().n : list.length;
   const { theme, setTheme } = useTheme();
   return (
     <header className="sticky top-0 z-30 flex min-h-16 items-center gap-3 border-b bg-background/90 px-3 backdrop-blur supports-[backdrop-filter]:bg-background/75 md:px-5" style={{ paddingTop: "env(safe-area-inset-top, 0px)" }}>
@@ -132,8 +142,8 @@ function TopBar({ r }: { r: Route }) {
         </div>
       </div>
       <div className="flex min-w-0 flex-1 justify-center px-1 sm:px-2"><GlobalSearch /></div>
-      {c.hasTickets && <dl className="hidden items-center gap-5 xl:flex" aria-label={`${isG ? "Audit" : "Shift"} progress`}>
-        {[[isG ? "Submitted" : "Closed", `${tt.done}/${n}`], ["Points", num(tt.sc)], ["Score", pct(tt.pct)]].map(([k, v]) => (
+      {c.hasTickets && <dl className="hidden items-center gap-5 xl:flex" aria-label={`${isG || isA ? "Audit" : "Shift"} progress`}>
+        {[[isG || isA ? "Submitted" : "Closed", `${tt.done}/${n}`], ["Points", num(tt.sc)], ["Score", pct(tt.pct)]].map(([k, v]) => (
           <div key={k} className="flex flex-col-reverse leading-tight">
             <dt className="text-[11px] uppercase tracking-[0.08em] text-muted-foreground">{k}</dt>
             <dd className="font-mono text-sm tabular-nums">{v}</dd>
@@ -144,6 +154,17 @@ function TopBar({ r }: { r: Route }) {
         {theme === "dark" ? <Sun className="size-4" /> : <Moon className="size-4" />}
       </Button>
     </header>
+  );
+}
+
+// A screen that belongs to another path, such as the ticket queue on GRC only.
+function NotInPath({ label }: { label: string }) {
+  return (
+    <div className="rounded-3xl border-2 border-dashed border-primary/20 bg-card px-6 py-10 text-center">
+      <h1 tabIndex={-1} data-page-title className="font-display text-xl font-bold">{label} isn't part of the {pathInfo().name} path</h1>
+      <p className="mt-1 text-sm text-muted-foreground">Switch paths in Settings to use it. Your progress on each path is saved separately.</p>
+      <div className="mt-5 flex flex-wrap justify-center gap-2"><Button asChild><a href="#/home">Back to home</a></Button><Button asChild variant="outline"><a href="#/settings">Change path</a></Button></div>
+    </div>
   );
 }
 
@@ -221,7 +242,8 @@ export default function App() {
         <div id="main" tabIndex={-1} className="mx-auto w-full max-w-[1480px] flex-1 px-4 py-6 outline-none md:px-6 md:py-7">
           <Crumbs r={r} />
           <Suspense fallback={<Loading />}>
-            {company().hasTickets ? <P r={r} /> : r.name === "home" ? <CompanyOverview /> : TICKET_PAGES.has(r.name) ? <NoTickets title={info.label} /> : <P r={r} />}
+            {!inPath(r.name) ? <NotInPath label={info.label} />
+              : company().hasTickets || (r.name === "home" && !pathChosen()) ? <P r={r} /> : r.name === "home" ? <CompanyOverview /> : TICKET_PAGES.has(r.name) ? <NoTickets title={info.label} /> : <P r={r} />}
           </Suspense>
         </div>
         <ActiveBar r={r} />

@@ -35,7 +35,8 @@ export function decodeReport(str){
   try {
     const bin = atob(str.replace(/-/g, "+").replace(/_/g, "/"));
     const data = JSON.parse(new TextDecoder().decode(Uint8Array.from(bin, c => c.charCodeAt(0))));
-    if (data && data.v === 1 && data.mon && Array.isArray(data.tickets) && Array.isArray(data.skills)) return data;
+    // GRC-only reports (p: "grc") carry an audit result instead of shifts.
+    if (data && data.v === 1 && (data.mon || (data.p === "grc" && data.audit)) && Array.isArray(data.tickets) && Array.isArray(data.skills)) return data;
   } catch (e) {}
   return null;
 }

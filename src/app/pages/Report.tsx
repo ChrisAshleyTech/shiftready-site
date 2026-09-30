@@ -2,7 +2,8 @@
 import { useState } from "react";
 import { Copy, ExternalLink, Printer } from "lucide-react";
 import { toast } from "sonner";
-import { buildReport, encodeReport } from "@/engine/report.js";
+import { encodeReport } from "@/engine/report.js";
+import { reportData } from "../reportData";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -17,7 +18,7 @@ export const shareUrl = (d: any) => new URL("/report/#r=" + encodeReport(d), loc
 export default function Report() {
   const [name, setName] = useState(savedName);
   // The company id lets the shared report show the right logo. Older links without it are Pacific Crest.
-  const d = { ...buildReport(name), c: company().id };
+  const d = reportData(name, company().id);
   const url = shareUrl(d);
   const copy = async () => {
     try { await navigator.clipboard.writeText(url); toast("Link copied."); }

@@ -18,8 +18,10 @@ export const TIERS: Tier[] = [
   { id: "free", name: "Free", blurb: "The complete Pacific Crest Logistics scenario.", monthly: 0, yearly: 0, cta: "Start free",
     features: [
       { text: "Pacific Crest Logistics (logistics)", status: "live" },
+      { text: "All three paths: IAM only, IAM + GRC, and GRC only", status: "live" },
       { text: "Monday and Thursday shifts, with downstream consequences", status: "live" },
-      { text: "GRC audit track", status: "live" },
+      { text: "Friday audit of your own week, and a GRC-only audit of a simulated analyst", status: "live" },
+      { text: "Framework panels: NIST, HIPAA, ISO 27001, SOC 2 and PCI DSS", status: "live" },
       { text: "Basic hints", status: "live" },
     ] },
   { id: "pro", name: "Pro", blurb: "Every industry scenario, every track and full coaching.", monthly: 15, yearly: 129, cta: "Join Pro waitlist",
