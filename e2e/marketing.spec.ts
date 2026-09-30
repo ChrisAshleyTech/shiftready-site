@@ -63,7 +63,7 @@ test("demo video files stay under 5 MB", async ({ request }) => {
 test("landing: sections in order and photo credits", async ({ page }) => {
   await page.goto("/");
   const ids = await page.locator("main section[id], main section[aria-labelledby]").evaluateAll(els => els.map(e => e.id || e.getAttribute("aria-labelledby")));
-  expect(ids).toEqual(["hero-h", "capabilities", "aud-h", "industries", "how", "pricing", "faq", "waitlist"]);
+  expect(ids).toEqual(["hero-h", "capabilities", "paths", "aud-h", "industries", "how", "pricing", "faq", "waitlist"]);
   await expect(page.locator("figcaption").filter({ hasText: "Unsplash" })).toHaveCount(4);
   const overflow = await page.setViewportSize({ width: 390, height: 844 }).then(() => page.evaluate(() => document.documentElement.scrollWidth > innerWidth));
   expect(overflow).toBe(false);
@@ -243,4 +243,17 @@ test("pre-rendered HTML contains the page content before JavaScript", async ({ r
   const html = await (await request.get("/")).text();
   expect(html).toContain('data-prerendered');
   expect(html).toContain("Identity and access skills, built on real operations work.");
+});
+
+test("landing and Tracks explain the paths: IAM, GRC and PAM (early access)", async ({ page }) => {
+  for (const [p, link] of [["/", "/tracks/#grc"], ["/tracks/", "/app/"]] as const) {
+    await page.goto(p);
+    const s = page.getByRole("region", { name: "Choose your path" });
+    await expect(s.getByRole("heading", { level: 3 })).toHaveText(["IAM", "GRC", "PAMEarly access"]);
+    await expect(s).toContainText("IAM + GRC");
+    await expect(s).toContainText("GRC only");
+    await expect(s.locator(`a[href="${link}"]`).first()).toBeVisible();
+  }
+  // PAM isn't in the app yet, so the Tracks page doesn't send anyone there for it.
+  await expect(page.getByRole("region", { name: "Choose your path" }).getByRole("link")).toHaveCount(2);
 });

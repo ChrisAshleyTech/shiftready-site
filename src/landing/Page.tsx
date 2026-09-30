@@ -10,6 +10,7 @@ import { EarlyAccess } from "@/components/brand/EarlyAccess";
 import { SiteHeader, SiteFooter } from "@/marketing/chrome";
 import { Photo, WaitlistBand } from "@/marketing/sections";
 import { Pricing } from "@/marketing/Pricing";
+import { ChoosePath } from "@/marketing/ChoosePath";
 import { INDUSTRIES } from "@/marketing/catalog";
 import { cn } from "@/lib/utils";
 import { HeroVideo } from "./HeroVideo";
@@ -95,6 +96,8 @@ export default function Landing() {
               </Reveal>))}
           </ul>
         </section>
+
+        <ChoosePath links="tracks" className="pt-0 pb-20" />
 
         <section aria-labelledby="aud-h" className="overflow-x-clip bg-card py-20">
           <div className="mx-auto grid max-w-7xl items-center gap-12 px-4 md:px-6 lg:grid-cols-2">

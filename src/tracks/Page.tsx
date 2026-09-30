@@ -3,6 +3,7 @@ import { ArrowRight, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { EarlyAccess } from "@/components/brand/EarlyAccess";
 import { MarketingFrame, PageHero } from "@/marketing/sections";
+import { ChoosePath } from "@/marketing/ChoosePath";
 
 const TRACKS = [
   { id: "iam-ops", name: "IAM Ops", level: "Service desk and IAM operations",
@@ -30,6 +31,7 @@ export default function Page() {
   return (
     <MarketingFrame current="tracks">
       <PageHero eyebrow="Tracks" title="Role-based tracks for identity and access work." lead="Each track is graded on outcome and process, with the control behind every decision." />
+      <ChoosePath links="app" className="pb-0" />
       <div className="mx-auto max-w-7xl space-y-6 px-4 py-16 md:px-6">
         {TRACKS.map(t => (
           <section key={t.id} id={t.id} aria-labelledby={`${t.id}-h`} className="scroll-mt-24 grid gap-8 rounded-3xl border bg-card p-8 lg:grid-cols-[1fr_1.4fr]">
