@@ -32,6 +32,7 @@ test("on a phone, the company switcher is in the navigation drawer", async ({ pa
 const NEW = [
   { name: "Harbor Health Network", group: "APP-EHR-Clinical", note: /Epic or Oracle Health/, source: /45 CFR 164/ },
   { name: "Meridian Aerospace", group: "APP-PLM-CUI", note: /Teamcenter/, source: /NIST SP 800-171 Rev. 2/ },
+  { name: "Coastline Credit Union", group: "APP-Core-Teller", note: /Symitar/, source: /12 CFR/ },
 ];
 for (const c of NEW) {
   test(`${c.name}: switch, explore, and switch back without losing progress`, async ({ page }) => {

@@ -1,7 +1,8 @@
 // Coastline Credit Union runbook. A federally insured credit union meets GLBA's safeguarding
 // duty (15 U.S.C. 6801(b)) through NCUA's rule, 12 CFR Part 748 and its Appendix A, not the
 // FTC Safeguards Rule. Examiners use the FFIEC IT Examination Handbook. SOX doesn't apply to
-// credit unions. Quoted regulation text is a US government work.
+// credit unions. Quoted regulation text is a US government work; checked against eCFR and
+// the US Code (Sep 2026).
 import { REQUESTABLE } from "./company";
 
 const g = (x: string) => `<span class="mono">${x}</span>`;
