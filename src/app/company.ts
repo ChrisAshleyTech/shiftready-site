@@ -6,7 +6,7 @@ import { init, setCompanyState } from "@/engine/state.js";
 import { COMPANIES, DEFAULT_COMPANY, companyById, type CompanyPack } from "@/packs";
 import { commit, ui } from "./sim";
 
-const STORE = "shiftready-company";
+const STORE = "verdelit-company";
 let active: CompanyPack = DEFAULT_COMPANY;
 export const company = () => active;
 export { COMPANIES };

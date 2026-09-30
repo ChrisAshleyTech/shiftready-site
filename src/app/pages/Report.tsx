@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label";
 import { ReportView } from "@/report/ReportView";
 import { company } from "../company";
 
-const NAME_KEY = "shiftready-report-name";
+const NAME_KEY = "verdelit-report-name";
 const savedName = () => { try { return localStorage.getItem(NAME_KEY) || ""; } catch { return ""; } };
 export const shareUrl = (d: any) => new URL("/report/#r=" + encodeReport(d), location.origin).href;
 

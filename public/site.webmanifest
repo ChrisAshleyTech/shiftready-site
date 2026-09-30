@@ -1,7 +1,7 @@
 {
-  "name": "ShiftReady",
-  "short_name": "ShiftReady",
-  "description": "Identity and access skills, built on real operations work.",
+  "name": "Verdelit",
+  "short_name": "Verdelit",
+  "description": "Prove you can do the job before day one.",
   "start_url": "/app/",
   "display": "standalone",
   "background_color": "#f6f8fc",

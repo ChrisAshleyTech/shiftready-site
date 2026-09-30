@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { EarlyAccess } from "@/components/brand/EarlyAccess";
-import { Logo } from "@/app/components/Logo";
+import { LogoHorizontal } from "@/components/brand/Verdelit";
 import { useTheme } from "@/lib/theme";
 import { cn } from "@/lib/utils";
 import { INDUSTRIES, LABS, RESOURCES, TRACKS, type Item } from "./catalog";
@@ -21,7 +21,8 @@ const MENUS: Menu[] = [
   { key: "resources", label: "Resources", href: "/resources/", lead: "Grading, runbooks, sample output and accessibility.", items: RESOURCES },
 ];
 
-export const Brand = () => <a href="/" className="flex items-center gap-2.5 font-display text-xl font-extrabold tracking-tight"><Logo className="size-8" />ShiftReady</a>;
+// Horizontal logo with the tagline under the wordmark.
+export const Brand = ({ small = false }: { small?: boolean }) => <a href="/" className="flex min-w-0 items-center rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-ring"><LogoHorizontal tagline taglineClass={small ? "hidden min-[380px]:block" : undefined} markClass="size-9" wordClass="text-[22px]" /></a>;
 
 function Panel({ m, id, onClose }: { m: Menu; id: string; onClose: () => void }) {
   return (
@@ -76,7 +77,8 @@ export function MegaNav({ current }: { current?: string }) {
       <div ref={bar} className="relative">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 md:px-6">
           <div className="flex items-center gap-8">
-            <Brand />
+            {/* Below 380px the header has room for the logo only; the tagline shows from 380px up. */}
+            <Brand small />
             <nav aria-label="Main" className="hidden lg:block">
               <ul className="flex items-center gap-1">
                 {MENUS.map(m => (
@@ -94,12 +96,12 @@ export function MegaNav({ current }: { current?: string }) {
               </ul>
             </nav>
           </div>
-          <div className="flex items-center gap-2">
-            <Button variant="ghost" size="icon" aria-label={theme === "dark" ? "Switch to light theme" : "Switch to dark theme"} onClick={() => setTheme(theme === "dark" ? "light" : "dark")}>
+          <div className="flex shrink-0 items-center gap-2">
+            <Button variant="ghost" size="icon" className="hidden min-[380px]:inline-flex" aria-label={theme === "dark" ? "Switch to light theme" : "Switch to dark theme"} onClick={() => setTheme(theme === "dark" ? "light" : "dark")}>
               {theme === "dark" ? <Sun /> : <Moon />}
             </Button>
             <a href="/app/" className="hidden font-display text-[15px] font-semibold text-foreground/85 hover:text-foreground sm:inline">Open the app</a>
-            <Button asChild className="h-10 px-5 font-display font-bold"><a href="/app/">Start free</a></Button>
+            <Button asChild className="h-10 px-4 font-display font-bold sm:px-5"><a href="/app/">Start free</a></Button>
             <Sheet>
               <SheetTrigger asChild><Button variant="outline" size="icon" className="lg:hidden" aria-label="Open menu"><Menu /></Button></SheetTrigger>
               <SheetContent side="right" className="w-[22rem] max-w-full overflow-y-auto">
@@ -118,6 +120,9 @@ export function MegaNav({ current }: { current?: string }) {
                       </AccordionItem>))}
                   </Accordion>
                   <a href="/pricing/" className="block border-b py-4 font-display text-base font-bold">Pricing</a>
+                  <button type="button" onClick={() => setTheme(theme === "dark" ? "light" : "dark")} className="flex w-full items-center gap-2 border-b py-4 text-left font-display text-base font-bold min-[380px]:hidden">
+                    {theme === "dark" ? <Sun className="size-4" aria-hidden /> : <Moon className="size-4" aria-hidden />}{theme === "dark" ? "Switch to light theme" : "Switch to dark theme"}
+                  </button>
                   <Button asChild className="mt-6 w-full font-bold"><a href="/app/">Start free</a></Button>
                 </nav>
               </SheetContent>

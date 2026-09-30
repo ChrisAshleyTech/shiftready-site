@@ -9,6 +9,7 @@ import { ChartContainer, type ChartConfig } from "@/components/ui/chart";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { IllusChart } from "@/components/brand/illustrations";
 import { brandFor } from "@/packs/brands";
+import { LevelBadge, isLevel, linkedInImage } from "@/components/brand/LevelBadge";
 
 const nf = new Intl.NumberFormat("en-US", { maximumFractionDigits: 1 });
 const pct = (n: number | null | undefined) => (n == null ? "–" : n + "%");
@@ -54,7 +55,7 @@ export function ReportView({ d, own = false }: { d: any; own?: boolean }) {
       {/* Fixed deep blue-to-violet so white text stays >= 6:1 in both themes. */}
       <header className="relative grid items-center gap-6 overflow-hidden rounded-3xl bg-gradient-to-br from-[#1d4ed8] via-[#2563eb] to-[#6d28d9] p-6 text-white shadow-xl shadow-primary/20 md:grid-cols-[1fr_auto] md:p-9">
         <div className="relative space-y-3">
-          <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.14em] text-white/85"><ShieldCheck className="size-4" aria-hidden />ShiftReady readiness report</p>
+          <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.14em] text-white/85"><ShieldCheck className="size-4" aria-hidden />Verdelit readiness report</p>
           <h1 id="rp-h" tabIndex={-1} data-page-title className="text-3xl font-extrabold md:text-5xl">{d.name || "IAM analyst readiness"}</h1>
           <p className="flex flex-wrap items-center gap-2 text-white/90"><brand.Mark className="size-6 shrink-0 rounded-md ring-1 ring-white/50" />IAM Ops track · {brand.name} simulation · {date}</p>
           <div className="flex flex-wrap items-center gap-3 pt-1">
@@ -62,7 +63,13 @@ export function ReportView({ d, own = false }: { d: any; own?: boolean }) {
             <span className="text-sm text-white/90">{b.note}</span>
           </div>
         </div>
-        <div className="relative hidden rounded-3xl bg-white/95 p-4 md:block"><IllusChart className="h-36 w-auto" /></div>
+        {/* A level badge shows only on reports that carry a level (practice levels, when they ship). */}
+        {isLevel(d.level) ? (
+          <div className="relative flex flex-col items-start gap-3 rounded-3xl bg-[#15201B] p-5 text-white ring-1 ring-[#2E4038]">
+            <LevelBadge level={d.level} />
+            <a href={linkedInImage(d.level)} download className="text-sm font-semibold text-[#3DDC97] underline underline-offset-2">Download LinkedIn image</a>
+          </div>
+        ) : <div className="relative hidden rounded-3xl bg-white/95 p-4 md:block"><IllusChart className="h-36 w-auto" /></div>}
       </header>
       <section aria-label="Headline numbers" className="grid grid-cols-2 gap-3 lg:grid-cols-5">
         <Tile k="Week score" v={pct(d.week)} d="After hint penalties" />
@@ -105,7 +112,7 @@ export function ReportView({ d, own = false }: { d: any; own?: boolean }) {
         <h2 className="font-sans text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">How to read this</h2>
         <p><b>Solo</b> means the ticket was closed without the exact-steps hint. <b>Assisted</b> means the learner revealed the exact steps. Smaller hints (a nudge or the policy clause) cost 10% or 25% of a ticket's score, and the ticket still counts as Solo.</p>
         <p>Thursday's queue is generated from Monday's decisions. <b>Consequences caused</b> counts the Monday mistakes that came back as incidents.</p>
-        <p className="text-muted-foreground">This report was generated in the learner's own browser and isn't verified by ShiftReady.{own ? "" : <> <a className="text-primary underline" href="/app/">Try the simulator yourself</a>.</>}</p>
+        <p className="text-muted-foreground">This report was generated in the learner's own browser and isn't verified by Verdelit.{own ? "" : <> <a className="text-primary underline" href="/app/">Try the simulator yourself</a>.</>}</p>
       </section>
     </article>
   );

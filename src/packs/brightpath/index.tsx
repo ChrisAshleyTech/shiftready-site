@@ -8,7 +8,7 @@ export const pack: CompanyPack = {
   name: "Brightpath SaaS",
   industry: "Software",
   frameworks: "SOC 2",
-  storageKey: "shiftready-sim-brightpath-v1",
+  storageKey: "verdelit-sim-brightpath-v1",
   hasTickets: false,
   Mark,
   appIcon: iconByPrefix({

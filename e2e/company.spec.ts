@@ -28,7 +28,7 @@ test("on a phone, the company switcher is in the navigation drawer", async ({ pa
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/app/#/home");
   await page.getByRole("button", { name: "Toggle navigation" }).click();
-  const drawer = page.getByRole("dialog", { name: "ShiftReady navigation" });
+  const drawer = page.getByRole("dialog", { name: "Verdelit navigation" });
   await expect(drawer.getByRole("combobox", { name: "Company" })).toContainText("Pacific Crest Logistics");
 });
 

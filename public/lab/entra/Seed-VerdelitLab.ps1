@@ -1,11 +1,11 @@
 <#
 .SYNOPSIS
-  Seeds a Microsoft Entra lab tenant with the ShiftReady Pacific Crest Logistics Monday scenario.
+  Seeds a Microsoft Entra lab tenant with the Verdelit Pacific Crest Logistics Monday scenario.
 
 .DESCRIPTION
   Creates 7 users and 9 security groups for six Monday tickets. Every object is tagged
-  "ShiftReady lab", and its object ID is recorded in shiftready-lab-state.json next to this script.
-  Keep that file: Export-ShiftReadyLab.ps1 and Remove-ShiftReadyLab.ps1 both need it.
+  "Verdelit lab", and its object ID is recorded in verdelit-lab-state.json next to this script.
+  Keep that file: Export-VerdelitLab.ps1 and Remove-VerdelitLab.ps1 both need it.
 
   Run this only in a lab or developer tenant, never in an employer's tenant. The script stops if the
   tenant has more than 50 users (unless you pass -LabTenant) and asks you to type the tenant's domain
@@ -20,24 +20,24 @@
   Allows seeding a tenant with more than 50 users. Use it only if that tenant is a lab.
 
 .EXAMPLE
-  .\Seed-ShiftReadyLab.ps1
+  .\Seed-VerdelitLab.ps1
 
 .EXAMPLE
-  .\Seed-ShiftReadyLab.ps1 -WhatIf
+  .\Seed-VerdelitLab.ps1 -WhatIf
   Shows what would be created without changing anything.
 #>
 [CmdletBinding(SupportsShouldProcess)]
 param(
   [switch]$LabTenant,
-  [string]$StatePath = (Join-Path $PSScriptRoot "shiftready-lab-state.json")
+  [string]$StatePath = (Join-Path $PSScriptRoot "verdelit-lab-state.json")
 )
 $ErrorActionPreference = "Stop"
-$GroupTag = "ShiftReady lab: Pacific Crest Logistics"
+$GroupTag = "Verdelit lab: Pacific Crest Logistics"
 
-# Lab data, generated from the ShiftReady simulator (src/app/lab/entra.ts). Do not edit by hand.
+# Lab data, generated from the Verdelit simulator (src/app/lab/entra.ts). Do not edit by hand.
 # BEGIN LAB DATA
 $Lab = @'
-{"company":"Pacific Crest Logistics (ShiftReady lab)","users":[{"key":"maria.lopez","alias":"maria.lopez","name":"Maria Lopez","empId":"10401","dept":"Finance","title":"AP Clerk","enabled":false,"groups":[]},{"key":"robert.hayes","alias":"robert.hayes","name":"Robert Hayes","empId":"10322","dept":"Operations","title":"Dispatcher","enabled":true,"groups":["GRP-All-Staff","APP-M365-E3","APP-CargoWise-Ops","APP-WMS-User"]},{"key":"tanya.wright","alias":"tanya.wright","name":"Tanya Wright","empId":"10257","dept":"Sales","title":"Account Executive","enabled":true,"groups":["GRP-All-Staff","APP-M365-E3","APP-Salesforce-User"]},{"key":"sofia.ramirez","alias":"sofia.ramirez","name":"Sofia Ramirez","empId":"10218","dept":"Sales","title":"Account Executive","enabled":false,"groups":["GRP-All-Staff","APP-Salesforce-User"]},{"key":"rachel.adams","alias":"rachel.adams","name":"Rachel Adams","empId":"10249","dept":"Sales","title":"Account Executive","enabled":true,"groups":["GRP-All-Staff","APP-M365-E3","APP-Salesforce-User"]},{"key":"ethan.moore","alias":"ethan.moore","name":"Ethan Moore","empId":"10402","dept":"Operations","title":"Dispatcher","enabled":false,"groups":[]},{"key":"bob.turner","alias":"bob.turner","name":"Bob Turner","empId":"10312","dept":"Operations","title":"Dispatcher","enabled":true,"groups":["GRP-All-Staff","APP-M365-E3","APP-CargoWise-Ops","APP-WMS-User","APP-SAP-AP-Entry","APP-Finance-Reports"]}],"groups":["APP-CargoWise-Ops","APP-Concur-User","APP-Finance-Reports","APP-M365-E3","APP-SAP-AP-Entry","APP-Salesforce-User","APP-WMS-User","APP-Workday-HR","GRP-All-Staff"]}
+{"company":"Pacific Crest Logistics (Verdelit lab)","users":[{"key":"maria.lopez","alias":"maria.lopez","name":"Maria Lopez","empId":"10401","dept":"Finance","title":"AP Clerk","enabled":false,"groups":[]},{"key":"robert.hayes","alias":"robert.hayes","name":"Robert Hayes","empId":"10322","dept":"Operations","title":"Dispatcher","enabled":true,"groups":["GRP-All-Staff","APP-M365-E3","APP-CargoWise-Ops","APP-WMS-User"]},{"key":"tanya.wright","alias":"tanya.wright","name":"Tanya Wright","empId":"10257","dept":"Sales","title":"Account Executive","enabled":true,"groups":["GRP-All-Staff","APP-M365-E3","APP-Salesforce-User"]},{"key":"sofia.ramirez","alias":"sofia.ramirez","name":"Sofia Ramirez","empId":"10218","dept":"Sales","title":"Account Executive","enabled":false,"groups":["GRP-All-Staff","APP-Salesforce-User"]},{"key":"rachel.adams","alias":"rachel.adams","name":"Rachel Adams","empId":"10249","dept":"Sales","title":"Account Executive","enabled":true,"groups":["GRP-All-Staff","APP-M365-E3","APP-Salesforce-User"]},{"key":"ethan.moore","alias":"ethan.moore","name":"Ethan Moore","empId":"10402","dept":"Operations","title":"Dispatcher","enabled":false,"groups":[]},{"key":"bob.turner","alias":"bob.turner","name":"Bob Turner","empId":"10312","dept":"Operations","title":"Dispatcher","enabled":true,"groups":["GRP-All-Staff","APP-M365-E3","APP-CargoWise-Ops","APP-WMS-User","APP-SAP-AP-Entry","APP-Finance-Reports"]}],"groups":["APP-CargoWise-Ops","APP-Concur-User","APP-Finance-Reports","APP-M365-E3","APP-SAP-AP-Entry","APP-Salesforce-User","APP-WMS-User","APP-Workday-HR","GRP-All-Staff"]}
 '@ | ConvertFrom-Json
 # END LAB DATA
 
@@ -54,7 +54,8 @@ function Retry([scriptblock]$Do) {
 foreach ($m in "Microsoft.Graph.Authentication", "Microsoft.Graph.Users", "Microsoft.Graph.Groups", "Microsoft.Graph.Identity.DirectoryManagement") {
   if (-not (Get-Module -ListAvailable -Name $m)) { throw "The $m module is missing. Install it with: Install-Module $m -Scope CurrentUser" }
 }
-if (Test-Path $StatePath) { throw "A lab is already seeded ($StatePath). Run Remove-ShiftReadyLab.ps1 first, then seed again." }
+if (Test-Path (Join-Path $PSScriptRoot "shiftready-lab-state.json")) { throw "A lab from before the rename is still seeded (shiftready-lab-state.json). Run Remove-VerdelitLab.ps1 first, then seed again." }
+if (Test-Path $StatePath) { throw "A lab is already seeded ($StatePath). Run Remove-VerdelitLab.ps1 first, then seed again." }
 
 Connect-MgGraph -Scopes "User.ReadWrite.All", "Group.ReadWrite.All", "Organization.Read.All" -NoWelcome
 $org = Get-MgOrganization | Select-Object -First 1
@@ -68,7 +69,7 @@ Write-Host "Users:   $count"
 Write-Host "Creates: $($Lab.users.Count) users and $($Lab.groups.Count) security groups, tagged '$GroupTag'."
 Write-Host ""
 if ($count -gt 50 -and -not $LabTenant) {
-  throw "This tenant has $count users, which looks like a real organization. ShiftReady seeds lab tenants only. If this really is a lab tenant, run the script again with -LabTenant."
+  throw "This tenant has $count users, which looks like a real organization. Verdelit seeds lab tenants only. If this really is a lab tenant, run the script again with -LabTenant."
 }
 
 # Stop before changing anything if a name is already taken.
@@ -87,7 +88,7 @@ if (-not $WhatIfPreference) {
 
 # The state file is written after every object, so a failed run can still be cleaned up.
 $state = [ordered]@{
-  schema = "shiftready-entra-lab/1"; tenantDomain = $domain; company = $Lab.company
+  schema = "verdelit-entra-lab/1"; tenantDomain = $domain; company = $Lab.company
   seededAt = $null; groups = [ordered]@{}; users = [ordered]@{}; baseline = [ordered]@{}
 }
 function Save { if (-not $WhatIfPreference) { $state | ConvertTo-Json -Depth 5 | Set-Content -Path $StatePath -Encoding utf8 } }
@@ -130,4 +131,4 @@ Save
 
 Write-Host ""
 Write-Host "Seeded. State saved to $StatePath (keep it)."
-Write-Host "Next: work the six tickets in the Microsoft Entra admin center, then run .\Export-ShiftReadyLab.ps1."
+Write-Host "Next: work the six tickets in the Microsoft Entra admin center, then run .\Export-VerdelitLab.ps1."

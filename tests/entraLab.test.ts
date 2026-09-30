@@ -10,7 +10,7 @@ const spec = labSpec();
 // An export of the tenant exactly as seeded, with optional per-user changes.
 function exportOf(changes: Record<string, Partial<ExportUser>> = {}): LabExport {
   return {
-    schema: "shiftready-entra-export/1", exportedAt: T1, seededAt: T0,
+    schema: "verdelit-entra-export/1", exportedAt: T1, seededAt: T0,
     baseline: Object.fromEntries(spec.users.map(u => [u.key, { sessionsValidFrom: T0, passwordChanged: T0 }])),
     users: spec.users.map(u => ({
       key: u.key, name: u.name, employeeId: u.empId, accountEnabled: u.enabled, department: u.dept, jobTitle: u.title,
@@ -30,7 +30,7 @@ const PERFECT = {
 
 describe("Entra ID lab", () => {
   test("seed script data matches the simulator", () => {
-    const ps1 = readFileSync("public/lab/entra/Seed-ShiftReadyLab.ps1", "utf8");
+    const ps1 = readFileSync("public/lab/entra/Seed-VerdelitLab.ps1", "utf8");
     const json = ps1.match(/# BEGIN LAB DATA\r?\n\$Lab = @'\r?\n(.*)\r?\n'@/)?.[1];
     expect(JSON.parse(json!)).toEqual(spec);
   });
@@ -83,7 +83,9 @@ describe("Entra ID lab", () => {
   test("parses a PowerShell 5.1 file with a byte-order mark, and rejects other files", () => {
     expect(parseExport(String.fromCharCode(0xfeff) + JSON.stringify(exportOf())).users).toHaveLength(7);
     expect(() => parseExport("not json")).toThrow(ExportError);
-    expect(() => parseExport('{"schema":"other"}')).toThrow(/isn't a ShiftReady lab export/);
+    // Exports made before the product was renamed still grade.
+    expect(parseExport(JSON.stringify({ ...exportOf(), schema: "shiftready-entra-export/1" })).users).toHaveLength(7);
+    expect(() => parseExport('{"schema":"other"}')).toThrow(/isn't a Verdelit lab export/);
     const partial = exportOf(); partial.users = partial.users.slice(1);
     expect(() => parseExport(JSON.stringify(partial))).toThrow(/missing maria.lopez/);
   });

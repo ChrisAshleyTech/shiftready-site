@@ -1,4 +1,6 @@
-# ShiftReady
+# Verdelit
+
+*Prove you can do the job before day one.* ([verdelit.com](https://verdelit.com))
 
 An IAM job simulator. Learners work a Monday service-desk shift at Pacific Crest Logistics
 (a fictional company). Thursday's queue is then built from what they did on Monday, and they
@@ -49,7 +51,7 @@ photographers anyway, in the image captions and here:
 | `team-room-*.webp` | RUT MIIT | https://unsplash.com/photos/RbC4-8CdbVQ |
 
 **Illustrations** (`src/components/brand/illustrations.tsx`) are original SVGs drawn for
-ShiftReady, so no third-party license applies. unDraw was considered, but its license forbids
+Verdelit, so no third-party license applies. unDraw was considered, but its license forbids
 automated downloading.
 
 **Skills strip** labels are plain text, not vendor logos.
@@ -73,10 +75,20 @@ npm test           # Vitest: engine parity, engine behaviour, landing demo vs en
 npm run e2e        # Playwright: UI, marketing pages, reduced motion, axe (uses installed Chrome)
 ```
 
+## Brand
+
+The mark, wordmark and tagline live in `src/components/brand/Verdelit.tsx`; level badges in
+`LevelBadge.tsx`. `node scripts/make-brand-assets.mjs` renders the favicon, app icons, social preview,
+logo lockups (`public/brand/`, SVG with the font embedded, plus PNG) and the LinkedIn level images
+(`public/badges/`). The product was called ShiftReady before; an inline script on every page moves
+saved progress from the old `shiftready-*` storage keys to `verdelit-*` (its hash is in the CSP in
+`vercel.json`), and the lab scripts still accept labs seeded under the old name.
+
 ## Deploy to Vercel
 
 `vercel.json` sets the Vite framework preset, `npm run build` and the `dist` output directory. Push
-to GitHub and import the repo into Vercel (or run `vercel deploy --prod`).
+to GitHub and import the repo into Vercel (or run `vercel deploy --prod`). Canonical URLs, the
+sitemap and social previews use `SITE_URL` (default `https://verdelit.com`).
 
 ## Hints and scoring
 

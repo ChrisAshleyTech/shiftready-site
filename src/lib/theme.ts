@@ -3,7 +3,7 @@
 import { useSyncExternalStore } from "react";
 
 type Theme = "dark" | "light";
-const KEY = "shiftready-theme";
+const KEY = "verdelit-theme";
 const listeners = new Set<() => void>();
 const read = (): Theme => (document.documentElement.dataset.theme === "dark" ? "dark" : "light");
 

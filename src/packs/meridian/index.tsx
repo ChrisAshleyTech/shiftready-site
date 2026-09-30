@@ -8,7 +8,7 @@ export const pack: CompanyPack = {
   name: "Meridian Aerospace",
   industry: "Aerospace and defense",
   frameworks: "CMMC Level 2, NIST SP 800-171",
-  storageKey: "shiftready-sim-meridian-v1",
+  storageKey: "verdelit-sim-meridian-v1",
   hasTickets: false,
   Mark,
   appIcon: iconByPrefix({

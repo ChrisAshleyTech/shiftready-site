@@ -12,9 +12,9 @@ import { LAB_TICKETS, ExportError, gradeExport, labSpec, parseExport, type LabRe
 import { PageHeader, Checks, SectionLabel, Tag } from "../components/bits";
 
 const SCRIPTS = [
-  ["Seed-ShiftReadyLab.ps1", "Creates the 7 lab users and 9 groups. Asks you to confirm the tenant first."],
-  ["Export-ShiftReadyLab.ps1", "Read-only. Writes shiftready-lab-export.json for grading."],
-  ["Remove-ShiftReadyLab.ps1", "Deletes only the tagged lab users and groups."],
+  ["Seed-VerdelitLab.ps1", "Creates the 7 lab users and 9 groups. Asks you to confirm the tenant first."],
+  ["Export-VerdelitLab.ps1", "Read-only. Writes verdelit-lab-export.json for grading."],
+  ["Remove-VerdelitLab.ps1", "Deletes only the tagged lab users and groups."],
 ] as const;
 
 const RESOURCES = [
@@ -103,8 +103,8 @@ function RunScripts() {
     <ol className="space-y-7">
       <Step n={1} title="Seed the tenant">
         <p>In PowerShell, go to the folder with the scripts. Unblock them (downloaded files are blocked by default), preview with <code className="font-mono text-sm">-WhatIf</code>, then run the seed:</p>
-        <Code>{"Unblock-File .\\*.ps1\n.\\Seed-ShiftReadyLab.ps1 -WhatIf\n.\\Seed-ShiftReadyLab.ps1"}</Code>
-        <p>Sign in with your lab admin account and accept the permissions prompt. The script shows the tenant name and asks you to type its domain. It then creates {spec.users.length} users in {spec.company} and {spec.groups.length} security groups, and saves <code className="font-mono text-sm">shiftready-lab-state.json</code> in the same folder. Keep that file.</p>
+        <Code>{"Unblock-File .\\*.ps1\n.\\Seed-VerdelitLab.ps1 -WhatIf\n.\\Seed-VerdelitLab.ps1"}</Code>
+        <p>Sign in with your lab admin account and accept the permissions prompt. The script shows the tenant name and asks you to type its domain. It then creates {spec.users.length} users in {spec.company} and {spec.groups.length} security groups, and saves <code className="font-mono text-sm">verdelit-lab-state.json</code> in the same folder. Keep that file.</p>
       </Step>
       <Step n={2} title="Work the six tickets in the Entra admin center">
         <p>Open <Ext href="https://entra.microsoft.com/">entra.microsoft.com</Ext> and go to <b>Users</b> and <b>Groups</b>. The access matrix and runbook are on the <a href="#/policy" className="font-medium text-primary-strong underline underline-offset-2">Policy &amp; matrix</a> page.</p>
@@ -118,13 +118,13 @@ function RunScripts() {
         </ul>
       </Step>
       <Step n={3} title="Export the results">
-        <p>The export signs in with read-only permissions and reads only the lab users. It writes <code className="font-mono text-sm">shiftready-lab-export.json</code>:</p>
-        <Code>{".\\Export-ShiftReadyLab.ps1"}</Code>
+        <p>The export signs in with read-only permissions and reads only the lab users. It writes <code className="font-mono text-sm">verdelit-lab-export.json</code>:</p>
+        <Code>{".\\Export-VerdelitLab.ps1"}</Code>
         <p>Then open the <b>Upload results</b> tab. You can fix things in Entra and export again as often as you like.</p>
       </Step>
       <Step n={4} title="Clean up when you're done">
         <p>This deletes only the users and groups the seed created, and only while they still carry the lab tag. Add <code className="font-mono text-sm">-Purge</code> to also empty them from the recycle bin.</p>
-        <Code>{".\\Remove-ShiftReadyLab.ps1 -WhatIf\n.\\Remove-ShiftReadyLab.ps1"}</Code>
+        <Code>{".\\Remove-VerdelitLab.ps1 -WhatIf\n.\\Remove-VerdelitLab.ps1"}</Code>
       </Step>
     </ol>
   );
@@ -142,7 +142,7 @@ function UploadResults() {
     if (!f) return;
     setFile(f.name); setResult(null);
     try {
-      if (f.size > 1_000_000) throw new ExportError("This file is too large to be a lab export. Upload shiftready-lab-export.json.");
+      if (f.size > 1_000_000) throw new ExportError("This file is too large to be a lab export. Upload verdelit-lab-export.json.");
       setResult(gradeExport(parseExport(await f.text()))); setError(null);
       requestAnimationFrame(() => heading.current?.focus());
     } catch (e) {
@@ -155,7 +155,7 @@ function UploadResults() {
     <div className="space-y-6">
       <div className="space-y-2">
         <label htmlFor={id} className="font-semibold">Export file</label>
-        <p id={`${id}-help`} className="text-sm text-muted-foreground">shiftready-lab-export.json, from Export-ShiftReadyLab.ps1. Grading runs in your browser; the file isn't uploaded anywhere.</p>
+        <p id={`${id}-help`} className="text-sm text-muted-foreground">verdelit-lab-export.json, from Export-VerdelitLab.ps1. Grading runs in your browser; the file isn't uploaded anywhere.</p>
         <div className="flex flex-wrap items-center gap-3">
           <input ref={input} id={id} type="file" accept=".json,application/json" className="sr-only" aria-describedby={`${id}-help${error ? ` ${id}-err` : ""}`}
             aria-invalid={!!error} onChange={e => onFile(e.target.files?.[0])} />
@@ -195,11 +195,11 @@ const TROUBLE: [string, ReactNode][] = [
   ["\"The Microsoft.Graph… module is missing\"", <>Run the install command on the Setup tab. In Windows PowerShell 5.1, install only those four modules rather than the full Microsoft.Graph module, which can exceed 5.1's function limit.</>],
   ["The sign-in asks for admin approval", <>Sign in with an admin of the lab tenant. The first run asks you to consent to permissions for Microsoft Graph Command Line Tools.</>],
   ["\"This tenant has N users\"", <>The seed stops on tenants with more than 50 users so it can't touch a real organization. If the tenant really is a lab, run it with <code className="font-mono">-LabTenant</code>.</>],
-  ["\"A group named … already exists\" or \"A user … already exists\"", <>A previous lab is still there. Run <code className="font-mono">.\Remove-ShiftReadyLab.ps1</code> from the folder with the state file, or delete those objects in the admin center, then seed again.</>],
+  ["\"A group named … already exists\" or \"A user … already exists\"", <>A previous lab is still there. Run <code className="font-mono">.\Remove-VerdelitLab.ps1</code> from the folder with the state file, or delete those objects in the admin center, then seed again.</>],
   ["\"Insufficient privileges to complete the operation\"", <>Your account needs User Administrator and Groups Administrator, or Global Administrator. See <Ext href="https://learn.microsoft.com/en-us/entra/identity/role-based-access-control/permissions-reference">Entra built-in roles</Ext>.</>],
   ["Revoking sessions or resetting a password didn't count", <>These are read from timestamps that can take a minute to update. Wait, then run the export again.</>],
   ["The export says a user \"was not found\"", <>The user was deleted. The runbook disables accounts instead, so that ticket scores 0. Remove the lab and seed it again to retry.</>],
-  ["The upload says the file isn't a lab export", <>Upload <code className="font-mono">shiftready-lab-export.json</code>, not the state file. If you edited it, export again.</>],
+  ["The upload says the file isn't a lab export", <>Upload <code className="font-mono">verdelit-lab-export.json</code>, not the state file. If you edited it, export again.</>],
 ];
 
 export default function Lab() {
@@ -244,7 +244,7 @@ export default function Lab() {
               </li>
             ))}
           </ul>
-          <p className="pt-2 text-xs text-muted-foreground">Links go to Microsoft's official documentation. ShiftReady is not affiliated with Microsoft.</p>
+          <p className="pt-2 text-xs text-muted-foreground">Links go to Microsoft's official documentation. Verdelit is not affiliated with Microsoft.</p>
         </aside>
       </div>
     </>

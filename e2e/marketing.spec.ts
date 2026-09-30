@@ -71,13 +71,13 @@ test("landing: sections in order and photo credits", async ({ page }) => {
 
 // Enterprise copy rules for every marketing page: third person, no personal content or
 // testimonials, no "Coming soon" (early access only), no unlisted platforms.
-const PAGES: [string, RegExp][] = [["/", /Identity and access skills/], ["/pricing/", /Start free. Upgrade/], ["/tracks/", /Role-based tracks/], ["/industries/", /Six industries/], ["/labs/", /real identity platform/], ["/resources/", /How ShiftReady works/], ["/privacy/", /Privacy policy/], ["/terms/", /Terms of use/]];
+const PAGES: [string, RegExp][] = [["/", /Identity and access skills/], ["/pricing/", /Start free. Upgrade/], ["/tracks/", /Role-based tracks/], ["/industries/", /Six industries/], ["/labs/", /real identity platform/], ["/resources/", /How Verdelit works/], ["/privacy/", /Privacy policy/], ["/terms/", /Terms of use/]];
 for (const [path, h1] of PAGES) {
   test(`copy rules: ${path}`, async ({ page }) => {
     const res = await page.goto(path);
     expect(res?.status()).toBe(200);
     await expect(page.getByRole("heading", { level: 1 })).toHaveText(h1);
-    const text = (await page.locator("body").innerText()).replace(/ShiftReady is not affiliated with[^\n]*/g, "");
+    const text = (await page.locator("body").innerText()).replace(/Verdelit is not affiliated with[^\n]*/g, "");
     expect(text).not.toMatch(/\b(We|we|We're|we're|We'll|we'll|Our|our|I|I'm|I've|me|my)\b/);
     expect(text).not.toMatch(/founder|Christopher|Ashley|testimonial|learner stories|built by/i);
     expect(text).not.toMatch(/coming soon/i);
@@ -135,7 +135,7 @@ test("footer: legal links and the non-affiliation disclaimer on every marketing 
     const footer = page.locator("footer");
     await expect(footer.getByRole("link", { name: "Privacy" })).toHaveAttribute("href", "/privacy/");
     await expect(footer.getByRole("link", { name: "Terms" })).toHaveAttribute("href", "/terms/");
-    await expect(footer).toContainText("ShiftReady is not affiliated with or endorsed by NIST, ISO, AICPA, the PCI Security Standards Council, Microsoft, Okta or Amazon. Framework names are used for identification only.");
+    await expect(footer).toContainText("Verdelit is not affiliated with or endorsed by NIST, ISO, AICPA, the PCI Security Standards Council, Microsoft, Okta or Amazon. Framework names are used for identification only.");
   }
 });
 
@@ -153,7 +153,7 @@ test("meta: unique title and description, Open Graph, Twitter card, icons and ma
   }
   expect(titles.size).toBe(ALL_PAGES.length);
   expect(descs.size).toBe(ALL_PAGES.length);
-  for (const f of ["/og/shiftready-og.png", "/favicon.ico", "/favicon.svg", "/apple-touch-icon.png", "/icon-192.png", "/icon-512.png", "/icon-maskable-512.png", "/site.webmanifest"])
+  for (const f of ["/og/verdelit-og.png", "/favicon.ico", "/favicon.svg", "/apple-touch-icon.png", "/icon-192.png", "/icon-512.png", "/icon-maskable-512.png", "/site.webmanifest"])
     expect((await request.get(f)).ok(), f).toBe(true);
 });
 

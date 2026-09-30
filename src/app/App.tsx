@@ -21,6 +21,7 @@ import { G, GK, gTotals } from "@/engine/grc.js";
 import { useSim, useRoute, ui, num, pct, type Route } from "./sim";
 import { NAV, pageInfo } from "./nav";
 import { Logo } from "./components/Logo";
+import { Wordmark, TAGLINE } from "@/components/brand/Verdelit";
 import { GlobalSearch } from "./components/GlobalSearch";
 import { CompanySwitcher } from "./components/CompanySwitcher";
 import { NoTickets, CompanyOverview } from "./components/NoTickets";
@@ -99,7 +100,7 @@ function Crumbs({ r }: { r: Route }) {
   return (
     <Breadcrumb className="mb-4">
       <BreadcrumbList>
-        <BreadcrumbItem><BreadcrumbLink href="#/home">ShiftReady</BreadcrumbLink></BreadcrumbItem>
+        <BreadcrumbItem><BreadcrumbLink href="#/home">Verdelit</BreadcrumbLink></BreadcrumbItem>
         {r.name !== "home" && <><BreadcrumbSeparator /><BreadcrumbItem><span>{p.section}</span></BreadcrumbItem></>}
         <BreadcrumbSeparator />
         <BreadcrumbItem>{item ? <BreadcrumbLink href={`#/${r.name}`}>{p.label}</BreadcrumbLink> : <BreadcrumbPage>{p.label}</BreadcrumbPage>}</BreadcrumbItem>
@@ -174,7 +175,7 @@ export default function App() {
     if (key === last.current) return;
     const samePage = last.current.split("/")[0] === r.name;
     last.current = key;
-    document.title = `${itemLabel(r) ?? info.label} · ShiftReady`;
+    document.title = `${itemLabel(r) ?? info.label} · Verdelit`;
     if (!samePage || innerWidth < 1024) scrollTo({ top: 0 });
     // Screens load on demand, so wait (up to ~1 s) for the heading to exist before focusing it.
     let tries = 0, raf = 0;
@@ -191,14 +192,14 @@ export default function App() {
     <AnimatedSidebarProvider>
       <a href="#main" onClick={e => { e.preventDefault(); document.getElementById("main")?.focus(); }}
         className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[60] focus:rounded-md focus:bg-card focus:px-4 focus:py-2 focus:shadow-lg">Skip to content</a>
-      <AnimatedSidebar ariaLabel="ShiftReady navigation" collapsible="icon" panelClassName="bg-card">
+      <AnimatedSidebar ariaLabel="Verdelit navigation" collapsible="icon" panelClassName="bg-card">
         <AnimatedSidebarHeader className="p-3 pb-1">
           <div className="flex min-h-11 items-center gap-3 overflow-hidden px-1.5">
             <a href="#/home" className="flex min-w-0 items-center gap-2.5 rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-ring">
               <Logo className="size-7 shrink-0" />
               <span className="min-w-0 group-data-[state=collapsed]/sidebar:hidden">
-                <span className="block truncate font-display text-base font-extrabold leading-tight">ShiftReady</span>
-                <span className="block truncate text-[12px] text-muted-foreground">Identity operations</span>
+                <Wordmark className="block text-lg leading-tight" />
+                <span className="block text-[12px] leading-snug text-muted-foreground [text-wrap:balance]">{TAGLINE}</span>
               </span>
             </a>
             <AnimatedSidebarClose className="ml-auto text-muted-foreground hover:bg-muted md:hidden"><span aria-hidden>✕</span></AnimatedSidebarClose>
@@ -209,7 +210,7 @@ export default function App() {
         <AnimatedSidebarFooter className="border-none">
           <AnimatedSidebarMenu>
             <AnimatedSidebarMenuItem>
-              <AnimatedSidebarMenuButton href="/" icon={<ArrowLeft className="size-4" />}>ShiftReady site</AnimatedSidebarMenuButton>
+              <AnimatedSidebarMenuButton href="/" icon={<ArrowLeft className="size-4" />}>Verdelit site</AnimatedSidebarMenuButton>
             </AnimatedSidebarMenuItem>
           </AnimatedSidebarMenu>
         </AnimatedSidebarFooter>

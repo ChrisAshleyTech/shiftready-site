@@ -128,7 +128,7 @@ test("mobile: list/detail toggle and navigation sheet", async ({ page }) => {
   await expect(page.getByRole("heading", { name: /CFO locked out/ })).toBeVisible();
   await expect(page.getByRole("navigation", { name: "Tickets" })).toBeHidden();
   await page.getByRole("button", { name: "Toggle navigation" }).click();
-  await expect(page.getByRole("dialog", { name: "ShiftReady navigation" })).toBeVisible();
+  await expect(page.getByRole("dialog", { name: "Verdelit navigation" })).toBeVisible();
   await page.keyboard.press("Escape");
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth > innerWidth);
   expect(overflow).toBe(false);
@@ -138,7 +138,7 @@ for (const [name, path] of [["landing", "/"], ["privacy", "/privacy/"], ["terms"
   for (const theme of ["dark", "light"]) {
     test(`axe: ${name} (${theme}) has no serious or critical violations`, async ({ page }) => {
       await page.goto("/app/");
-      await page.evaluate(t => { localStorage.clear(); if (t === "light") localStorage.setItem("shiftready-theme", "light"); }, theme);
+      await page.evaluate(t => { localStorage.clear(); if (t === "light") localStorage.setItem("verdelit-theme", "light"); }, theme);
       await page.goto(path); await page.reload(); await page.waitForTimeout(400);
       const r = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"]).analyze();
       const bad = r.violations.filter(v => v.impact === "serious" || v.impact === "critical");

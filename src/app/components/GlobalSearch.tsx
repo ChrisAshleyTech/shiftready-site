@@ -27,7 +27,7 @@ export function GlobalSearch() {
         <span className="flex-1 truncate">Search users, groups, tickets and policies</span>
         <kbd className="hidden rounded border bg-muted px-1.5 font-mono text-[11px] sm:inline">Ctrl K</kbd>
       </button>
-      <CommandDialog open={open} onOpenChange={setOpen} title="Search ShiftReady" description="Search users, groups, tickets, policies and pages">
+      <CommandDialog open={open} onOpenChange={setOpen} title="Search Verdelit" description="Search users, groups, tickets, policies and pages">
         <CommandInput placeholder="Search by name, username, ticket ID, group or policy" />
         <CommandList>
           <CommandEmpty>No results.</CommandEmpty>

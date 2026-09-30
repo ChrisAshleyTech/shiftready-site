@@ -1,4 +1,4 @@
-// Original flat illustrations for ShiftReady (drawn for this project, no third-party license).
+// Original flat illustrations for Verdelit (drawn for this project, no third-party license).
 // Decorative: aria-hidden, colours from the theme's brand hues so they follow light/dark mode.
 import type { SVGProps } from "react";
 

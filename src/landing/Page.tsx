@@ -38,10 +38,10 @@ const STEPS = [
 ];
 
 const FAQ = [
-  ["Who is ShiftReady for?", "Identity and access professionals at every level: service desk analysts, IAM analysts and engineers, GRC and audit staff, and the team leads who develop them."],
+  ["Who is Verdelit for?", "Identity and access professionals at every level: service desk analysts, IAM analysts and engineers, GRC and audit staff, and the team leads who develop them."],
   ["Is a lab tenant required?", "No. The simulator runs in the browser. The Entra ID lab, in early access, adds an optional path that uses a Microsoft Entra tenant."],
   ["What does the free tier include?", "Pacific Crest Logistics with both shifts, downstream consequences and the GRC audit track. Pro features are included free during early access."],
-  ["Are the companies real?", "No. All companies and people in ShiftReady scenarios are fictional."],
+  ["Are the companies real?", "No. All companies and people in Verdelit scenarios are fictional."],
   ["Is the policy content compliance advice?", "No. Runbook policies are training material based on published frameworks, not legal or compliance advice."],
 ];
 
@@ -57,7 +57,7 @@ export default function Landing() {
             <div className="space-y-7">
               <Reveal><p className="t-eyebrow">Identity and access skills platform</p></Reveal>
               <Reveal delay={0.05}><h1 id="hero-h" className="t-display">Identity and access skills, built on real operations work.</h1></Reveal>
-              <Reveal delay={0.1}><p className="t-lead max-w-xl">ShiftReady places identity and access professionals in a working service desk and audit function. Provision and deprovision access, run access reviews, contain compromised accounts and prepare audit evidence, then see how each decision holds up.</p></Reveal>
+              <Reveal delay={0.1}><p className="t-lead max-w-xl">Verdelit places identity and access professionals in a working service desk and audit function. Provision and deprovision access, run access reviews, contain compromised accounts and prepare audit evidence, then see how each decision holds up.</p></Reveal>
               <Reveal delay={0.15} className="flex flex-wrap gap-3">
                 <Button asChild size="lg" className="h-13 rounded-xl px-7 text-[17px] font-bold"><a href="/app/">Start free <ArrowRight /></a></Button>
                 <Button asChild size="lg" variant="outline" className="h-13 rounded-xl border-2 px-7 text-[17px] font-bold"><a href="/tracks/">View tracks</a></Button>
@@ -72,7 +72,8 @@ export default function Landing() {
                 </dl>
               </Reveal>
             </div>
-            <Reveal from="right" delay={0.1}>
+            {/* min-w-0: the video's natural width must not stretch the grid column on phones. */}
+            <Reveal from="right" delay={0.1} className="min-w-0">
               <HeroVideo />
               <div className="mt-3 flex justify-end"><PauseButton /></div>
             </Reveal>
@@ -95,7 +96,7 @@ export default function Landing() {
           </ul>
         </section>
 
-        <section aria-labelledby="aud-h" className="bg-card py-20">
+        <section aria-labelledby="aud-h" className="overflow-x-clip bg-card py-20">
           <div className="mx-auto grid max-w-7xl items-center gap-12 px-4 md:px-6 lg:grid-cols-2">
             <Reveal from="left"><Photo name="service-desk" className="aspect-[4/5] max-h-[640px] shadow-2xl" alt="A service desk analyst wearing a headset, working at a computer with colleagues behind her."
               credit="BaljkanN 4" profile="https://unsplash.com/@baljkann4" /></Reveal>

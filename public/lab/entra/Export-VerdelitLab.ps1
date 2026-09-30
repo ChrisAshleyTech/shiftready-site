@@ -1,31 +1,33 @@
 <#
 .SYNOPSIS
-  Read-only export of the ShiftReady lab users, for grading in the browser.
+  Read-only export of the Verdelit lab users, for grading in the browser.
 
 .DESCRIPTION
-  Reads the 7 seeded users listed in shiftready-lab-state.json: enabled state, department, job title,
+  Reads the 7 seeded users listed in verdelit-lab-state.json: enabled state, department, job title,
   employee ID, session and password timestamps, and membership of the 9 lab groups. It signs in with
   read-only permissions (User.Read.All, Group.Read.All) and changes nothing.
 
   The export contains only the lab users. It doesn't include your tenant ID, domain or any other
-  directory objects. Upload shiftready-lab-export.json on the ShiftReady "Connect your lab" page;
+  directory objects. Upload verdelit-lab-export.json on the Verdelit "Connect your lab" page;
   grading happens in your browser and the file isn't sent anywhere.
 
 .EXAMPLE
-  .\Export-ShiftReadyLab.ps1
+  .\Export-VerdelitLab.ps1
 #>
 [CmdletBinding()]
 param(
-  [string]$StatePath = (Join-Path $PSScriptRoot "shiftready-lab-state.json"),
-  [string]$OutPath = (Join-Path $PSScriptRoot "shiftready-lab-export.json")
+  [string]$StatePath = (Join-Path $PSScriptRoot "verdelit-lab-state.json"),
+  [string]$OutPath = (Join-Path $PSScriptRoot "verdelit-lab-export.json")
 )
 $ErrorActionPreference = "Stop"
 
 function Iso($d) { if ($d) { ([datetime]$d).ToUniversalTime().ToString("o") } else { $null } }
 
-if (-not (Test-Path $StatePath)) { throw "No lab state found at $StatePath. Run this from the folder where you ran Seed-ShiftReadyLab.ps1." }
+# Before the product was renamed, the seed wrote shiftready-lab-state.json. Use it if that is what exists.
+if (-not (Test-Path $StatePath)) { $legacy = Join-Path $PSScriptRoot "shiftready-lab-state.json"; if (Test-Path $legacy) { $StatePath = $legacy } }
+if (-not (Test-Path $StatePath)) { throw "No lab state found at $StatePath. Run this from the folder where you ran Seed-VerdelitLab.ps1." }
 $state = Get-Content -Path $StatePath -Raw | ConvertFrom-Json
-if ($state.schema -ne "shiftready-entra-lab/1" -or -not $state.seededAt) { throw "$StatePath isn't a complete ShiftReady lab state file. Remove the lab and seed it again." }
+if ($state.schema -notin "verdelit-entra-lab/1", "shiftready-entra-lab/1" -or -not $state.seededAt) { throw "$StatePath isn't a complete Verdelit lab state file. Remove the lab and seed it again." }
 
 Connect-MgGraph -Scopes "User.Read.All", "Group.Read.All" -NoWelcome
 
@@ -51,7 +53,7 @@ $users = foreach ($p in $state.users.PSObject.Properties) {
 }
 
 $out = [ordered]@{
-  schema = "shiftready-entra-export/1"
+  schema = "verdelit-entra-export/1"
   exportedAt = (Get-Date).ToUniversalTime().ToString("o")
   seededAt = $state.seededAt
   baseline = $state.baseline
@@ -61,4 +63,4 @@ $out | ConvertTo-Json -Depth 6 | Set-Content -Path $OutPath -Encoding utf8
 
 Write-Host ""
 Write-Host "Exported to $OutPath"
-Write-Host "Upload it on the ShiftReady 'Connect your lab' page, Upload results tab."
+Write-Host "Upload it on the Verdelit 'Connect your lab' page, Upload results tab."

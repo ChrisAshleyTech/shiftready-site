@@ -8,7 +8,7 @@ export const pack: CompanyPack = {
   name: "Sunset Retail Group",
   industry: "Retail",
   frameworks: "PCI DSS v4.0.1, SOX ITGC",
-  storageKey: "shiftready-sim-sunset-retail-v1",
+  storageKey: "verdelit-sim-sunset-retail-v1",
   hasTickets: false,
   Mark,
   appIcon: iconByPrefix({

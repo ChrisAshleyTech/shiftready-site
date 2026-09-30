@@ -3,8 +3,8 @@
 // sitemap.xml and robots.txt with the same SITE_URL.
 import type { Plugin } from "vite";
 
-export const SITE_URL = (process.env.SITE_URL || "https://shiftready-site.vercel.app").replace(/\/$/, "");
-const OG_IMAGE = "/og/shiftready-og.png";
+export const SITE_URL = (process.env.SITE_URL || "https://verdelit.com").replace(/\/$/, "");
+const OG_IMAGE = "/og/verdelit-og.png";
 const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;");
 
 // Public, indexable pages for sitemap.xml. /report/ (learners' shared reports) is excluded and noindex.
@@ -12,7 +12,7 @@ export const SITEMAP = ["/", "/tracks/", "/industries/", "/labs/", "/pricing/", 
 
 export function seo(): Plugin {
   return {
-    name: "shiftready-seo",
+    name: "verdelit-seo",
     generateBundle() {
       const today = new Date().toISOString().slice(0, 10);
       const urls = SITEMAP.map(p => `  <url><loc>${SITE_URL}${p}</loc><lastmod>${today}</lastmod></url>`).join("\n");
@@ -29,21 +29,21 @@ export function seo(): Plugin {
     // module preloads: on a slow connection it is the only render-blocking request.
     transformIndexHtml: { order: "post", handler(html, ctx) {
       const path = ctx.path.replace(/index\.html$/, "");
-      const title = html.match(/<title>([^<]*)<\/title>/)?.[1] ?? "ShiftReady";
+      const title = html.match(/<title>([^<]*)<\/title>/)?.[1] ?? "Verdelit";
       const desc = html.match(/<meta name="description" content="([^"]*)"/)?.[1] ?? "";
       const url = SITE_URL + path;
       const img = SITE_URL + OG_IMAGE;
       const tags = [
         `<link rel="canonical" href="${url}">`,
         `<meta property="og:type" content="website">`,
-        `<meta property="og:site_name" content="ShiftReady">`,
+        `<meta property="og:site_name" content="Verdelit">`,
         `<meta property="og:title" content="${esc(title)}">`,
         `<meta property="og:description" content="${esc(desc)}">`,
         `<meta property="og:url" content="${url}">`,
         `<meta property="og:image" content="${img}">`,
         `<meta property="og:image:width" content="1200">`,
         `<meta property="og:image:height" content="630">`,
-        `<meta property="og:image:alt" content="ShiftReady: identity and access skills, built on real operations work. A screenshot of the ticket queue.">`,
+        `<meta property="og:image:alt" content="Verdelit: prove you can do the job before day one. The Verdelit logo beside a screenshot of the ticket queue.">`,
         `<meta name="twitter:card" content="summary_large_image">`,
         `<meta name="twitter:title" content="${esc(title)}">`,
         `<meta name="twitter:description" content="${esc(desc)}">`,

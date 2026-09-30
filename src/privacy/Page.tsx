@@ -1,4 +1,4 @@
-// /privacy: what ShiftReady collects, where it goes, and the choices available.
+// /privacy: what Verdelit collects, where it goes, and the choices available.
 import { LegalPage, Contact } from "@/marketing/LegalPage";
 import { LEGAL } from "@/marketing/legal";
 

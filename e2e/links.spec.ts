@@ -53,7 +53,8 @@ test.describe("390px wide", () => {
   test.use({ viewport: { width: 390, height: 844 } });
   for (const p of [...PAGES, "/app/#/home", "/app/#/queue/INC0041220", "/app/#/directory/greg.foster", "/app/#/groups", "/app/#/results", "/app/#/report", "/app/#/grc/G1", "/report/#r=x"]) {
     test(`no horizontal overflow: ${p}`, async ({ page }) => {
-      await page.goto(p); await page.waitForTimeout(300);
+      // After load, so late swaps (the hero video replaces its poster on load) are measured too.
+      await page.goto(p, { waitUntil: "load" }); await page.waitForTimeout(600);
       const { sw, w } = await page.evaluate(() => ({ sw: document.documentElement.scrollWidth, w: innerWidth }));
       expect(sw, `${p} is ${sw}px wide at 390px`).toBeLessThanOrEqual(w);
       await expect(page.getByRole("heading", { level: 1 }).first()).toBeVisible();
