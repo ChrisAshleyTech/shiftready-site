@@ -220,7 +220,9 @@ export function buildFinance(spec: FinanceSpec, users: Record<string, User>): Fi
       d = weekday(addDays(d, int(r, 6, 35)));
       if (d > PERIOD.to) break;
       const enteredBy = entryFor(d);
-      const approvedBy = v.id === sodVendor.id ? spec.plant.vendorSod.user : approveFor(v, enteredBy, d);
+      const approvedBy = v.id === sodVendor.id ? spec.plant.vendorSod.user : enteredBy && approveFor(v, enteredBy, d);
+      // Nobody who could enter or approve it was working that day: the bill waits, and the PO stays unbilled.
+      if (!enteredBy || !approvedBy) break;
       invoices.push({ id: "", number: nextNo(v.id), vendor: v.id, po: po.id, date: d, enteredBy, approvedBy, amountCents: amt, paid: payDate(d) });
     }
   }
