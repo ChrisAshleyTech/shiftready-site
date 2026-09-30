@@ -4,7 +4,7 @@
 import { REQUESTABLE } from "./company";
 
 const g = (x: string) => `<span class="mono">${x}</span>`;
-const ECFR = "https://www.ecfr.gov/current/title-45/subtitle-A/subchapter-C/part-164/subpart-C";
+const ECFR = "https://www.ecfr.gov/current/title-45";
 const s308 = (p: string) => ({ label: `45 CFR 164.308${p}`, href: `${ECFR}/section-164.308` });
 const s312 = (p: string) => ({ label: `45 CFR 164.312${p}`, href: `${ECFR}/section-164.312` });
 

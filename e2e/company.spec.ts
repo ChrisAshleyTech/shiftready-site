@@ -31,6 +31,7 @@ test("on a phone, the company switcher is in the navigation drawer", async ({ pa
 // Companies whose tickets are still being written. Extended as each pack lands.
 const NEW = [
   { name: "Harbor Health Network", group: "APP-EHR-Clinical", note: /Epic or Oracle Health/, source: /45 CFR 164/ },
+  { name: "Meridian Aerospace", group: "APP-PLM-CUI", note: /Teamcenter/, source: /NIST SP 800-171 Rev. 2/ },
 ];
 for (const c of NEW) {
   test(`${c.name}: switch, explore, and switch back without losing progress`, async ({ page }) => {

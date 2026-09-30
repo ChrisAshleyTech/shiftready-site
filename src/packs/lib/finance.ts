@@ -59,11 +59,12 @@ const plainName = (mgr: string) => mgr.replace(/\s*\(.*\)$/, "");
 const weekday = (s: string) => { const d = new Date(s + "T00:00:00Z").getUTCDay(); return d === 0 ? addDays(s, 1) : d === 6 ? addDays(s, 2) : s; };
 const employedOn = (e: Employment, id: string, day: string) => { const x = e[id]; return !!x && x.hired <= day && (!x.left || x.left > day); };
 
-export function employmentFor(users: Record<string, User>, base: Date, seed: number, over: FinanceSpec["employment"] = {}): Employment {
+export function employmentFor(users: Record<string, User>, base: Date, seed: number, over: FinanceSpec["employment"] = {}, tenured: string[] = []): Employment {
   const r = rng(seed ^ 0x5eed);
   const out: Employment = {};
   // Managers were hired by 2019, so the approval chain exists for the whole period.
-  const managers = new Set(Object.values(users).map(u => plainName(u.mgr)));
+  // So are the people in planted exceptions, so each exception happens while they work there.
+  const managers = new Set([...Object.values(users).map(u => plainName(u.mgr)), ...tenured.map(id => users[id]?.name)]);
   for (const u of Object.values(users)) {
     if (u.type === "Service") continue;
     const o = over[u.id] ?? {};
@@ -81,7 +82,9 @@ const daysBetween = (a: string, b: string) => Math.round((Date.parse(b) - Date.p
 
 export function buildFinance(spec: FinanceSpec, users: Record<string, User>): Finance {
   const r = rng(spec.seed);
-  const emp = employmentFor(users, spec.base, spec.seed, spec.employment);
+  const pl = spec.plant;
+  const emp = employmentFor(users, spec.base, spec.seed, spec.employment,
+    [pl.split.requester, pl.vendorSod.user, pl.vendorSod.requester, pl.approval.requester, pl.approval.approver]);
   const byName = new Map(Object.values(users).map(u => [u.name, u]));
   const limit = (id: string) => spec.limits[users[id]?.title] ?? 0;
   // Acting on a day needs employment and, for dormant accounts, a sign-in since then.
