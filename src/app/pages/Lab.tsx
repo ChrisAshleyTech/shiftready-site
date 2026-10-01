@@ -3,8 +3,9 @@
 // in the browser. The guides open only with tester access; the scripts are served by the lab-file
 // endpoint to browsers that hold it (api/_lib/labAccess.js).
 //
-// TODO(labs-auth): gate on a Supabase session with the Pro + Labs plan instead of the tester cookie,
-// and load the step-by-step guide text from server storage so it no longer ships in this bundle.
+// The step-by-step content is fetched from the server (lab-files/<lab>/guide.json) with the same
+// access check as the scripts, so none of it is in the public site bundle.
+// TODO(labs-auth): gate on a Supabase session with the Pro + Labs plan instead of the tester cookie.
 import { useEffect, useState } from "react";
 import { FlaskConical, Lock } from "lucide-react";
 import { Card } from "@/components/ui/card";
@@ -14,7 +15,7 @@ import { LAB_INFO } from "@/marketing/catalog";
 import { cn } from "@/lib/utils";
 import type { Route } from "../sim";
 import { PageHeader } from "../components/bits";
-import { Resources, Trouble, UploadResults, type LabGuide } from "./labs/shared";
+import { GuideSteps, Resources, Trouble, UploadResults, type GuideContent, type LabGuide } from "./labs/shared";
 import { ENTRA } from "./labs/entra";
 import { OKTA } from "./labs/okta";
 import { AWS } from "./labs/aws";
@@ -44,23 +45,41 @@ function Picker({ current }: { current: string }) {
   );
 }
 
+function useGuideContent(lab: string) {
+  const [c, setC] = useState<GuideContent | "error" | null>(null);
+  useEffect(() => {
+    let live = true;
+    setC(null);
+    fetch(`/lab-files/${lab}/guide.json`, { credentials: "same-origin", cache: "no-store" })
+      .then(r => (r.ok ? r.json() : Promise.reject()))
+      .then(j => live && setC(j), () => live && setC("error"));
+    return () => { live = false; };
+  }, [lab]);
+  return c;
+}
+
 function Guide({ g }: { g: LabGuide }) {
+  const c = useGuideContent(g.id);
   return (
     <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_18rem]">
       <Card className="min-w-0 p-5 md:p-6">
-        {/* Keyed by lab, so switching labs starts on Setup with a fresh upload. */}
-        <Tabs key={g.id} defaultValue="setup">
-          <TabsList className="grid w-full grid-cols-2 group-data-[orientation=horizontal]/tabs:h-auto sm:flex sm:w-fit">
-            <TabsTrigger className="h-9" value="setup">Setup</TabsTrigger>
-            <TabsTrigger className="h-9" value="run">Run scripts</TabsTrigger>
-            <TabsTrigger className="h-9" value="upload">Upload results</TabsTrigger>
-            <TabsTrigger className="h-9" value="trouble">Troubleshooting</TabsTrigger>
-          </TabsList>
-          <TabsContent value="setup" className="pt-4"><g.setup /></TabsContent>
-          <TabsContent value="run" className="pt-4"><g.run /></TabsContent>
-          <TabsContent value="upload" className="pt-4"><UploadResults guide={g} /></TabsContent>
-          <TabsContent value="trouble" className="pt-4"><Trouble items={g.trouble} /></TabsContent>
-        </Tabs>
+        {c === null && <p role="status" className="t-meta py-10 text-center">Loading the lab guide…</p>}
+        {c === "error" && <p role="alert" className="py-10 text-center font-medium text-destructive">The lab guide couldn't be loaded. Your access may have expired; open your invitation link again.</p>}
+        {c && c !== "error" && (
+          /* Keyed by lab, so switching labs starts on Setup with a fresh upload. */
+          <Tabs key={g.id} defaultValue="setup">
+            <TabsList className="grid w-full grid-cols-2 group-data-[orientation=horizontal]/tabs:h-auto sm:flex sm:w-fit">
+              <TabsTrigger className="h-9" value="setup">Setup</TabsTrigger>
+              <TabsTrigger className="h-9" value="run">Run scripts</TabsTrigger>
+              <TabsTrigger className="h-9" value="upload">Upload results</TabsTrigger>
+              <TabsTrigger className="h-9" value="trouble">Troubleshooting</TabsTrigger>
+            </TabsList>
+            <TabsContent value="setup" className="pt-4"><GuideSteps steps={c.setup} guide={g} content={c} /></TabsContent>
+            <TabsContent value="run" className="pt-4"><GuideSteps steps={c.run} guide={g} content={c} /></TabsContent>
+            <TabsContent value="upload" className="pt-4"><UploadResults guide={g} /></TabsContent>
+            <TabsContent value="trouble" className="pt-4"><Trouble items={c.trouble} /></TabsContent>
+          </Tabs>
+        )}
       </Card>
       <Resources items={g.resources} vendor={g.vendor} />
     </div>

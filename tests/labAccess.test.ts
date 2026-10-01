@@ -77,3 +77,30 @@ describe("lab access endpoints", () => {
     for (const [lab, files] of Object.entries(LAB_FILES)) for (const f of files) expect(existsSync(`lab-files/${lab}/${f}`), `${lab}/${f}`).toBe(true);
   });
 });
+
+describe("lab guides and revocation", () => {
+  test("each guide is served only with access, inline, and covers every ticket", async () => {
+    const { LAB_TICKETS } = await import("../src/app/lab/core");
+    for (const lab of Object.keys(LAB_FILES)) {
+      const path = `/api/lab-file?lab=${lab}&file=guide.json`;
+      expect((await labFile(req(path), env)).status, lab).toBe(401);
+      const r = await labFile(req(path, `${COOKIE}=${token}`), env);
+      expect(r.headers.get("content-disposition")).toBe("inline");
+      const g = await r.json();
+      expect(g).toMatchObject({ schema: "rolevara-lab-guide/1", lab });
+      expect(Object.keys(g.todo).sort()).toEqual([...LAB_TICKETS].sort());
+      expect(g.setup.length && g.run.length && g.trouble.length).toBeTruthy();
+      // Every script the guide offers is downloadable, and every downloadable script is offered.
+      expect(g.scripts.map((s: string[]) => s[0]).sort()).toEqual(LAB_FILES[lab as keyof typeof LAB_FILES].filter(f => f !== "guide.json").sort());
+    }
+  });
+
+  test("LAB_REVOKED withdraws one tester's link without touching others", async () => {
+    const other = signToken({ sub: "other@example.com", exp: inDays(7) }, KEY);
+    const renv = { ...env, LAB_REVOKED: " Tester@Example.com ,x@y.z" };
+    expect(labSession(req("/api/lab-session", `${COOKIE}=${token}`), renv).status).toBe(401);
+    expect((await labFile(req("/api/lab-file?lab=okta&file=guide.json", `${COOKIE}=${token}`), renv)).status).toBe(401);
+    expect(labAccess(req(`/labs/access?key=${token}`), renv).headers.get("location")).toBe("/labs/?access=invalid");
+    expect(labSession(req("/api/lab-session", `${COOKIE}=${other}`), renv).status).toBe(200);
+  });
+});

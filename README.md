@@ -100,8 +100,10 @@ preview mode: the form validates but doesn't send).
 
 Three labs (Microsoft Entra ID, Okta, AWS IAM) share the Pacific Crest seed data and grading in
 `src/app/lab/core.ts`; each platform parses its own read-only export (`entra.ts`, `okta.ts`,
-`aws.ts`). The scripts live in `lab-files/`, outside `public/`, so they are not in the site build.
-Vercel serves them from `api/lab-file.js` only to browsers holding tester access.
+`aws.ts`). The scripts and each lab's step-by-step guide (`lab-files/<lab>/guide.json`) live in
+`lab-files/`, outside `public/` and `src/`, so none of it is in the site build (an e2e test checks
+`dist/`). Vercel serves them from `api/lab-file.js` only to browsers holding tester access, checked on
+every request.
 
 Access is a private link, `/labs/access?key=...`, signed with `LAB_ACCESS_SECRET` (Vercel project
 environment variable, 32+ characters; without it every link is refused). The link sets an HttpOnly
@@ -112,7 +114,10 @@ node scripts/make-lab-link.mjs --new-secret          # paste into Vercel as LAB_
 LAB_ACCESS_SECRET=... node scripts/make-lab-link.mjs --to "tester@example.com" --days 30
 ```
 
-Rotating the secret revokes every link. `TODO(labs-auth)` in `api/_lib/labAccess.js` covers the
+Links expire on their own. To cut off one tester early, add the name used with `--to` to the
+`LAB_REVOKED` environment variable (comma-separated) and redeploy; rotating the secret revokes every
+link. The repository itself is public, so anyone can still read `lab-files/` on GitHub until it moves
+to private storage. `TODO(labs-auth)` in `api/_lib/labAccess.js` covers the
 move to Supabase Auth with a paid-tier check and scripts and guide text served from storage. The
 public `/labs` page shows only each lab's overview. The AWS template
 (`lab-files/aws/rolevara-lab-aws.json`) is generated from `awsTemplate()`; `tests/awsLab.test.ts`

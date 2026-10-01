@@ -4,12 +4,13 @@
 // variable (Vercel project settings), never in this repository.
 //
 // TODO(labs-auth): replace tester links with Supabase Auth plus a paid-tier check (Pro + Labs).
-//   1. Sign-in with Supabase Auth; read the plan from a `subscriptions` table (or Stripe webhook).
-//   2. lab-session returns the plan; lab-file allows only Pro + Labs (and trial) users.
-//   3. Move lab-files/ and the step-by-step guide text into Supabase Storage (private bucket),
-//      served through signed URLs, so neither the scripts nor the instructions ship in the public
-//      site bundle or this repository.
-//   4. Remove LAB_ACCESS_SECRET, this file's token code and scripts/make-lab-link.mjs.
+//   1. Sign-in with Supabase Auth. A Stripe webhook (checkout completed, subscription updated or
+//      deleted, payment failed) writes each user's plan and status to a `subscriptions` table.
+//   2. lab-session and lab-file look the plan up on every request: only an active or trialing
+//      Pro + Labs subscription gets files, so cancelling or a failed payment cuts access at once.
+//   3. Move lab-files/ (scripts and guide.json) into Supabase Storage (private bucket), handed out
+//      as signed URLs that expire in minutes, so nothing lives in this public repository.
+//   4. Remove LAB_ACCESS_SECRET, LAB_REVOKED, this file's token code and scripts/make-lab-link.mjs.
 import { createHmac, timingSafeEqual } from "node:crypto";
 
 export const COOKIE = "rv_lab_access";
@@ -51,8 +52,14 @@ export function readCookie(header, name = COOKIE) {
   return null;
 }
 
-/** The tester's access from the request's cookie, or null. */
-export const accessFrom = (request, env = process.env) => verifyToken(readCookie(request.headers.get("cookie")), labSecret(env));
+/** Testers whose links are withdrawn early: LAB_REVOKED is a comma-separated list of the names used with --to. */
+export const revoked = (sub, env = process.env) => (env.LAB_REVOKED || "").split(",").map(s => s.trim().toLowerCase()).filter(Boolean).includes(sub.toLowerCase());
+
+/** The tester's access from the request's cookie, or null. Checked on every request, so expiry and revocation apply at once. */
+export function accessFrom(request, env = process.env) {
+  const p = verifyToken(readCookie(request.headers.get("cookie")), labSecret(env));
+  return p && !revoked(p.sub, env) ? p : null;
+}
 
 export const cookieFor = (token, exp, now = Date.now()) =>
   `${COOKIE}=${token}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=${Math.max(0, Math.min(MAX_AGE, Math.floor(exp - now / 1000)))}`;

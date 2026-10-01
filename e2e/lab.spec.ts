@@ -1,6 +1,8 @@
 // Platform lab guides: locked without tester access; a signed link unlocks the guides, the script
 // downloads and in-browser grading for Entra ID, Okta and AWS.
 import { test, expect, type Page } from "@playwright/test";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
+import { join } from "node:path";
 import { labSpec } from "../src/app/lab/core";
 import { AWS_KEY_USERS } from "../src/app/lab/aws";
 import { signToken } from "../api/_lib/labAccess.js";
@@ -100,4 +102,15 @@ test("lab guides fit a 390px screen", async ({ page }) => {
       expect(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), `${lab} ${tab}`).toBe(false);
     }
   }
+});
+
+test("the public site build contains no lab scripts or step-by-step guide text", () => {
+  const dir = "dist";
+  const files = readdirSync(dir, { recursive: true }).map(String).filter(f => /\.(js|html|json|css)$/.test(f));
+  const SECRET_TEXT = [/Unblock-File/, /Install-Module/, /-MaskInput/, /seed_rolevara_lab\.py --dry-run/, /\.SYNOPSIS/, /Clear a user's sessions/, /AWS::IAM::AccessKey/, /LAB DATA/];
+  for (const f of files) {
+    const text = readFileSync(join(dir, f), "utf8");
+    for (const re of SECRET_TEXT) expect(re.test(text), `${f} contains ${re}`).toBe(false);
+  }
+  expect(existsSync(join(dir, "lab-files"))).toBe(false);
 });

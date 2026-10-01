@@ -1,0 +1,173 @@
+{
+ "schema": "rolevara-lab-guide/1",
+ "lab": "okta",
+ "scripts": [
+  [
+   "Seed-RolevaraOktaLab.ps1",
+   "Creates the 7 lab users and 9 groups. Asks you to confirm the org first."
+  ],
+  [
+   "Check-RolevaraOktaLab.ps1",
+   "Read-only (GET requests only). Writes rolevara-okta-export.json for grading."
+  ],
+  [
+   "Remove-RolevaraOktaLab.ps1",
+   "Deletes only the tagged lab users and groups."
+  ]
+ ],
+ "setup": [
+  {
+   "title": "Get a free Okta Integrator org",
+   "blocks": [
+    {
+     "p": "Sign up for the Okta Integrator Free Plan. It gives you an org of your own for practice. **Never run the scripts in an employer's org.** The seed script stops if an org has more than 50 users."
+    },
+    {
+     "note": "Sign up at [developer.okta.com/signup](https://developer.okta.com/signup/). Your org URL looks like `https://integrator-1234567.okta.com`."
+    }
+   ]
+  },
+  {
+   "title": "Create a Super Administrator token for seeding",
+   "blocks": [
+    {
+     "p": "Signed in as the org's first admin (a Super Administrator), open **Security > API > Tokens** and create a token named `rolevara-seed`. Okta shows it once. Seeding and cleanup use it; the scripts never save it."
+    },
+    {
+     "note": "See [Create an API token](https://developer.okta.com/docs/guides/create-an-api-token/main/)."
+    }
+   ]
+  },
+  {
+   "title": "Create a read-only admin token for checks",
+   "blocks": [
+    {
+     "p": "A token has exactly the permissions of the admin who creates it, so grading uses a read-only one. Add a person for yourself (a plus address such as `you+readonly@…` works), assign them the **Read-Only Administrator** role under **Security > Administrators**, sign in as them in a private window, and create a token named `rolevara-check`."
+    },
+    {
+     "note": "See [Read-only administrators](https://help.okta.com/en-us/content/topics/security/administrators-read-only-admin.htm)."
+    }
+   ]
+  },
+  {
+   "title": "Install PowerShell 7",
+   "blocks": [
+    {
+     "p": "The scripts need PowerShell 7 on Windows, macOS or Linux, and no extra modules."
+    },
+    {
+     "note": "See [Installing PowerShell](https://learn.microsoft.com/en-us/powershell/scripting/install/installing-powershell)."
+    }
+   ]
+  },
+  {
+   "title": "Download the scripts into one folder",
+   "blocks": [
+    {
+     "scripts": true
+    },
+    {
+     "note": "Read the scripts before you run them. Each one explains what it does at the top."
+    }
+   ]
+  }
+ ],
+ "run": [
+  {
+   "title": "Seed the org",
+   "blocks": [
+    {
+     "p": "In PowerShell 7 (`pwsh`), go to the folder with the scripts. Paste the **Super Administrator** token when asked (input is hidden), preview with `-WhatIf`, then run the seed with your org URL:"
+    },
+    {
+     "code": "$env:OKTA_API_TOKEN = Read-Host \"Super admin token\" -MaskInput\n.\\Seed-RolevaraOktaLab.ps1 -OrgUrl https://integrator-1234567.okta.com -WhatIf\n.\\Seed-RolevaraOktaLab.ps1 -OrgUrl https://integrator-1234567.okta.com"
+    },
+    {
+     "p": "The script shows the org and asks you to type its subdomain. It then creates 7 users (sign-in names end in `@pacificcrest.example.com`, which never receives mail) and 9 groups, and saves `rolevara-okta-state.json` in the same folder. Keep that file."
+    }
+   ]
+  },
+  {
+   "title": "Work the six tickets in the Okta Admin Console",
+   "blocks": [
+    {
+     "p": "Open your org's Admin Console and go to **Directory > People** and **Directory > Groups**. Clear a user's sessions from their profile under **More Actions**. The access matrix and runbook are on the [Policy & matrix](#/policy) page."
+    },
+    {
+     "tickets": true
+    }
+   ]
+  },
+  {
+   "title": "Check the results with the read-only token",
+   "blocks": [
+    {
+     "p": "Switch to the **Read-Only Administrator** token. The check sends only GET requests, reads only the lab users and their System Log events, and writes `rolevara-okta-export.json`:"
+    },
+    {
+     "code": "$env:OKTA_API_TOKEN = Read-Host \"Read-only admin token\" -MaskInput\n.\\Check-RolevaraOktaLab.ps1"
+    },
+    {
+     "p": "Then open the **Upload results** tab. You can fix things in Okta and check again as often as you like."
+    }
+   ]
+  },
+  {
+   "title": "Clean up when you're done",
+   "blocks": [
+    {
+     "p": "With the Super Administrator token again, this deactivates and deletes only the users and groups the seed created, and only while they still carry the lab tag. Then revoke both tokens under **Security > API > Tokens**."
+    },
+    {
+     "code": "$env:OKTA_API_TOKEN = Read-Host \"Super admin token\" -MaskInput\n.\\Remove-RolevaraOktaLab.ps1 -WhatIf\n.\\Remove-RolevaraOktaLab.ps1"
+    }
+   ]
+  }
+ ],
+ "todo": {
+  "REQ0018841": "Activate Maria Lopez and add her to exactly the AP Clerk groups.",
+  "REQ0018850": "Offboard Robert Hayes: remove every group, clear his user sessions, then deactivate him.",
+  "REQ0018852": "Move Tanya Wright to Operations / Dispatcher: edit Department and Title in her profile, swap Sales groups for Dispatcher groups.",
+  "REQ0018870": "Rehire Sofia Ramirez as HR / HR Generalist: activate her (her old password stops working), update her profile, remove old access, add the new role's groups.",
+  "REQ0018879": "Put Rachel Adams on leave: suspend her and keep her groups.",
+  "REQ0018881": "Provision Ethan Moore as a Dispatcher from the access matrix: activate him and add the Dispatcher groups, not Bob Turner's."
+ },
+ "trouble": [
+  [
+   "\"Running scripts is disabled on this system\" (Windows)",
+   "Run `Unblock-File .\\*.ps1`, then allow scripts for this window only: `Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass`."
+  ],
+  [
+   "\"#Requires\" or \"-MaskInput\" errors",
+   "The scripts need PowerShell 7. Start `pwsh`, not Windows PowerShell 5.1."
+  ],
+  [
+   "\"Okta returned 401\"",
+   "The token is wrong, revoked or expired (unused tokens expire after 30 days), or it belongs to another org. Create a new one in the same org as `-OrgUrl`."
+  ],
+  [
+   "\"Okta returned 403\" while seeding",
+   "The token was created by an admin without enough rights. Seeding and cleanup need a token created by a Super Administrator."
+  ],
+  [
+   "\"This org has N users\"",
+   "The seed stops on orgs with more than 50 users so it can't touch a real organization. If the org really is a lab, run it with `-LabTenant`."
+  ],
+  [
+   "\"A group named … already exists\" or \"A user … already exists\"",
+   "A previous lab is still there. Run `.\\Remove-RolevaraOktaLab.ps1` from the folder with the state file, then seed again."
+  ],
+  [
+   "Clearing sessions or a new password didn't count",
+   "Both are read from the System Log, which can take a minute to show new events. Wait, then run the check again. For Sofia, activating her after the seed counts: Okta sends a fresh activation link and her old password stops working."
+  ],
+  [
+   "The check says a user \"was not found\"",
+   "The user was deleted. Okta deletes are permanent, and the runbook deactivates instead, so that ticket scores 0. Remove the lab and seed it again to retry."
+  ],
+  [
+   "The upload says the file isn't a lab export",
+   "Upload `rolevara-okta-export.json`, not the state file. If you edited it, run the check again."
+  ]
+ ]
+}

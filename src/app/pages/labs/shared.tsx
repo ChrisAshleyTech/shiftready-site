@@ -1,5 +1,6 @@
-// Building blocks shared by the lab guides: steps, copyable commands, script downloads, the six
-// tickets, results upload and grading, troubleshooting and resources.
+// Building blocks shared by the lab guides. The step-by-step content (setup, run, ticket notes,
+// troubleshooting) is not in this bundle: it is lab-files/<lab>/guide.json, fetched from the server
+// only by browsers with lab access, and rendered here.
 import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 import { toast } from "sonner";
 import { Copy, Download, ExternalLink, FolderGit2, Upload } from "lucide-react";
@@ -15,13 +16,49 @@ export type LabGuide = {
   id: LabId;
   name: string;
   sub: string;
-  setup: () => ReactNode;
-  run: () => ReactNode;
   upload: { file: string; script: string; grade: (text: string) => LabResult };
-  trouble: [string, ReactNode][];
   resources: readonly (readonly [string, string, string])[];
   vendor: string;
 };
+
+// ---------- Server-served guide content (lab-files/<lab>/guide.json) ----------
+type Block = { p?: string; note?: string; code?: string; scripts?: boolean; tickets?: boolean };
+type GuideStep = { title: string; blocks: Block[] };
+export type GuideContent = {
+  schema: "rolevara-lab-guide/1"; lab: LabId; scripts: [string, string][];
+  setup: GuideStep[]; run: GuideStep[]; todo: Record<string, string>; trouble: [string, string][];
+};
+
+/** Inline markup used in guide.json: **bold**, `code` and [text](url). Text only, never HTML. */
+export function Rich({ text }: { text: string }) {
+  const parts = text.split(/(\*\*[^*]+\*\*|`[^`]+`|\[[^\]]+\]\([^)\s]+\))/g);
+  return <>{parts.map((t, i) => {
+    if (t.startsWith("**") && t.endsWith("**")) return <b key={i}>{t.slice(2, -2)}</b>;
+    if (t.startsWith("`") && t.endsWith("`")) return <Mono key={i}>{t.slice(1, -1)}</Mono>;
+    const m = t.match(/^\[([^\]]+)\]\(([^)\s]+)\)$/);
+    if (m) return m[2].startsWith("#/")
+      ? <a key={i} href={m[2]} className="font-medium text-primary-strong underline underline-offset-2">{m[1]}</a>
+      : /^https:\/\//.test(m[2]) ? <Ext key={i} href={m[2]}>{m[1]}</Ext> : m[1];
+    return t;
+  })}</>;
+}
+
+export function GuideSteps({ steps, guide, content }: { steps: GuideStep[]; guide: LabGuide; content: GuideContent }) {
+  return (
+    <ol className="space-y-7">
+      {steps.map((s, i) => (
+        <Step key={s.title} n={i + 1} title={s.title}>
+          {s.blocks.map((b, j) =>
+            b.code != null ? <Code key={j}>{b.code}</Code>
+            : b.scripts ? <Scripts key={j} lab={guide.id} files={content.scripts} />
+            : b.tickets ? <TicketList key={j} todo={content.todo} />
+            : b.note != null ? <p key={j} className="text-sm text-muted-foreground"><Rich text={b.note} /></p>
+            : <p key={j}><Rich text={b.p ?? ""} /></p>)}
+        </Step>
+      ))}
+    </ol>
+  );
+}
 
 export function Code({ children }: { children: string }) {
   const copy = () => navigator.clipboard?.writeText(children).then(() => toast("Copied to the clipboard."), () => toast("Couldn't copy. Select the text and copy it instead."));
@@ -151,13 +188,13 @@ export function UploadResults({ guide }: { guide: LabGuide }) {
   );
 }
 
-export function Trouble({ items }: { items: [string, ReactNode][] }) {
+export function Trouble({ items }: { items: [string, string][] }) {
   return (
     <div className="divide-y rounded-lg border">
       {items.map(([q, a]) => (
         <details key={q} className="group px-4 py-3">
           <summary className="cursor-pointer font-medium">{q}</summary>
-          <p className="pt-2 text-sm text-muted-foreground [&_code]:text-foreground">{a}</p>
+          <p className="pt-2 text-sm text-muted-foreground [&_code]:text-foreground"><Rich text={a} /></p>
         </details>
       ))}
     </div>

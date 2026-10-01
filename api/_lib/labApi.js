@@ -2,13 +2,14 @@
 // the Vite dev and preview servers mount the same handlers (vite.config.ts), so tests cover them.
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
-import { accessFrom, cookieFor, labSecret, verifyToken } from "./labAccess.js";
+import { accessFrom, cookieFor, labSecret, revoked, verifyToken } from "./labAccess.js";
 
 // Every file the lab guides offer. Nothing outside this list is ever read.
 export const LAB_FILES = {
-  entra: ["Seed-RolevaraLab.ps1", "Export-RolevaraLab.ps1", "Remove-RolevaraLab.ps1"],
-  okta: ["Seed-RolevaraOktaLab.ps1", "Check-RolevaraOktaLab.ps1", "Remove-RolevaraOktaLab.ps1"],
-  aws: ["rolevara-lab-aws.json", "seed_rolevara_lab.py", "check_rolevara_lab.py", "remove_rolevara_lab.py"],
+// guide.json is the step-by-step guide; it is served like the scripts, never bundled with the site.
+  entra: ["guide.json", "Seed-RolevaraLab.ps1", "Export-RolevaraLab.ps1", "Remove-RolevaraLab.ps1"],
+  okta: ["guide.json", "Seed-RolevaraOktaLab.ps1", "Check-RolevaraOktaLab.ps1", "Remove-RolevaraOktaLab.ps1"],
+  aws: ["guide.json", "rolevara-lab-aws.json", "seed_rolevara_lab.py", "check_rolevara_lab.py", "remove_rolevara_lab.py"],
 };
 
 const NO_STORE = { "Cache-Control": "private, no-store", "X-Robots-Tag": "noindex" };
@@ -19,7 +20,7 @@ const redirect = (to, extra = {}) => new Response(null, { status: 302, headers: 
 export function labAccess(request, env = process.env) {
   const key = new URL(request.url).searchParams.get("key");
   const p = verifyToken(key, labSecret(env));
-  if (!p) return redirect("/labs/?access=invalid");
+  if (!p || revoked(p.sub, env)) return redirect("/labs/?access=invalid");
   return redirect("/app/#/labs", { "Set-Cookie": cookieFor(key, p.exp) });
 }
 
@@ -37,5 +38,6 @@ export async function labFile(request, env = process.env, root = process.cwd()) 
   if (!accessFrom(request, env)) return json(401, { ok: false, error: "Lab files need tester access. Open the access link from your invitation first." });
   const body = await readFile(join(root, "lab-files", lab, file));
   const type = file.endsWith(".json") ? "application/json" : "text/plain; charset=utf-8";
-  return new Response(body, { status: 200, headers: { ...NO_STORE, "Content-Type": type, "Content-Disposition": `attachment; filename="${file}"` } });
+  const disposition = file === "guide.json" ? "inline" : `attachment; filename="${file}"`;
+  return new Response(body, { status: 200, headers: { ...NO_STORE, "Content-Type": type, "Content-Disposition": disposition } });
 }
