@@ -8,11 +8,11 @@ import { Play } from "lucide-react";
 import { useStill, usePrefersReducedMotion } from "@/components/brand/motion";
 
 const STEPS = [
-  "The Monday queue has one ticket left: a caller claiming to be the CFO wants MFA moved to a new phone before a wire deadline.",
+  "The queue has one ticket left: a caller claiming to be the CFO wants MFA moved to a new phone before a wire deadline.",
   "The analyst starts work and opens the first hint, which costs 10% of the ticket's score.",
   "The caller's employee ID (10020) doesn't match the directory (10002), so the ticket is escalated to the Security team and rejected.",
   "The ticket is graded 9 out of 10: every check passes, less the hint penalty.",
-  "Thursday begins. A stale account left enabled on Monday has been used in a password spray, and returns as an incident marked Caused by your Monday shift.",
+  "Later in the shift, a stale account left enabled earlier has been used in a password spray, and lands in the queue as a new incident traced back to that decision.",
 ];
 
 export function HeroVideo() {
@@ -55,7 +55,7 @@ export function HeroVideo() {
               <picture>
                 <source srcSet="/video/demo-poster.webp" type="image/webp" />
                 <img src="/video/demo-poster.jpg" width={1280} height={800} className="size-full object-cover" data-hero-still
-                  alt="The Rolevara Thursday queue showing an incident, Dormant account signed in from unknown IP, marked Caused by your Monday shift." />
+                  alt="The ticket queue showing a new incident, Dormant account signed in from unknown IP, traced back to an earlier decision." />
               </picture>
               {mounted && <button type="button" onClick={() => setOptIn(true)} className="absolute bottom-4 left-4 inline-flex h-11 items-center gap-2 rounded-full bg-card/95 px-4 font-display text-sm font-bold shadow-lg ring-1 ring-border hover:bg-card">
                 <Play className="size-4" aria-hidden />Play the walkthrough
