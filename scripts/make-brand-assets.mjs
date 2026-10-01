@@ -4,6 +4,7 @@
 //   public/brand/rolevarasim-logo{,-dark}.png    simulator logo (door R + RolevaraSim), tagline removed
 //   public/brand/rolevara-logo-tagline.png       full website logo with the tagline, for downloads
 //   public/brand/rolevara-mark{,-dark}.png       door R mark alone
+//   public/brand/rolevara-door.png               large white door R for the landing intro animation
 //   public/favicon.svg, public/favicon-32.png (-> favicon.ico with ffmpeg), public/apple-touch-icon.png,
 //   public/icon-192.png, public/icon-512.png, public/icon-maskable-512.png,
 //   public/og/rolevara-og.png (1200x630 social preview, navy-square mark),
@@ -83,6 +84,8 @@ save(await cut(sim.file, { ...sim, dark: true }), "public/brand/rolevarasim-logo
 const mark = await cut("rolevara-mark.png");
 save(await cut("rolevara-mark.png", { height: 144 }), "public/brand/rolevara-mark.png");
 save(await cut("rolevara-mark.png", { height: 144, dark: true }), "public/brand/rolevara-mark-dark.png");
+// The large door R the person walks through in the landing intro (IntroScene.tsx): 480px tall, so it stays sharp at the scene's size.
+save(await cut("rolevara-mark.png", { height: 480, dark: true }), "public/brand/rolevara-door.png");
 
 // ---------- Icons ----------
 const sq = (url, size, pad = 0.04) => `<div style="width:${size}px;height:${size}px;display:grid;place-items:center;padding:${Math.round(size * pad)}px"><img src="${url}" style="max-width:100%;max-height:100%"></div>`;

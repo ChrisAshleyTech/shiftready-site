@@ -208,3 +208,61 @@ html[data-motion="paused"] .anim-drift { animation-play-state: paused; }
 @keyframes price-in { from { opacity: 0; transform: translateY(12px); } }
 .price-in { animation: price-in 260ms cubic-bezier(.22,1,.36,1); }
 @media (prefers-reduced-motion: reduce) { .price-in { animation: none; } }
+
+/* Landing intro (src/landing/IntroScene.tsx). Resting styles are the still frame; the animations play
+   from the start of the story into it, about 10 seconds in all. Times are seconds from page load. */
+[data-intro-scene] :is(.is-homecard, .is-carry, .is-toast, .is-clouds, .p-leg, .p-arm) { transform-box: fill-box; transform-origin: center; }
+[data-intro-scene] .p-arm { transform-origin: 50% 0; }
+[data-intro-scene] .p-leg { transform-origin: 6px 0; } /* the hip: the shoe makes the box wider in front */
+[data-intro-scene] :is(.is-walker, .is-commuter) { transform-box: view-box; transform-origin: 0 0; }
+@keyframes is-in { from { opacity: 0; } }
+@keyframes is-out { from { opacity: 1; } to { opacity: 0; } }
+@keyframes is-rise { from { transform: translateY(250px); } }
+@keyframes is-drift { to { transform: translateX(40px); } }
+@keyframes is-swing { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(26deg); } 75% { transform: rotate(-26deg); } }
+@keyframes is-arm { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(-22deg); } 75% { transform: rotate(22deg); } }
+@keyframes is-step { to { transform: translateY(-2.5px); } }
+@keyframes is-type { to { transform: rotate(-3deg); } }
+@keyframes is-close { from { transform: none; } }
+@keyframes is-pop { from { opacity: 0; transform: translateY(14px) scale(.6); } }
+@keyframes is-away { to { opacity: 0; transform: translate(14px, -18px) scale(.6); } }
+@keyframes is-bob { to { transform: translateY(-5px); } }
+@keyframes is-pulse { from { opacity: .3; } to { opacity: .8; } }
+@keyframes is-commute { from { transform: translate(-40px, 400px) scale(var(--s)); } to { transform: translate(700px, 400px) scale(var(--s)); } }
+@keyframes is-walk {
+  0% { transform: translate(200px, 400px) scale(1); opacity: 0; }
+  3% { opacity: 1; }
+  70% { transform: translate(706px, 400px) scale(1); }
+  86% { transform: translate(762px, 349px) scale(.8); opacity: 1; }
+  100% { transform: translate(766px, 318px) scale(.4); opacity: 0; }
+}
+
+[data-intro-scene] .is-day { animation: is-in 6s 1.2s both ease-in-out; }
+[data-intro-scene] .is-stars { opacity: 0; animation: is-out 3s .6s both; }
+[data-intro-scene] .is-sun { animation: is-rise 7.5s .8s both cubic-bezier(.3,.6,.4,1); }
+[data-intro-scene] .is-clouds { animation: is-drift 20s ease-in-out infinite alternate; }
+[data-intro-scene] .is-streetlight { animation: is-out 1.5s 4s both; }
+[data-intro-scene] .walking .p-leg-f { animation: is-swing .72s linear infinite; }
+[data-intro-scene] .walking .p-leg-b { animation: is-swing .72s linear infinite reverse; }
+[data-intro-scene] .walking .p-arm-f { animation: is-arm .72s linear infinite; }
+[data-intro-scene] .walking .p-arm-b { animation: is-arm .72s linear infinite reverse; }
+[data-intro-scene] .walking .p-body { animation: is-step .36s ease-in-out infinite alternate; }
+[data-intro-scene] .is-commuter { --s: .82; opacity: .92; transform: translate(430px, 400px) scale(var(--s)); animation: is-commute 15s linear infinite; }
+[data-intro-scene] .is-commuter-b { --s: .76; transform: translate(250px, 400px) scale(var(--s)); animation-duration: 17s; animation-delay: -8s; }
+[data-intro-scene] .is-sitter { opacity: 0; animation: is-out .2s 2.3s both; }
+[data-intro-scene] .is-type { transform-box: view-box; transform-origin: 180px 290px; animation: is-out .2s 2.3s both, is-type .2s 10 alternate; }
+[data-intro-scene] .is-screen { transform-box: view-box; transform-origin: 261px 327px; transform: rotate(-102deg); animation: is-close .5s 2.1s both ease-in; }
+[data-intro-scene] .is-screen-glow { animation: is-out .4s 2.1s both; }
+[data-intro-scene] .is-lamp-glow { animation: is-out .3s 2.7s both; }
+[data-intro-scene] .is-homecard { opacity: 0; animation: is-pop .45s var(--t) both cubic-bezier(.34,1.56,.64,1), is-away .35s 2.3s forwards; }
+[data-intro-scene] .is-walker { transform: translate(762px, 349px) scale(.8); animation: is-walk 6.6s 2.4s both linear; }
+[data-intro-scene] .is-walker .walking :is(.p-leg, .p-arm) { animation-delay: 2.4s; animation-iteration-count: 9; }
+[data-intro-scene] .is-walker .walking .p-body { animation-delay: 2.4s; animation-iteration-count: 18; }
+[data-intro-scene] .is-carry { animation: is-pop .45s var(--t) both cubic-bezier(.34,1.56,.64,1); }
+[data-intro-scene] .is-bob { animation: is-bob 1.1s ease-in-out infinite alternate; }
+[data-intro-scene] .is-doorlight { animation: is-in 1.2s 6.6s both; }
+[data-intro-scene] .is-doorpulse { animation: is-pulse 2.2s ease-in-out infinite alternate; }
+[data-intro-scene] .is-lit { animation: is-in .3s var(--t) both; }
+[data-intro-scene] .is-toast { animation: is-pop .5s 9.3s both cubic-bezier(.34,1.56,.64,1); }
+html[data-motion="paused"] [data-intro-scene] * { animation-play-state: paused !important; }
+@media (prefers-reduced-motion: reduce) { [data-intro-scene] * { animation: none !important; } }
