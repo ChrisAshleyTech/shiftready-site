@@ -83,7 +83,7 @@ const CORE: Core[] = [
   ["lukas.brenner", "Lukas Brenner", "BPC-0501", "Engineering|Engineering Contractor", "Tamsin Okoro (sponsor)", { type: "Contractor", expiry: 2 }],
   ["ayanna.brooks", "Ayanna Brooks", "BP-0401", "Engineering|Software Engineer", "Tamsin Okoro", { enabled: false, groups: [], last: null, mfa: false, preHire: true }],
   ["mateo.silva", "Mateo Silva", "BP-0402", "Sales|Sales Development Rep", "Dante Russo", { enabled: false, groups: [], last: null, mfa: false, preHire: true }],
-  // Week-one ticket cast (see tickets.js).
+  // The shift's ticket cast (see tickets.js).
   ["cosima.hartley", "Cosima Hartley", "BP-0141", "Sales|Account Executive", "Dante Russo", { last: 3 }],
   ["percy.underhill", "Percy Underhill", "BP-0143", "Customer Success|Support Engineer", "Priya Shankar", { locked: true }],
   ["juniper.ashworth", "Juniper Ashworth", "BP-0145", "Product|Product Manager", "Marisol Ibanez"],

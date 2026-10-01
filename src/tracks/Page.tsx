@@ -7,12 +7,12 @@ import { ChoosePath } from "@/marketing/ChoosePath";
 
 const TRACKS = [
   { id: "iam-ops", name: "IAM Ops", level: "Service desk and IAM operations",
-    lead: "A full operating week on the identity service desk at Pacific Crest Logistics.",
+    lead: "A full shift on the identity service desk at Pacific Crest Logistics, worked like a real ServiceNow queue.",
     covers: ["Joiner, mover, leaver, rehire and leave-of-absence requests provisioned from the access matrix",
       "Caller verification before password, MFA and unlock actions", "Requestable access with documented approvals, and SoD enforcement",
       "Inactive-account sweeps, contractor expiry and service-account ownership", "Compromised-account containment and escalation",
-      "Thursday's queue generated from Monday's decisions, with 13 possible downstream consequences"],
-    cta: { href: "/app/", label: "Start the Monday shift" } },
+      "Tickets stay open until resolved: requesters reply when a fix didn't work, and 13 possible follow-up incidents land in the same queue"],
+    cta: { href: "/app/", label: "Start the shift" } },
   { id: "grc", name: "GRC Audit", level: "IT audit and compliance",
     lead: "The same company from the auditor's side, for a Q3 SOX IT general controls cycle.",
     covers: ["Test new-user provisioning (APD-01) and timely terminations (APD-02) against sampled evidence",

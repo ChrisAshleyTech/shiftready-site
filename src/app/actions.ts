@@ -2,11 +2,12 @@
 import { toast } from "sonner";
 import { S, U } from "@/engine/store.js";
 import { act, tact, closeTicket as engineClose, revealHint, resetAll, finalScore, isAssisted } from "@/engine/state.js";
-import { startThursday as engineStartThursday, THU_T } from "@/engine/thursday.js";
+import { queueTickets } from "@/engine/followups.js";
 import { TK } from "@/engine/tickets.js";
-import { commit, ui, go, num, plural, focusSoon } from "./sim";
+import { commit, ui, go, num, focusSoon } from "./sim";
 import { ensureJordan } from "./company";
 import { path } from "./paths";
+import { ticketNo, ticketName } from "./ticketLabel";
 
 const noTicket = () => (S.active ? "" : " No active ticket, so this change isn't tied to one.");
 // Plain toasts auto-dismiss; toasts with an action stay until dismissed (WCAG 2.2.1).
@@ -29,14 +30,24 @@ export const verify = (tid: string) => { toast(tact("verify", tid)); commit(); }
 export const requestApproval = (tid: string) => { tact("approval", tid); commit(); toast("Approval requested. The reply is on the ticket."); };
 export const escalate = (tid: string, who: string) => { toast(tact("escalate", tid, who)); commit(); };
 
+const openIds = () => new Set<string>(queueTickets().filter((t: any) => !S.tickets[t.id].checks).map((t: any) => t.id));
+
 export function closeTicket(tid: string, kind: "resolve" | "reject", note: string, answer?: string) {
-  const t = TK[tid];
+  const t = TK[tid], before = openIds(), again = !!S.tickets[tid].first;
   const err = engineClose(tid, kind, { note, answer: t.question ? answer : undefined });
   ui.closeError = err;
   commit();
   if (err) { focusSoon(t.question ? "#ans-" + tid : "#close-error"); return; }
   const ts = S.tickets[tid];
-  toast(`${tid} ${ts.status}: ${num(finalScore(ts))}/${ts.max}${isAssisted(ts) ? " · Assisted" : ""}.`);
+  toast(again ? `${ticketNo(t)} ${ts.status} again. The first resolution's grade stands: ${num(finalScore(ts))}/${ts.max}.`
+    : `${ticketNo(t)} ${ts.status}: ${num(finalScore(ts))}/${ts.max}${isAssisted(ts) ? " · Assisted" : ""}.`);
+  // Whatever landed in the queue while this ticket was being closed: replies and new tickets.
+  [...openIds()].filter(id => !before.has(id) && id !== tid).forEach(id => {
+    const n = TK[id], s = S.tickets[id], open = { label: "Open", onClick: () => go(`#/queue/${id}`) };
+    if (s.status === "reopened") toast(`${ticketNo(n)} reopened. ${s.replies[s.replies.length - 1].from} replied that it isn't fixed.`, { ...persistent, action: open });
+    else if (n.reopens) toast(`${ticketNo(n)} reopened. ${n.from} replied: ${n.title}`, { ...persistent, action: open });
+    else toast(`New in the queue: ${n.id} ${ticketName(n)}`, { ...persistent, action: open });
+  });
   focusSoon("#grade-h");
 }
 
@@ -51,18 +62,11 @@ export function hintFree(tid: string) {
   ui.freeHints[tid] = n; commit(); focusSoon(`#hint-${tid}-${n - 1}`);
 }
 
-export function startThursday() {
-  engineStartThursday(); ui.view = "cur"; ui.qfilter = "open";
-  const caused = S.report.filter((r: any) => r.bad).length;
-  go("#/queue");
-  toast(`Thursday, 8:00 AM. ${caused ? plural(caused, "Monday decision", "Monday decisions") + " came back as tickets." : "Nothing from Monday came back."} ${THU_T.length} tickets waiting.`);
-}
-
 // Resets the current path at the current company. Other paths keep their progress.
 export function resetProgress() {
   resetAll();
   ensureJordan();
-  Object.assign(ui, { confirmReset: false, view: "cur", tutor: {}, freeHints: {}, qfilter: "open" });
+  Object.assign(ui, { confirmReset: false, tutor: {}, freeHints: {}, qfilter: "open" });
   go("#/home");
-  toast(path() === "grc" ? "Audit erased. Jordan's week is ready to audit again." : "Progress erased. Monday starts again.");
+  toast(path() === "grc" ? "Audit erased. Jordan's shift is ready to audit again." : "Progress erased. The shift starts again.");
 }

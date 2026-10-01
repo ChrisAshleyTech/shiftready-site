@@ -12,15 +12,15 @@ export const NAV: NavSection[] = [
   { label: "Identity", items: [{ k: "directory", label: "Users", icon: Users }, { k: "groups", label: "Groups", icon: UsersRound }] },
   { label: "Operations", items: [{ k: "queue", label: "Ticket queue", icon: Inbox }, { k: "hr", label: "HR feed", icon: Workflow }] },
   { label: "Governance", items: [{ k: "policy", label: "Policy & matrix", icon: BookOpenText }, { k: "log", label: "Audit log", icon: ScrollText }] },
-  { label: "Audit", items: [{ k: "audit", label: "Friday audit", icon: FileSearch }, { k: "grc", label: "Q3 SOX audit desk", icon: ClipboardCheck }] },
-  { label: "Progress", items: [{ k: "results", label: "Shift results", icon: ListChecks }, { k: "week", label: "Week summary", icon: CalendarCheck }, { k: "report", label: "Readiness report", icon: FileBarChart2 }] },
+  { label: "Audit", items: [{ k: "audit", label: "Audit your shift", icon: FileSearch }, { k: "grc", label: "Q3 SOX audit desk", icon: ClipboardCheck }] },
+  { label: "Progress", items: [{ k: "results", label: "Shift results", icon: ListChecks }, { k: "week", label: "Shift summary", icon: CalendarCheck }, { k: "report", label: "Readiness report", icon: FileBarChart2 }] },
   { label: "Platform labs", items: [{ k: "labs", label: "Connect your lab", icon: FlaskConical, early: true }] },
   { label: "Account", items: [{ k: "settings", label: "Settings", icon: Settings }] },
 ];
 
-// The week audit is the learner's own Friday on IAM + GRC, and Jordan's week on GRC only. The GRC
+// The shift audit is the learner's own shift on IAM + GRC, and Jordan's shift on GRC only. The GRC
 // desk is named after the company's audit.
-const label = (i: NavItem) => (i.k === "audit" && path() === "grc" ? "Audit Jordan's week" : i.k === "grc" ? deskName() : i.label);
+const label = (i: NavItem) => (i.k === "audit" && path() === "grc" ? "Audit Jordan's shift" : i.k === "grc" ? deskName() : i.label);
 const deskName = () => { const d = brandFor(company().id).desk; return d[0].toUpperCase() + d.slice(1); };
 const byKey = Object.fromEntries(NAV.flatMap(s => s.items.map(i => [i.k, { ...i, section: s.label }])));
 export const pageInfo = (k: string) => { const i = byKey[k] as (NavItem & { section: string }) | undefined; return i && { ...i, label: label(i) }; };

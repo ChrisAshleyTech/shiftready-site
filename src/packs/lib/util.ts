@@ -22,7 +22,7 @@ export const addDays = (s: string, n: number) => { const d = new Date(s + "T00:0
 export const monthOf = (s: string) => s.slice(0, 7);
 export const monthEnd = (month: string) => { const [y, m] = month.split("-").map(Number); return ymd(y, m, 0); };
 
-// Local-date formatter for a pack's Monday, matching Pacific Crest's fmtDay.
+// Local-date formatter for a pack's shift day, matching Pacific Crest's fmtDay.
 export function makeFmtDay(base: Date) {
   return (off: number) => { const d = new Date(base); d.setDate(d.getDate() + off); return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }); };
 }

@@ -15,7 +15,7 @@ const verifySteps = (name, empId, mgr) => [
 ];
 
 export const HINTS = {
-  // ---------------- Monday ----------------
+  // ---------------- Assigned tickets ----------------
   REQ0018841:{skill:"jml",kind:"joiner",
     nudge:"The account already exists. Two things need to change on it: whether it can sign in, and what it can reach. Where do you find exactly what an AP Clerk gets?",
     clause:{keys:["joiners","sod"],matrix:["Finance|AP Clerk"]},
@@ -101,13 +101,13 @@ export const HINTS = {
     clause:{keys:["compromised"]},
     steps:["Start work on the ticket.","Open Sam Okafor. Select <b>Revoke sessions</b>, <b>Reset password</b> and <b>Reset MFA</b>.","Escalate to the <b>Security team</b>.","Resolve the ticket."]},
 
-  // ---------------- Thursday: standing tickets ----------------
+  // ---------------- Standing tickets (arrive partway through) ----------------
   REQ0018910:{skill:"access",kind:"request",
     nudge:"Carla approved it. Check whether this group is one that can be requested at all.",
     clause:{keys:["requestable"],matrix:["Operations|Dispatcher","Operations|Warehouse Manager"]},
     steps:[`Start work on the ticket. Don't add ${g("APP-WMS-Admin")}: it isn't requestable, and it isn't part of the Dispatcher role.`,"<b>Reject</b> the ticket. Suggest a role change or a temporary, logged process owned by the WMS team."]},
   REQ0018912:{skill:"jml",kind:"loa",
-    nudge:"How you handled her leave on Monday decides how much work this is. Compare what she has now with her role.",
+    nudge:"How you handled her leave earlier decides how much work this is. Compare what she has now with her role.",
     clause:{keys:["loa"],matrix:["Sales|Account Executive"]},
     steps:()=>{const have=U("rachel.adams").groups, want=role("Sales|Account Executive");
       const miss=want.filter(x=>!have.includes(x)), extra=have.filter(x=>!want.includes(x));
@@ -115,7 +115,7 @@ export const HINTS = {
         miss.length?`Add the missing Account Executive groups: ${list(miss)}.`:"Her Account Executive groups are all still there. Nothing to add.",
         ...(extra.length?[`Remove ${list(extra)}.`]:[]),"Resolve the ticket."];}},
 
-  // ---------------- Thursday: consequences ----------------
+  // ---------------- Follow-ups ----------------
   INC0041302:{skill:"incident",kind:"compromise",
     nudge:"An attacker is in and has added their own MFA method. What do you need to take away from them, and who takes it from there?",
     clause:{keys:["compromised","inactive"]},
@@ -126,7 +126,7 @@ export const HINTS = {
     clause:{keys:["inactive"]},
     steps:["Start work on the ticket.",`Open ${g("svc-backup")} and select <b>Enable</b>.`,"Escalate to the <b>Account owner</b> (Victor Alvarez).","Resolve the ticket."]},
   INC0041308:{skill:"jml",kind:"leaver",
-    nudge:"This offboarding was left half done on Monday. Finish every part of it, and remember the activity after he left.",
+    nudge:"This offboarding was left half done. Finish every part of it, and remember the activity after he was told.",
     clause:{keys:["leavers","compromised"],note:"Access after termination makes this a security incident as well as an offboarding gap."},
     steps:()=>["Start work on the ticket.","Open Robert Hayes. Select <b>Disable</b> (if still enabled) and <b>Revoke sessions</b>.",`Remove any remaining groups${U("robert.hayes").groups.length?": "+list(U("robert.hayes").groups):""}.`,"Escalate to the <b>Security team</b>.","Resolve the ticket."]},
   INC0041311:{skill:"incident",kind:"leaver",
@@ -154,11 +154,11 @@ export const HINTS = {
     clause:{keys:["compromised"]},
     steps:["Start work on the ticket.","Open Patricia Reed. Select <b>Revoke sessions</b>, <b>Reset MFA</b> and <b>Reset password</b>.","Escalate to the <b>Security team</b>.","Resolve the ticket."]},
   INC0041323:{skill:"hygiene",kind:"contractor",
-    nudge:"Same rules as Monday's request, with the account already expired. What has to be logged on <i>this</i> ticket before you change the expiry?",
+    nudge:"Same rules as the first time, with the account already expired. What has to be logged on the ticket again before you change the expiry?",
     clause:{keys:["contractors"]},
     steps:["Start work on the ticket.","Select <b>Request manager approval</b> on this ticket first.",`Open Dev Patel, select <b>Enable</b>, and set Account expiry to ${g("90")} days.`,"Resolve the ticket."]},
   INC0041326:{skill:"incident",kind:"compromise",
-    nudge:"Monday's containment was incomplete, and the attacker came back. This time, do every step.",
+    nudge:"The first containment was incomplete, and the attacker came back. This time, do every step.",
     clause:{keys:["compromised"]},
     steps:["Start work on the ticket.","Open Sam Okafor. Select <b>Revoke sessions</b>, <b>Reset password</b> and <b>Reset MFA</b>.","Escalate to the <b>Security team</b>.","Resolve the ticket."]},
   INC0041329:{skill:"incident",kind:"compromise",
@@ -166,7 +166,7 @@ export const HINTS = {
     clause:{keys:["compromised","verify"]},
     steps:["Start work on the ticket.","Open James Carter. Select <b>Revoke sessions</b> and <b>Reset password</b>.","Escalate to the <b>Security team</b>.","Resolve the ticket."]},
   REQ0018918:{skill:"access",kind:"review",
-    nudge:"This is the revocation that didn't happen on Monday.",
+    nudge:"This is the revocation that didn't happen the first time.",
     clause:{keys:[],note:"Access reviews: the reviewer's Revoke decision is the approval. Remove exactly the entitlement marked."},
     steps:["Start work on the ticket.",`Open Jordan Lee and remove ${g("APP-Finance-Reports")}.`,"Resolve the ticket."]},
   REQ0018921:{skill:"jml",kind:"mover",
@@ -177,13 +177,13 @@ export const HINTS = {
       return ["Start work on the ticket.",`Open Tanya Wright.${ex.length?" Remove "+list(ex)+".":""}${miss.length?" Add "+list(miss)+".":""} Her groups should match the Dispatcher role exactly.`,"Resolve the ticket."];}},
 };
 
-// Monday ticket and Thursday ticket for each consequence key, for the results timeline.
+// Each follow-up's source ticket. A `reopen` follow-up comes back as a reply on the source ticket.
 export const CONSEQ_LINKS = {
-  stale:{mon:"TSK0007712",thu:"INC0041302"}, svc:{mon:"TSK0007712",thu:"INC0041305"},
-  robert:{mon:"REQ0018850",thu:"INC0041308"}, brian:{mon:"INC0041231",thu:"INC0041311"},
-  lisa:{mon:"REQ0018855",thu:"INC0041314"}, ethan:{mon:"REQ0018881",thu:"REQ0018915"},
-  tyler:{mon:"REQ0018866",thu:"INC0041318"}, cfo:{mon:"INC0041220",thu:"INC0041320"},
-  dev:{mon:"REQ0018861",thu:"INC0041323"}, sam:{mon:"INC0041240",thu:"INC0041326"},
-  james:{mon:"INC0041207",thu:"INC0041329"}, jordan:{mon:"REQ0018876",thu:"REQ0018918"},
-  tanya:{mon:"REQ0018852",thu:"REQ0018921"},
+  stale:{src:"TSK0007712",id:"INC0041302"}, svc:{src:"TSK0007712",id:"INC0041305"},
+  robert:{src:"REQ0018850",id:"INC0041308"}, brian:{src:"INC0041231",id:"INC0041311"},
+  lisa:{src:"REQ0018855",id:"INC0041314"}, ethan:{src:"REQ0018881",id:"REQ0018915",reopen:true},
+  tyler:{src:"REQ0018866",id:"INC0041318"}, cfo:{src:"INC0041220",id:"INC0041320"},
+  dev:{src:"REQ0018861",id:"INC0041323",reopen:true}, sam:{src:"INC0041240",id:"INC0041326"},
+  james:{src:"INC0041207",id:"INC0041329"}, jordan:{src:"REQ0018876",id:"REQ0018918",reopen:true},
+  tanya:{src:"REQ0018852",id:"REQ0018921",reopen:true},
 };

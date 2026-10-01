@@ -29,7 +29,7 @@ export default function Page() {
             <h2 id="grading-h" className="t-h1">How grading works</h2>
             <p>Every ticket is graded on its <b>outcome</b> (the account state after the work) and its <b>process</b> (whether identity was verified, approval was recorded, or the right team was escalated to, and in the right order). Each check shows the points it carries and why it matters.</p>
             <p>Three hint tiers are available on every ticket. The score is reduced by the highest tier opened before closing; costs do not add up. Opening the exact steps marks the ticket <b>Assisted</b>. Hints are free to read after a ticket is closed.</p>
-            <p>Thursday's queue is generated from Monday's decisions, so missed work returns as incidents.</p>
+            <p>Tickets stay open until resolved, so a fix that didn't work comes back from the requester and missed work returns as incidents.</p>
           </div>
           <div className="overflow-x-auto rounded-2xl border">
             <table className="w-full text-left">
@@ -48,7 +48,7 @@ export default function Page() {
           </section>
           <section id="sample-report" aria-labelledby="sample-h" className="scroll-mt-24 space-y-4 rounded-3xl border bg-card p-8">
             <h2 id="sample-h" className="t-h2">Sample readiness report</h2>
-            <p className="text-muted-foreground">A report from a full week: Monday {sample.mon.pct}%, Thursday {sample.thu?.pct}%, {sample.caused} Monday decisions that returned as Thursday incidents, and a score for each of five skills. Reports are shared as a single link.</p>
+            <p className="text-muted-foreground">A report from a full shift: a shift score of {sample.week}%, {sample.caused} decisions that came back as follow-up incidents, and a score for each of five skills. Reports are shared as a single link.</p>
             <Button asChild variant="outline" className="border-2 font-bold"><a href={SAMPLE_URL} target="_blank" rel="noopener">View the sample report <ExternalLink /></a></Button>
           </section>
         </div>

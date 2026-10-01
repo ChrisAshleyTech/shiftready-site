@@ -27,6 +27,7 @@ export function Status({ st }: { st: string }) {
   if (st === "working") return <Tag tone="primary"><span className="size-1.5 rounded-full bg-current" aria-hidden />In progress</Tag>;
   if (st === "resolved") return <Tag tone="ok">Resolved</Tag>;
   if (st === "rejected") return <Tag tone="warn">Rejected</Tag>;
+  if (st === "reopened") return <Tag tone="bad">Reopened</Tag>;
   if (st === "open") return <Tag>Open</Tag>;
   return <Tag>New</Tag>;
 }

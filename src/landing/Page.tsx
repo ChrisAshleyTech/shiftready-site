@@ -4,7 +4,7 @@ import { ArrowRight, Bot, ClipboardCheck, FileBarChart2, KeyRound, ShieldAlert, 
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import { AnimatedBackdrop, CountUp, MotionPauseProvider, PauseButton, Reveal } from "@/components/brand/motion";
-import { IllusShield, IllusWeek } from "@/components/brand/illustrations";
+import { IllusShield, IllusReopen } from "@/components/brand/illustrations";
 import { SkillsStrip } from "@/components/brand/SkillsStrip";
 import { EarlyAccess } from "@/components/brand/EarlyAccess";
 import { SiteHeader, SiteFooter } from "@/marketing/chrome";
@@ -35,7 +35,7 @@ const STEPS = [
   ["Work the queue", "Requests arrive from HR feeds, phone calls, security alerts and access reviews.", "bg-hue-blue"],
   ["Operate the directory", "Enable, disable, reset, change group membership and job data, set expiry, revoke sessions, escalate.", "bg-hue-violet"],
   ["Get graded", "Every ticket is scored on outcome and process, with the control behind each decision.", "bg-hue-pink"],
-  ["Carry the consequences", "Thursday's queue is generated from Monday's decisions. The GRC track then audits the week.", "bg-hue-amber"],
+  ["Carry the consequences", "Tickets stay in the queue until they're actually fixed. Miss something and the requester replies, or it comes back as an incident. The GRC track then audits the shift.", "bg-hue-amber"],
 ];
 
 const FAQ = [
@@ -135,8 +135,8 @@ export default function Landing() {
         <section id="how" aria-labelledby="how-h" className="scroll-mt-24 bg-card py-20">
           <div className="mx-auto max-w-7xl px-4 md:px-6">
             <div className="grid items-center gap-10 lg:grid-cols-[1fr_auto]">
-              <Reveal><p className="t-eyebrow">How it works</p><h2 id="how-h" className="t-h1 mt-3">One company. A full operating week.</h2></Reveal>
-              <IllusWeek className="hidden h-36 lg:block" />
+              <Reveal><p className="t-eyebrow">How it works</p><h2 id="how-h" className="t-h1 mt-3">One company. A live service desk queue.</h2></Reveal>
+              <IllusReopen className="hidden h-36 lg:block" />
             </div>
             <ol className="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-4">
               {STEPS.map(([t, d, c], i) => (

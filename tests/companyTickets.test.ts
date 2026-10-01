@@ -1,12 +1,12 @@
-// Every company with tickets: the playbook earns full marks, a clean Monday fires nothing, a
-// careless Monday fires all 13 consequences, Jordan Reyes' week shows exactly the planted
-// mistakes, the week audit and GRC desk answer keys score 100%, and every ticket maps to topics.
+// Every company with tickets: the playbook earns full marks, clean work causes no follow-ups,
+// careless work causes all 13, Jordan Reyes' shift shows exactly the planted mistakes, the shift
+// audit and GRC desk answer keys score 100%, and every ticket maps to topics.
 import { describe, it, expect, beforeEach } from "vitest";
 import { S, setState, U } from "../src/engine/store.js";
 import { setCompanyData } from "../src/engine/company.js";
 import { setPolicyData, POLICY } from "../src/engine/policy.js";
 import { T, TK } from "../src/engine/tickets.js";
-import { startThursday, THU_T, CONSEQ } from "../src/engine/thursday.js";
+import { releaseAll, FOLLOW, CONSEQ, REPLIES } from "../src/engine/followups.js";
 import { HINTS, hintSteps } from "../src/engine/hints.js";
 import { G, gGrade, gQs } from "../src/engine/grc.js";
 import * as st from "../src/engine/state.js";
@@ -42,7 +42,7 @@ describe("ticket ids", () => {
 for (const x of loaded) describe(x.c.name, () => {
   beforeEach(() => use(x));
 
-  it("has 20 Monday tickets, complete hints and a playbook for all 35", () => {
+  it("has 20 assigned tickets, complete hints and a playbook for all 35", () => {
     expect(T).toHaveLength(20);
     expect(Object.keys(SET.playbook)).toHaveLength(35);
     for (const id of Object.keys(SET.playbook)) {
@@ -53,40 +53,48 @@ for (const x of loaded) describe(x.c.name, () => {
     for (const t of T) for (const u of t.users) expect(U(u), `${t.id}: ${u}`).toBeTruthy();
   });
 
-  it("a perfect Monday fires no consequences, and a perfect Thursday scores 100%", () => {
+  it("clean work causes no follow-ups or replies, and the whole queue scores 100%", () => {
     T.forEach((t: any) => { expect(hintSteps(t.id).length).toBeGreaterThan(0); work(t.id); });
-    startThursday();
     expect(S.report.filter((r: any) => r.bad).map((r: any) => r.text)).toEqual([]);
-    expect(THU_T).toHaveLength(2);
-    THU_T.forEach((t: any) => work(t.id));
-    expect(st.totals(THU_T).pct).toBe(100);
+    expect(FOLLOW).toHaveLength(2);
+    FOLLOW.forEach((t: any) => work(t.id));
+    releaseAll();
+    expect(st.totals().pct).toBe(100);
+    expect(Object.values(S.tickets).some((ts: any) => ts.reopens)).toBe(false);
   });
 
-  it("a careless Monday fires all 13 consequences, and each is fixable by its playbook", () => {
+  it("every reply names someone and goes quiet once the playbook has fixed the ticket", () => {
+    for (const id of Object.keys(REPLIES)) expect(SET.playbook[id], id).toBeTruthy();
+    T.forEach((t: any) => work(t.id));
+    for (const id of Object.keys(REPLIES)) if (S.tickets[id]?.checks) expect(REPLIES[id](S.tickets[id]), id).toBeNull();
+  });
+
+  it("careless work causes all 13 follow-ups, and each is fixable by its playbook", () => {
     const { mon: M } = (SET as any).story;
     st.act("addgrp", M.sodReq.uid, M.sodReq.group); st.act("addgrp", M.priv.uid, M.priv.group);
     st.act("pwreset", M.exec.uid); st.act("pwreset", M.callerPw.uid); st.act("disable", M.sweep.svc);
     M.copy.extras.forEach((g: string) => st.act("addgrp", M.copy.uid, g));
-    startThursday();
-    expect(S.thu.map((f: any) => f.key)).toEqual(CONSEQ.map((c: any) => c.key));
-    expect(THU_T).toHaveLength(15);
-    THU_T.forEach((t: any) => { expect(hintSteps(t.id).length).toBeGreaterThan(0); expect(ticketTopics(t.id).length, t.id).toBeGreaterThan(0); work(t.id); });
+    T.forEach((t: any) => { st.tact("start", t.id); st.closeTicket(t.id, "resolve", { answer: TK[t.id].question ? "none" : undefined }); });
+    releaseAll();
+    expect(S.thu.map((f: any) => f.key).sort()).toEqual(CONSEQ.map((c: any) => c.key).sort());
+    expect(FOLLOW).toHaveLength(15);
+    FOLLOW.forEach((t: any) => { expect(hintSteps(t.id).length).toBeGreaterThan(0); expect(ticketTopics(t.id).length, t.id).toBeGreaterThan(0); work(t.id); });
   });
 
   it("every ticket maps to known framework topics", () => {
     for (const [id, ks] of Object.entries(SET.topics)) for (const k of ks) expect(TOPICS[k], `${id}: ${k}`).toBeTruthy();
   });
 
-  it("Jordan's week has exactly the planted mistakes, and they come back on Thursday", () => {
+  it("Jordan's shift has exactly the planted mistakes, and they come back as follow-ups", () => {
     playJordanWeek();
-    const all = [...T, ...THU_T];
+    const all = [...T, ...FOLLOW];
     const imperfect = all.filter((t: any) => S.tickets[t.id].score < S.tickets[t.id].max).map((t: any) => t.id).sort();
     expect(imperfect).toEqual(Object.keys(mistakes()).filter(k => k !== "unticketed").sort());
     expect(S.thu.map((f: any) => f.key).sort()).toEqual(["callerPw", "leaver", "mover"]);
     expect(S.log.filter((e: any) => !e.ticket)).toHaveLength(1);
   });
 
-  it("the audit of Jordan's week finds the planted exceptions, and its answer key scores 100%", () => {
+  it("the audit of Jordan's shift finds the planted exceptions, and its answer key scores 100%", () => {
     playJordanWeek();
     const wa = buildWeekAudit("jordan"), w3 = wa.tasks.find(t => t.id === "W3")!;
     const exceptions = w3.rows!.filter(r => r.correct !== 0).map(r => r.name.split(" · ")[0]).sort();

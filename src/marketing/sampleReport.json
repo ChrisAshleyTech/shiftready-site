@@ -24,6 +24,7 @@
  "grc": null,
  "caused": 2,
  "prevented": 11,
+ "reopened": 0,
  "hints": 4,
  "skills": [
   [
@@ -218,13 +219,22 @@
    "Access request: WMS Admin for Aisha Brown"
   ],
   [
+   "REQ0018921",
+   50,
+   5,
+   0,
+   1,
+   "jml",
+   "Transferred employee still pulling Sales leads"
+  ],
+  [
    "REQ0018912",
    70,
    7,
    0,
    1,
    "jml",
-   "Early return from leave: Rachel Adams"
+   "Leave postponed: Rachel Adams"
   ],
   [
    "INC0041326",
@@ -234,15 +244,6 @@
    1,
    "incident",
    "Sam Okafor's mailbox sent 300 phishing emails"
-  ],
-  [
-   "REQ0018921",
-   50,
-   5,
-   0,
-   1,
-   "jml",
-   "Transferred employee still pulling Sales leads"
   ]
  ]
 }

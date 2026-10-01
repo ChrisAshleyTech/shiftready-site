@@ -32,7 +32,7 @@ test("on a phone, the company switcher is in the navigation drawer", async ({ pa
   await expect(drawer.getByRole("combobox", { name: "Company" })).toContainText("Pacific Crest Logistics");
 });
 
-// The industry companies: each has its own week of tickets and its own audit desk.
+// The industry companies: each has its own queue of tickets and its own audit desk.
 const INDUSTRY = [
   { name: "Harbor Health Network", joiner: "REQ0027104", desk: "HIPAA audit desk", group: "APP-EHR-Clinical", note: /Epic or Oracle Health/, source: /45 CFR 164/ },
   { name: "Meridian Aerospace", joiner: "REQ0034104", desk: "CMMC audit desk", group: "APP-PLM-CUI", note: /Teamcenter/, source: /NIST SP 800-171 Rev. 2/ },
@@ -53,7 +53,7 @@ for (const c of INDUSTRY) {
     await page.getByRole("option", { name: new RegExp(c.name) }).click();
     await expect(page.getByRole("combobox", { name: "Company" })).toContainText(c.name);
 
-    // Its own Monday queue, with no Pacific Crest tickets, and its own audit desk.
+    // Its own queue, with no Pacific Crest tickets, and its own audit desk.
     await page.goto("/app/#/queue");
     await expect(page.getByText(c.joiner).first()).toBeVisible();
     await expect(page.getByText("INC0041220")).toHaveCount(0);

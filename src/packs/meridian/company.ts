@@ -84,7 +84,7 @@ const CORE: Core[] = [
   ["ivan.petrenko", "Ivan Petrenko", "MA-C-2203", "Engineering|Engineering Contractor", "Gabriel Fontaine (sponsor)", { type: "Contractor", expiry: 2 }],
   ["amara.nwosu", "Amara Nwosu", "MA-40401", "Engineering|Design Engineer", "Gabriel Fontaine", { enabled: false, groups: [], last: null, mfa: false, preHire: true }],
   ["felix.moreau", "Felix Moreau", "MA-40402", "Manufacturing|Machinist", "Raymond Cho", { enabled: false, groups: [], last: null, mfa: false, preHire: true }],
-  // Week-one ticket cast (see tickets.js).
+  // The shift's ticket cast (see tickets.js).
   ["bernadette.quigley", "Bernadette Quigley", "MA-40161", "Quality|Quality Inspector", "Delia Marquez", { last: 3 }],
   ["wendell.haskins", "Wendell Haskins", "MA-40163", "Manufacturing|Machinist", "Raymond Cho", { locked: true }],
   ["fiona.galbraith", "Fiona Galbraith", "MA-40165", "Program Management|Program Manager", "Catherine Aldous"],

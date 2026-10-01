@@ -30,5 +30,5 @@ export function approvalBefore(tid,test){
 }
 export const esc = (ts,who) => (ts.esc||[]).includes(who);
 export const sodConflicts = id => SOD.filter(([a,b])=>has(id,a)&&has(id,b));
-// Whether a Monday ticket was escalated to `who` (Thursday consequences read Monday's work).
-export const monEsc = (tid,who) => ((S.tickets[tid]||{}).esc||[]).includes(who);
+// Whether a ticket was escalated to `who` (follow-ups read the source ticket's work).
+export const escalatedOn = (tid,who) => ((S.tickets[tid]||{}).esc||[]).includes(who);

@@ -48,7 +48,7 @@ test("reduced motion: a still image replaces the video, with an opt-in play butt
   await expect(page.getByRole("button", { name: /Pause animations/ })).toHaveCount(0);
   await expect(page.locator("dd").filter({ hasText: "131" }).first()).toBeVisible();
   await page.getByText("Video description").click();
-  await expect(page.locator("#demo-desc")).toContainText("Caused by your Monday shift");
+  await expect(page.locator("#demo-desc")).toContainText("traced back to that decision");
   await page.getByRole("button", { name: "Play the walkthrough" }).click();
   await expect(page.locator("[data-hero-video]")).toHaveJSProperty("controls", true);
 });

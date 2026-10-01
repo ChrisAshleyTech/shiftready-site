@@ -1,5 +1,5 @@
 // Connect your lab: the Microsoft Entra ID lab guide. Seed a lab tenant with PowerShell, work six
-// Monday tickets in the Entra admin center, export read-only results and grade them in the browser.
+// Assigned tickets in the Entra admin center, export read-only results and grade them in the browser.
 import { useId, useRef, useState, type ReactNode } from "react";
 import { toast } from "sonner";
 import { Copy, Download, ExternalLink, FlaskConical, Upload } from "lucide-react";
@@ -169,7 +169,7 @@ function UploadResults() {
           <div className="flex flex-wrap items-end justify-between gap-3 rounded-lg border bg-muted/40 p-4">
             <div>
               <h2 id="lab-score" ref={heading} tabIndex={-1} className="font-semibold outline-none">Lab score</h2>
-              <p className="text-sm text-muted-foreground">Exported {new Date(result.exportedAt).toLocaleString()}. Graded with the same checks as the Monday shift.</p>
+              <p className="text-sm text-muted-foreground">Exported {new Date(result.exportedAt).toLocaleString()}. Graded with the same checks as the simulator.</p>
             </div>
             <div className="font-mono text-3xl">{result.score}/{result.max}</div>
           </div>
@@ -204,7 +204,7 @@ const TROUBLE: [string, ReactNode][] = [
 export default function Lab() {
   return (
     <>
-      <PageHeader icon={FlaskConical} title="Connect your lab" sub="Work six Pacific Crest Monday tickets in a real Microsoft Entra tenant, then grade a read-only export in your browser.">
+      <PageHeader icon={FlaskConical} title="Connect your lab" sub="Work six Pacific Crest tickets in a real Microsoft Entra tenant, then grade a read-only export in your browser.">
         <EarlyAccess />
       </PageHeader>
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_18rem]">

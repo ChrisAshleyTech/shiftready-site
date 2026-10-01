@@ -1,5 +1,5 @@
 // Readiness report data for the current path. IAM paths use the engine's shift report (plus the
-// Friday audit on IAM + GRC); GRC only reports the audit of Jordan Reyes' week.
+// self-audit on IAM + GRC); GRC only reports the audit of Jordan Reyes' shift.
 import { buildReport } from "@/engine/report.js";
 import { gTotals, G } from "@/engine/grc.js";
 import { path } from "./paths";

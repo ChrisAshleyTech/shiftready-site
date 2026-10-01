@@ -1,5 +1,5 @@
 // Entra ID lab: the seed spec for a Microsoft Entra tenant, and grading of the read-only export.
-// Grading runs the simulator's own Monday ticket checks against the exported tenant state, so a
+// Grading runs the simulator's own ticket checks against the exported tenant state, so a
 // ticket done in Entra is scored exactly as the same ticket done in the app.
 // The lab is built on Pacific Crest, whichever company is active in the app.
 import * as Active from "../../engine/company.js";
@@ -10,7 +10,7 @@ import { S, setState } from "../../engine/store.js";
 const { buildUsers, ROLES } = PacificCrest;
 const TK: Record<string, any> = Object.fromEntries(T.map((t: any) => [t.id, t]));
 
-// Monday tickets that can be worked in the Entra admin center and checked from an export.
+// Assigned tickets that can be worked in the Entra admin center and checked from an export.
 export const LAB_TICKETS = ["REQ0018841", "REQ0018850", "REQ0018852", "REQ0018870", "REQ0018879", "REQ0018881"] as const;
 const LAB_USERS = ["maria.lopez", "robert.hayes", "tanya.wright", "sofia.ramirez", "rachel.adams", "ethan.moore", "bob.turner"];
 // Roles the tickets provision into, so every group the learner needs exists in the tenant.

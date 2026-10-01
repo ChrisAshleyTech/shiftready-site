@@ -5,13 +5,13 @@ export { path, pathChosen, type PathId } from "./pathStore";
 export type PathInfo = { id: PathId; name: string; role: string; blurb: string; steps: string[] };
 export const PATHS: PathInfo[] = [
   { id: "iam", name: "IAM only", role: "IAM analyst",
-    blurb: "Work the service desk. Monday's decisions come back on Thursday, then you get a summary of your week.",
-    steps: ["Monday shift", "Thursday consequences shift", "Week summary"] },
+    blurb: "Work a live service desk queue. If a fix doesn't work, the requester replies and the ticket comes back until it's resolved, and missed steps turn into new incidents.",
+    steps: ["Work the queue", "Handle replies and follow-ups as they land", "Shift summary"] },
   { id: "iam-grc", name: "IAM + GRC", role: "IAM analyst, then auditor",
-    blurb: "Work Monday and Thursday, then audit your own week on Friday. Each ticket shows the NIST, HIPAA, ISO 27001, SOC 2 and PCI DSS requirements behind it.",
-    steps: ["Monday shift", "Thursday consequences shift", "Friday audit of your own week (optional)", "Week summary"] },
+    blurb: "Work the queue, then audit your own shift. Each ticket shows the NIST, HIPAA, ISO 27001, SOC 2 and PCI DSS requirements behind it.",
+    steps: ["Work the queue", "Handle replies and follow-ups as they land", "Audit your own shift (optional)", "Shift summary"] },
   { id: "grc", name: "GRC only", role: "Internal auditor",
-    blurb: "Audit Jordan Reyes, an IAM analyst whose Monday-to-Thursday week includes realistic mistakes. Walk through, sample, test, evaluate evidence, write the finding, rate the risk and review management's response.",
+    blurb: "Audit Jordan Reyes, an IAM analyst whose shift includes realistic mistakes. Walk through, sample, test, evaluate evidence, write the finding, rate the risk and review management's response.",
     steps: ["Walkthrough and sampling", "Control testing and evidence", "Finding, risk rating and management response"] },
 ];
 export const pathInfo = (p: PathId = path()) => PATHS.find(x => x.id === p)!;
@@ -24,5 +24,5 @@ const ONLY: Record<string, PathId[]> = {
 export const inPath = (route: string, p: PathId = path()) => !ONLY[route] || ONLY[route].includes(p);
 // Framework panels are part of both GRC paths.
 export const showFrameworks = (p: PathId = path()) => p !== "iam";
-// On GRC only, the learner audits Jordan's week and can't change accounts.
+// On GRC only, the learner audits Jordan's shift and can't change accounts.
 export const readOnly = (p: PathId = path()) => p === "grc";

@@ -87,7 +87,7 @@ const CORE: Core[] = [
   ["raj.malhotra", "Raj Malhotra", "C-7701", "IT|IT Contractor", "Dennis Mulroney (sponsor)", { type: "Contractor", expiry: 2 }],
   ["kiara.thompson", "Kiara Thompson", "60401", "Branch|Teller", "Caroline Ashby", { enabled: false, groups: [], last: null, mfa: false, preHire: true }],
   ["omar.farouk", "Omar Farouk", "60402", "Lending|Loan Officer", "Nathan Greer", { enabled: false, groups: [], last: null, mfa: false, preHire: true }],
-  // Week-one ticket cast (see tickets.js).
+  // The shift's ticket cast (see tickets.js).
   ["rosalyn.whitcombe", "Rosalyn Whitcombe", "60141", "Lending|Loan Servicing Specialist", "Nathan Greer", { last: 3 }],
   ["ambrose.kittredge", "Ambrose Kittredge", "60143", "Branch|Teller", "Patrice Duval", { locked: true }],
   ["clementine.rourke", "Clementine Rourke", "60145", "Lending|Loan Officer", "Nathan Greer"],

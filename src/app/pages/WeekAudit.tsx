@@ -16,7 +16,7 @@ import { path } from "../paths";
 import { ANALYST } from "../audit/jordan";
 import { company } from "../company";
 import {
-  WEEK_CONTROLS, buildWeekAudit, retryTask, saveDraft, skipFriday, submitTask, unskipFriday, waTotals, weekAudit,
+  WEEK_CONTROLS, buildWeekAudit, retryTask, saveDraft, skipSelfAudit, submitTask, unskipSelfAudit, waTotals, weekAudit,
   type Answers, type Task,
 } from "../audit/weekAudit";
 
@@ -114,31 +114,31 @@ function Controls() {
 export default function WeekAudit({ r }: { r: Route }) {
   const grc = path() === "grc", wa = weekAudit(), tt = waTotals();
   const header = (tabs?: React.ReactNode) => (
-    <PageHeader icon={FileSearch} tint="bg-hue-sky/15 text-info" title={grc ? `Audit ${ANALYST.name}' week` : "Friday audit"}
-      sub={grc ? `You're ${company().name}'s internal auditor. ${ANALYST.name}, IAM Analyst, worked the Monday and Thursday service-desk shifts. Test the IAM controls against the evidence, write up what you find and review management's response.`
-        : `You switch sides for Friday: as internal auditor, you test your own Monday and Thursday against ${company().name}'s IAM controls. Optional.`}>{tabs}</PageHeader>
+    <PageHeader icon={FileSearch} tint="bg-hue-sky/15 text-info" title={grc ? `Audit ${ANALYST.name}' shift` : "Audit your shift"}
+      sub={grc ? `You're ${company().name}'s internal auditor. ${ANALYST.name}, IAM Analyst, worked a service-desk shift, follow-ups and reopened tickets included. Test the IAM controls against the evidence, write up what you find and review management's response.`
+        : `You switch sides: as internal auditor, you test your own shift against ${company().name}'s IAM controls. Optional.`}>{tabs}</PageHeader>
   );
 
   if (!grc && !wa) {
-    const ready = stage() === "thu-done";
+    const ready = stage() === "done";
     return (
       <>
         {header()}
         {S.wa?.skipped ? (
-          <Empty art={IllusChart} title="You skipped the Friday audit">
-            <p>Your week summary and report don't include it. You can still do it.</p>
-            <Button className="mt-5 font-bold" onClick={() => { unskipFriday(); commit(); }}>Do the Friday audit after all</Button>
+          <Empty art={IllusChart} title="You skipped the self-audit">
+            <p>Your shift summary and report don't include it. You can still do it.</p>
+            <Button className="mt-5 font-bold" onClick={() => { unskipSelfAudit(); commit(); }}>Audit your shift after all</Button>
           </Empty>
         ) : !ready ? (
-          <Empty art={IllusChart} title="Friday comes after Thursday">Finish the Monday and Thursday shifts first. This audit tests your own work from both days.</Empty>
+          <Empty art={IllusChart} title="Clear the queue first">This audit tests your own work, so finish the shift first, including any replies and follow-ups that land.</Empty>
         ) : (
           <Card className="max-w-3xl gap-4 p-6">
-            <h2 className="text-xl font-semibold">Audit your own week</h2>
+            <h2 className="text-xl font-semibold">Audit your own shift</h2>
             <p>Seven tasks, the same ones an internal auditor would work: walkthrough, sample selection, control testing, evidence evaluation, a finding, risk ratings and the management response.</p>
             <p className="text-sm text-muted-foreground">The evidence is frozen when you start: your audit log and the directory as they are now. It's scored like a shift.</p>
             <div className="flex flex-wrap gap-2">
-              <Button className="font-bold" onClick={() => { buildWeekAudit("self"); commit(); go("#/audit/W1"); }}>Start the Friday audit</Button>
-              <Button variant="outline" onClick={() => { skipFriday(); commit(); go("#/week"); toast("Friday skipped. You can come back to it from the audit page."); }}>Skip Friday</Button>
+              <Button className="font-bold" onClick={() => { buildWeekAudit("self"); commit(); go("#/audit/W1"); }}>Start the audit</Button>
+              <Button variant="outline" onClick={() => { skipSelfAudit(); commit(); go("#/week"); toast("Self-audit skipped. You can come back to it from the audit page."); }}>Skip the audit</Button>
             </div>
           </Card>
         )}

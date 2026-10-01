@@ -1,13 +1,15 @@
 // Parity: the original single-file simulator (legacy/sim-original.html) and the engine in
 // src/engine are driven with identical seeded random action sequences; full state is compared
-// after every action, at the Thursday handoff, in the totals and in GRC grading.
+// after every action, at the handoff to the follow-ups, in the totals and in GRC grading. The
+// original had two fixed shifts, so the live queue is switched off here (setLiveQueue(false)) and
+// the follow-ups are released in one go, the way the original started its second shift.
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { describe, it, expect, beforeAll } from "vitest";
+import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import { S, setState } from "../src/engine/store.js";
 import { ROLES, ALL_GROUPS } from "../src/engine/company.js";
 import { T, TK } from "../src/engine/tickets.js";
-import { startThursday, curTickets } from "../src/engine/thursday.js";
+import { releaseAll, setLiveQueue, FOLLOW } from "../src/engine/followups.js";
 import { G, gGrade, gQs } from "../src/engine/grc.js";
 import * as st from "../src/engine/state.js";
 
@@ -28,7 +30,9 @@ beforeAll(() => {
   localStorage.clear();
   new Function(js)();
   old = window.__old;
+  setLiveQueue(false);
 });
+afterAll(() => setLiveQueue(true));
 
 function rng(seed){ return () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
 const ANSWERS = ["", "none", "derek.chan", "derek.chan, lisa.morales", "Derek Chan", "jordan.lee, derek.chan"];
@@ -40,8 +44,16 @@ function scenario(seed, opsPerShift){
   const r = rng(seed), pick = a => a[Math.floor(r() * a.length)];
   old.reset(); setState(st.fresh());
   const named = Object.keys(S.users).slice(0, 34).concat(Object.keys(S.users).slice(-5));
+  // After the handoff the original reset its clock for a new day and the live queue doesn't; the
+  // queue also records when tickets arrived. Neither changes grading.
+  let handedOff = false;
+  const norm = s => { s = JSON.parse(JSON.stringify(s)); delete s.shift; delete s.q;
+    Object.values(s.tickets).forEach(t => { delete t.opened; if (t.approval) t.approval = 1; }); // approval wording was rewritten too
+    if (s.report) s.report = s.report.map(r => r.bad); // the wording was rewritten; outcomes must match
+    if (handedOff) { delete s.clock; s.log.forEach(e => { delete e.t; }); }
+    return JSON.stringify(Object.fromEntries(Object.entries(s).sort(([a], [b]) => a < b ? -1 : 1))); };
   const compare = where => {
-    const a = JSON.stringify(old.getS()), b = JSON.stringify(S);
+    const a = norm(old.getS()), b = norm(S);
     if (a !== b) { let k = 0; while (a[k] === b[k]) k++; throw new Error(`seed ${seed}, ${where}: state differs near …${a.slice(Math.max(0, k - 80), k + 80)}…`); }
   };
   const fx = document.getElementById("fx");
@@ -75,11 +87,12 @@ function scenario(seed, opsPerShift){
   run(T, opsPerShift);
   const ot = old.totals(T), nt = st.totals(T);
   expect([nt.raw, nt.mx, nt.done]).toEqual([ot.sc, ot.mx, ot.done]);
-  old.startThursday(); startThursday();
-  compare("Thursday start");
-  expect(curTickets().map(t => t.id)).toEqual(old.curTickets().map(t => t.id));
-  run(curTickets(), Math.round(opsPerShift * 0.6));
-  const oT = old.totals(old.curTickets()), nT = st.totals(curTickets());
+  // The original also cleared the active ticket when its second shift started.
+  old.startThursday(); releaseAll(); S.active = null; handedOff = true;
+  compare("handoff");
+  expect(FOLLOW.map(t => t.id)).toEqual(old.curTickets().map(t => t.id));
+  run(FOLLOW, Math.round(opsPerShift * 0.6));
+  const oT = old.totals(old.curTickets()), nT = st.totals(FOLLOW);
   expect([nT.raw, nT.mx]).toEqual([oT.sc, oT.mx]);
   G.forEach(g => {
     const go = {}, gn = {};
@@ -87,7 +100,7 @@ function scenario(seed, opsPerShift){
     const a = {}; qs.forEach((q, i) => { a[i] = g.kind === "table" ? Math.floor(r() * g.opts.length) : q.num ? Math.floor(r() * 4) : q.multi ? q.opts.map((_, j) => j).filter(() => r() < 0.5) : Math.floor(r() * q.opts.length); });
     expect(JSON.stringify(gGrade(g, gn, a)), `GRC ${g.id}`).toBe(JSON.stringify(old.gGrade(g, go, a)));
   });
-  return curTickets().length - 2;
+  return FOLLOW.length - 2;
 }
 
 describe("engine parity with the original simulator", () => {
