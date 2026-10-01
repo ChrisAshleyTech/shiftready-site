@@ -6,7 +6,7 @@
 @import "@fontsource/ibm-plex-mono/latin-400.css";
 @import "@fontsource/ibm-plex-mono/latin-500.css";
 
-/* Verdelit "Bright and Bold" theme. Light is the default; dark is opt-in (data-theme="dark").
+/* Rolevara "Bright and Bold" theme. Light is the default; dark is opt-in (data-theme="dark").
    Contrast, light: body text 16.8:1, muted text >= 7:1, white on primary 5.2:1, status text on its
    12% tint >= 4.7:1, field borders 3.5:1. Dark: body 16:1, muted 8:1, status on tint >= 5.3:1. */
 :root {

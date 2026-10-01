@@ -96,7 +96,7 @@ test("first visit: choose GRC only and audit Jordan Reyes' week", async ({ page 
 test("IAM + GRC: Friday is optional, the week summary follows, and tickets show framework panels", async ({ page }) => {
   const week = finishedWeek();
   await page.goto("/app/");
-  await page.evaluate(w => { localStorage.clear(); localStorage.setItem("verdelit-path", "iam-grc"); localStorage.setItem("pcl-iam-sim-v1", w); }, week);
+  await page.evaluate(w => { localStorage.clear(); localStorage.setItem("rolevara-path", "iam-grc"); localStorage.setItem("pcl-iam-sim-v1", w); }, week);
   await page.goto("/app/#/home");
   await page.reload();
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(/Now audit it/);
@@ -125,7 +125,7 @@ test("IAM + GRC: Friday is optional, the week summary follows, and tickets show 
 test("IAM only: no audit screens and no framework panels", async ({ page }) => {
   const week = finishedWeek();
   await page.goto("/app/");
-  await page.evaluate(w => { localStorage.clear(); localStorage.setItem("verdelit-path", "iam"); localStorage.setItem("pcl-iam-sim-v1:iam", w); }, week);
+  await page.evaluate(w => { localStorage.clear(); localStorage.setItem("rolevara-path", "iam"); localStorage.setItem("pcl-iam-sim-v1:iam", w); }, week);
   await page.goto("/app/#/queue/INC0041207");
   await page.reload();
   await expect(page.getByRole("heading", { name: /Forgot password/ })).toBeVisible();

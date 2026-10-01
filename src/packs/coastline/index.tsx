@@ -8,7 +8,7 @@ export const pack: CompanyPack = {
   name: "Coastline Credit Union",
   industry: "Banking",
   frameworks: "GLBA (NCUA Part 748), FFIEC",
-  storageKey: "verdelit-sim-coastline-v1",
+  storageKey: "rolevara-sim-coastline-v1",
   hasTickets: false,
   Mark,
   appIcon: iconByPrefix({

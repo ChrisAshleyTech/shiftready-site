@@ -41,7 +41,7 @@ export function HeroVideo() {
       <div className="overflow-hidden rounded-2xl border bg-card shadow-2xl shadow-primary/15">
         <div aria-hidden className="flex items-center gap-1.5 border-b bg-muted/60 px-4 py-2.5">
           <span className="size-2.5 rounded-full bg-hue-pink" /><span className="size-2.5 rounded-full bg-hue-amber" /><span className="size-2.5 rounded-full bg-hue-green" />
-          <span className="ml-3 truncate font-mono text-[11px] text-muted-foreground">verdelit / app / ticket queue</span>
+          <span className="ml-3 truncate font-mono text-[11px] text-muted-foreground">rolevara / app / ticket queue</span>
         </div>
         <div className="relative aspect-[8/5] bg-muted">
           {showVideo ? (
@@ -55,7 +55,7 @@ export function HeroVideo() {
               <picture>
                 <source srcSet="/video/demo-poster.webp" type="image/webp" />
                 <img src="/video/demo-poster.jpg" width={1280} height={800} className="size-full object-cover" data-hero-still
-                  alt="The Verdelit Thursday queue showing an incident, Dormant account signed in from unknown IP, marked Caused by your Monday shift." />
+                  alt="The Rolevara Thursday queue showing an incident, Dormant account signed in from unknown IP, marked Caused by your Monday shift." />
               </picture>
               {mounted && <button type="button" onClick={() => setOptIn(true)} className="absolute bottom-4 left-4 inline-flex h-11 items-center gap-2 rounded-full bg-card/95 px-4 font-display text-sm font-bold shadow-lg ring-1 ring-border hover:bg-card">
                 <Play className="size-4" aria-hidden />Play the walkthrough

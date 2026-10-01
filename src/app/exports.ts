@@ -7,7 +7,7 @@ export type Cell = string | number | boolean | null | undefined;
 export type Column = { header: string; kind?: "text" | "number" | "money" | "date"; width?: number };
 export type Table = { name: string; columns: Column[]; rows: Cell[][] };
 
-export const NOTICE = "Fictional training data from Verdelit. All companies, people and vendors are fictional.";
+export const NOTICE = "Fictional training data from Rolevara. All companies, people and vendors are fictional.";
 
 export function csvCell(v: Cell): string {
   if (v == null) return "";

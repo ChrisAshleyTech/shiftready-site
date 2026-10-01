@@ -51,7 +51,7 @@ const STATE = JSON.stringify(store.S);
 const out = new URL("./.demo/", import.meta.url);
 rmSync(out, { recursive: true, force: true }); mkdirSync(out, { recursive: true });
 const W = 1280, H = 800;
-const browser = await chromium.launch({ channel: "chrome" });
+const browser = await chromium.launch(process.env.CHROME_PATH ? { executablePath: process.env.CHROME_PATH } : { channel: "chrome" });
 const ctx = await browser.newContext({ viewport: { width: W, height: H }, recordVideo: { dir: out.pathname.replace(/^\/([A-Z]:)/, "$1"), size: { width: W, height: H } } });
 await ctx.addInitScript(s => {
   if (!sessionStorage.getItem("seeded")) { localStorage.clear(); localStorage.setItem("pcl-iam-sim-v1", s); sessionStorage.setItem("seeded", "1"); }

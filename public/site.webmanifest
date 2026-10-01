@@ -1,7 +1,7 @@
 {
-  "name": "Verdelit",
-  "short_name": "Verdelit",
-  "description": "Prove you can do the job before day one.",
+  "name": "Rolevara",
+  "short_name": "Rolevara",
+  "description": "Experience the role. Master the work.",
   "start_url": "/app/",
   "display": "standalone",
   "background_color": "#f6f8fc",
