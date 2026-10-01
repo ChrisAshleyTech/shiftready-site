@@ -97,3 +97,27 @@ export function IllusReopen(p: P) {
     </svg>
   );
 }
+
+// Still used by the app's week screens until the live ticket queue lands there.
+/** A week calendar with Monday and Thursday highlighted. Consequences carry over. */
+export function IllusWeek(p: P) {
+  const days = ["M", "T", "W", "T", "F"];
+  return (
+    <svg {...base(p)}>
+      <ellipse cx="120" cy="160" rx="92" ry="10" fill="var(--hue-blue)" opacity=".12" />
+      <rect x="30" y="36" width="180" height="116" rx="16" fill="var(--card)" stroke="var(--hue-blue)" strokeWidth="2.5" />
+      <rect x="30" y="36" width="180" height="30" rx="16" fill="var(--hue-blue)" /><rect x="30" y="52" width="180" height="14" fill="var(--hue-blue)" />
+      {days.map((d, i) => {
+        const hot = i === 0 || i === 3;
+        return (
+          <g key={i} transform={`translate(${46 + i * 32} 84)`}>
+            <rect width="26" height="48" rx="8" fill={hot ? (i === 0 ? "var(--hue-sky)" : "var(--hue-coral)") : "var(--hue-blue)"} opacity={hot ? 1 : 0.12} />
+            <text x="13" y="30" textAnchor="middle" fontSize="13" fontWeight="700" fontFamily="inherit" fill={hot ? "#fff" : "var(--hue-blue)"}>{d}</text>
+          </g>
+        );
+      })}
+      <path d="M66 142c20 18 64 18 84 0" stroke="var(--hue-amber)" strokeWidth="4" strokeLinecap="round" strokeDasharray="2 8" />
+      <path d="M144 136l8 6-9 4" stroke="var(--hue-amber)" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}

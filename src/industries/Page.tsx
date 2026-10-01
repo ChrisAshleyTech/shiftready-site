@@ -17,7 +17,7 @@ const SYSTEMS: Record<string, string> = {
 export default function Page() {
   return (
     <MarketingFrame current="industries">
-      <PageHero eyebrow="Industries" title="Six industries. One engine." lead="Each company brings its own applications, access matrix, separation-of-duties rules, regulatory policies and HR feed. All companies and people are fictional." />
+      <PageHero eyebrow="Companies" title="Six companies. Six rulebooks." lead="Each company has its own applications, access matrix, separation-of-duties rules, regulations and HR feed. Every company and person is fictional." />
       <ul className="mx-auto grid max-w-7xl gap-6 px-4 py-16 md:grid-cols-2 md:px-6">
         {INDUSTRIES.map(c => (
           <li key={c.id} id={c.id} className="scroll-mt-24 flex flex-col gap-4 rounded-3xl border bg-card p-8">

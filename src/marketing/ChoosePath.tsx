@@ -24,7 +24,7 @@ export function ChoosePath({ links, className }: { links: "tracks" | "app"; clas
       <div className="max-w-3xl">
         <p className="t-eyebrow">Paths</p>
         <h2 id="paths-h" className="t-h1 mt-3">Choose your path</h2>
-        <p className="t-lead mt-4">Learners pick a path when they open the app and can switch at any time. Each path keeps its own progress, and all three are in the free tier.</p>
+        <p className="t-lead mt-4">Pick a path when you open the app and switch any time. Each path keeps its own progress, and all three are free.</p>
       </div>
       <ul className="mt-10 grid gap-5 lg:grid-cols-3">
         {AREAS.map(a => (

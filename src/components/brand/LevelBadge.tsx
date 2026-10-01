@@ -34,7 +34,7 @@ export function LevelBadge({ level, className }: { level: Level; className?: str
       <LevelCapsule level={level} className="h-14 w-6 shrink-0" />
       <span className="leading-tight">
         <span className="block text-xs font-semibold uppercase tracking-[0.12em] opacity-80">Level</span>
-        <span className="block font-display text-xl font-extrabold">{LEVEL_LABEL[level]}</span>
+        <span className="block font-display text-xl font-bold">{LEVEL_LABEL[level]}</span>
       </span>
     </span>
   );

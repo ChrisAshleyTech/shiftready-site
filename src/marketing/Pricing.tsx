@@ -15,7 +15,7 @@ function Price({ t, billing }: { t: Tier; billing: Billing }) {
     <div className="min-h-[7rem]">
       <div className="flex items-baseline gap-1">
         {/* Re-keyed on change so the CSS entrance animation replays (off under reduced motion). */}
-        <span key={`${t.id}-${billing}`} className="price-in font-display text-5xl font-extrabold tracking-tight">{usd(main)}</span>
+        <span key={`${t.id}-${billing}`} className="price-in font-display text-5xl font-bold tracking-tight">{usd(main)}</span>
         <span className="text-muted-foreground">{t.monthly === 0 ? "forever" : billing === "monthly" ? "/month" : "/year"}</span>
       </div>
       {t.monthly > 0 && billing === "yearly" && <p className="t-meta mt-1">{usd(perMonthYearly(t))}/month billed yearly · <b className="text-ok">save {yearlySaving(t)}%</b></p>}

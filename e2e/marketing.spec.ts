@@ -53,7 +53,7 @@ test("reduced motion: a still image replaces the video, with an opt-in play butt
   await expect(page.getByRole("button", { name: /Pause animations/ })).toHaveCount(0);
   await expect(page.locator("dd").filter({ hasText: "131" }).first()).toBeVisible();
   await page.getByText("Video description").click();
-  await expect(page.locator("#demo-desc")).toContainText("Caused by your Monday shift");
+  await expect(page.locator("#demo-desc")).toContainText("traced back to that decision");
   await page.getByRole("button", { name: "Play the walkthrough" }).click();
   await expect(page.locator("[data-hero-video]")).toHaveJSProperty("controls", true);
 });
@@ -68,15 +68,15 @@ test("demo video files stay under 5 MB", async ({ request }) => {
 test("landing: sections in order and photo credits", async ({ page }) => {
   await page.goto("/");
   const ids = await page.locator("main section[id], main section[aria-labelledby]").evaluateAll(els => els.map(e => e.id || e.getAttribute("aria-labelledby")));
-  expect(ids).toEqual(["hero-h", "capabilities", "paths", "aud-h", "industries", "how", "pricing", "faq", "waitlist"]);
-  await expect(page.locator("figcaption").filter({ hasText: "Unsplash" })).toHaveCount(4);
+  expect(ids).toEqual(["hero-h", "how", "paths", "capabilities", "industries", "aud-h", "pricing", "faq", "waitlist"]);
+  await expect(page.locator("figcaption").filter({ hasText: "Unsplash" })).toHaveCount(3);
   const overflow = await page.setViewportSize({ width: 390, height: 844 }).then(() => page.evaluate(() => document.documentElement.scrollWidth > innerWidth));
   expect(overflow).toBe(false);
 });
 
-// Enterprise copy rules for every marketing page: third person, no personal content or
+// Copy rules for every marketing page: second person ("you") or third, never "we"; no personal content or
 // testimonials, and "Coming soon" only for the Active Directory lab on /labs.
-const PAGES: [string, RegExp][] = [["/", /Identity and access skills/], ["/pricing/", /Start free. Upgrade/], ["/tracks/", /Role-based tracks/], ["/industries/", /Six industries/], ["/labs/", /real identity platform/], ["/resources/", /How Rolevara works/], ["/privacy/", /Privacy policy/], ["/terms/", /Terms of use/]];
+const PAGES: [string, RegExp][] = [["/", /Know you can do the job/], ["/pricing/", /Start free. Upgrade/], ["/tracks/", /Pick the role you want/], ["/industries/", /Six companies/], ["/labs/", /real identity platform/], ["/resources/", /How Rolevara works/], ["/privacy/", /Privacy policy/], ["/terms/", /Terms of use/]];
 for (const [path, h1] of PAGES) {
   test(`copy rules: ${path}`, async ({ page }) => {
     const res = await page.goto(path);
@@ -247,7 +247,7 @@ for (const rm of ["reduce", "no-preference"] as const) {
 test("pre-rendered HTML contains the page content before JavaScript", async ({ request }) => {
   const html = await (await request.get("/")).text();
   expect(html).toContain('data-prerendered');
-  expect(html).toContain("Identity and access skills, built on real operations work.");
+  expect(html).toContain("Know you can do the job");
 });
 
 test("landing and Tracks explain the paths: IAM, GRC and PAM (early access)", async ({ page }) => {
