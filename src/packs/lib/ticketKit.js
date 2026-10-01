@@ -62,7 +62,8 @@ const plain = s => s.replace(/ \((owner|sponsor)\)$/, "");
 
 /**
  * spec: { id, ROLES, SOD, buildUsers, mon: {slot: story}, thu: {adminReq, loaReturn}, conseq: {key: story},
- *         audit: { manager: {name, title} }, grc: { G, ctx, intro, levels } }
+ *         audit: { manager: {name, title} }, grc: { G, ctx, intro, levels, controls? } }
+ * grc.controls overrides a row of the GRC desk's controls table: { "APD-02": [title, text, frequency] }.
  * A story has the ticket's id, title, from, channel, opened, body (HTML) and lesson, plus the
  * slot's people and groups. Optional: pri, nudge (overrides the default nudge), approval.
  */
@@ -459,7 +460,7 @@ export function buildTicketSet(spec) {
   };
 
   return { id: spec.id, T, CONSEQ, BASE_THU, HINTS, CONSEQ_LINKS, G: spec.grc.G, playbook, jordan, audit, topics,
-    grc: { ctx: spec.grc.ctx, intro: spec.grc.intro, levels: spec.grc.levels },
+    grc: { ctx: spec.grc.ctx, intro: spec.grc.intro, levels: spec.grc.levels, ...(spec.grc.controls ? { controls: spec.grc.controls } : {}) },
     // The story the set was built from, for tests.
     story: { mon: M, thu: Th, conseq: K } };
 }

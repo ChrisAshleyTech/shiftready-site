@@ -25,7 +25,7 @@ const JORDAN: [string, string][] = [["Audit your own IAM Ops shift", "Audit Jord
   ["You find exceptions in your own work.", "You find exceptions in Jordan's work."], ["Leave your own tickets out of the sample", "Leave Jordan's tickets out of the sample"], ["Evidence snapshot of your log", "Evidence snapshot of the log"]];
 const say = (x: string) => (path() === "grc" ? JORDAN.reduce((a, [from, to]) => a.split(from).join(to), x) : x);
 
-const CONTROLS = [
+const CONTROLS: string[][] = [
   ["APD-01", "New user provisioning", "Access is approved by the user's manager before provisioning and limited to the role's birthright groups.", "Per event · Manual · Preventive"],
   ["APD-02", "Timely terminations", "Accounts are disabled within one business day of the HR termination date.", "Per event · Manual · Preventive"],
   ["APD-03", "Change authorization", "Every account change references an approved ticket. Caller identity is verified before any credential change.", "Per event · Manual · Preventive"],
@@ -124,7 +124,7 @@ export default function Grc({ r }: { r: Route }) {
         <div className="space-y-6">
           <div className="overflow-x-auto rounded-lg border"><table className="w-full text-sm"><caption className="sr-only">Controls in scope</caption>
             <thead className="bg-muted/50 text-left text-xs uppercase tracking-wider text-muted-foreground"><tr><th className="p-3">Control</th><th className="p-3">Description</th><th className="p-3">Attributes</th></tr></thead>
-            <tbody className="divide-y">{CONTROLS.map(c => <tr key={c[0]}><td className="p-3 align-top"><span className="font-mono">{c[0]}</span><div>{c[1]}</div></td><td className="p-3 align-top">{c[2]}</td><td className="p-3 align-top text-muted-foreground">{c[3]}</td></tr>)}</tbody></table></div>
+            <tbody className="divide-y">{CONTROLS.map(c => { const o = SET.grc.controls?.[c[0]]; return o ? [c[0], ...o] : c; }).map(c => <tr key={c[0]}><td className="p-3 align-top"><span className="font-mono">{c[0]}</span><div>{c[1]}</div></td><td className="p-3 align-top">{c[2]}</td><td className="p-3 align-top text-muted-foreground">{c[3]}</td></tr>)}</tbody></table></div>
           <Card className="gap-2 p-5"><h2 className="text-lg font-semibold">{SET.grc.levels.title}</h2>
             <ul className="ml-5 max-w-[80ch] list-disc space-y-1 text-sm">
               {SET.grc.levels.items.map(([k, v]) => <li key={k}><b>{k}:</b> {v}</li>)}</ul>

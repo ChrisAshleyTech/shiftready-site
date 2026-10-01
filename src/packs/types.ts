@@ -29,7 +29,7 @@ export type TicketSet = {
   // Framework topics for each ticket (see app/frameworks.ts).
   topics: Record<string, string[]>;
   // The GRC desk's top-bar context, page intro and deficiency levels.
-  grc: { ctx: string; intro: string; levels: { title: string; items: [string, string][]; note: string } };
+  grc: { ctx: string; intro: string; levels: { title: string; items: [string, string][]; note: string }; controls?: Record<string, [string, string, string]> };
 };
 
 export type Records = { finance: () => Finance; metricRules: (rows: Finance["metrics"]) => string[]; IAM_KEY: readonly IamFinding[] };

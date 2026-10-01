@@ -182,5 +182,8 @@ export const set = buildTicketSet({
       ["Security incident", "an event that actually compromises, or is reasonably likely to compromise, the security of the system or its data. The incident response plan applies (SOC 2 CC7.3, CC7.4)."],
       ["Customer notice", "when an incident affects a customer's data, Brightpath tells the customer within the time its contract sets, and the customer decides on any notice to its own people under the laws that apply to it."]],
       note: "Audit findings go to the Head of Security. Anything that may involve customer data goes to Security at once." },
+    controls: {
+      "VEN-01": ["Subprocessor oversight", "SOC reports for subprocessors are reviewed each year, including exceptions, gap coverage, subservice providers, user entity controls and the data processing agreement.", "Annual · Manual · Detective"],
+    },
   },
 });

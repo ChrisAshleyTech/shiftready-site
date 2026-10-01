@@ -182,5 +182,8 @@ export const set = buildTicketSet({
       ["Rapid report", "when a cyber incident affects covered defense information, report it to the DoD at dibnet.dod.mil within 72 hours of discovery (252.204-7012(c))."],
       ["Preserve", "keep images of the affected systems and relevant monitoring data for at least 90 days from the report, in case the DoD asks for them (252.204-7012(e))."]],
       note: "Audit findings go to the IT Manager and into the System Security Plan and POA&M. Anything that may involve CUI goes to Security at once, so the 72-hour clock is met." },
+    controls: {
+      "VEN-01": ["Service provider oversight", "Security evidence for cloud and external service providers is reviewed each year, including FedRAMP equivalency, the customer responsibility matrix and contract coverage.", "Annual · Manual · Detective"],
+    },
   },
 });
