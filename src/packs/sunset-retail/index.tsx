@@ -1,4 +1,4 @@
-// Sunset Retail Group: retail, PCI DSS v4.0.1 and SOX. Tickets are in development.
+// Sunset Retail Group: retail, PCI DSS v4.0.1 and SOX.
 import { iconByPrefix, noteByPrefix } from "../appIcons";
 import type { CompanyPack } from "../types";
 import { Mark } from "./mark";
@@ -10,7 +10,7 @@ export const pack: CompanyPack = {
   frameworks: "PCI DSS v4.0.1, SOX ITGC",
   storageKey: "verdelit-sim-sunset-retail-v1",
   domain: "sunsetretail.com",
-  hasTickets: false,
+  hasTickets: true,
   Mark,
   appIcon: iconByPrefix({
     "APP-Office-Suite": "suite", "APP-Store-Mail": "suite", "APP-Finance-Reports": "chart", "APP-GL-Post": "ledger", "APP-AP": "receipt",
@@ -32,6 +32,6 @@ export const pack: CompanyPack = {
     "APP-LP-Video": "Loss prevention teams often pair camera systems with POS exception reporting (for example Agilence).",
     "APP-HRIS": "Retailers often use Workday or UKG for HR and payroll.",
   }),
-  load: async () => ({ company: await import("./company"), policy: await import("./policy") }),
+  load: async () => ({ company: await import("./company"), policy: await import("./policy"), tickets: (await import("./tickets.js")).set }),
   loadRecords: () => import("./finance"),
 };

@@ -84,6 +84,7 @@ export const IAM_KEY = [
   { kind: "sod", user: "callum.frazer", note: "Cardholder-data-environment admin who can also administer the security logs." },
   { kind: "excess", user: "callum.frazer", note: "Security log admin isn't part of the Payments Systems Engineer role." },
   { kind: "excess", user: "dylan.mercer", note: "Storefront admin (price changes) isn't part of the Customer Care Agent role." },
+  { kind: "excess", user: "henrietta.sowerby", note: "Order management and the payment gateway aren't part of the Ecommerce Specialist role." },
   { kind: "dormant", user: "heather.lindgren", note: "Enabled POS user; no sign-in for 118 days." },
   { kind: "dormant", user: "percy.oyelowo", note: "Enabled buyer account; no sign-in for 99 days." },
   { kind: "leaver-active", user: "sabrina.cortez", note: "Resigned nine days ago; still enabled and signing in." },

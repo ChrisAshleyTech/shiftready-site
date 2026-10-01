@@ -88,6 +88,18 @@ const CORE: Core[] = [
   ["corey.blackwell", "Corey Blackwell", "SRS-3301", "Stores|Seasonal Associate", "Keiko Hartley (sponsor)", { type: "Contractor", expiry: 2 }],
   ["imani.walker", "Imani Walker", "SR-100401", "Stores|Sales Associate", "Bernadette Quaye", { enabled: false, groups: [], last: null, mfa: false, preHire: true }],
   ["noel.garrido", "Noel Garrido", "SR-100402", "Ecommerce|Ecommerce Specialist", "Samir Haddad", { enabled: false, groups: [], last: null, mfa: false, preHire: true }],
+  // Week-one ticket cast (see tickets.js).
+  ["clarissa.wren", "Clarissa Wren", "SR-100161", "Finance|Staff Accountant", "Colleen McBride", { last: 3 }],
+  ["bartholomew.finch", "Bartholomew Finch", "SR-100163", "Stores|Stock Associate", "Rafael Montoya", { locked: true }],
+  ["isolde.marchbanks", "Isolde Marchbanks", "SR-100165", "Merchandising|Buyer", "Ingrid Solberg"],
+  ["octavia.rhodes", "Octavia Rhodes", "SR-100167", "Merchandising|Buyer", "Ingrid Solberg"],
+  ["cornelius.ashdown", "Cornelius Ashdown", "SR-100169", "Stores|Sales Associate", "Anneliese Vogt", { last: 89 }],
+  ["fergus.doherty", "Fergus Doherty", "SR-100171", "IT|Service Desk Analyst", "Walter Ng"],
+  ["wilhelmina.frost", "Wilhelmina Frost", "SR-100173", "Stores|Assistant Store Manager", "Bernadette Quaye", { groups: [...R["Stores|Assistant Store Manager"], "APP-POS-Reports"] }],
+  // Planted: leftover order management and payment gateway access from a customer care stint.
+  ["henrietta.sowerby", "Henrietta Sowerby", "SR-100175", "Ecommerce|Ecommerce Specialist", "Samir Haddad", { groups: [...R["Ecommerce|Ecommerce Specialist"], "APP-Order-Management", "APP-Payment-Gateway"] }],
+  ["fenella.strickland", "Fenella Strickland", "SR-100177", "Customer Care|Customer Care Agent", "Samir Haddad", { last: 0 }],
+  ["svc-file-backup", "svc-file-backup", "SVC-055", null, "Walter Ng (owner)", { dept: "IT", title: "Service account: file server backup", type: "Service", groups: ["SVC-Backup-Operators"], last: 130, mfa: false }],
   ["svc-pos-sync", "svc-pos-sync", "SVC-051", null, "Callum Frazer (owner)", { dept: "IT", title: "Service account: POS to ERP sales sync", type: "Service", groups: ["SVC-POS-Sync"], last: 0, mfa: false }],
 ];
 const FILLER: Filler[] = [
@@ -115,7 +127,7 @@ export const HR_FEED = [
   { type: "Hire", who: "Noel Garrido", detail: "Ecommerce Specialist, Ecommerce. Manager: Samir Haddad. Start date: today.", when: 0 },
   { type: "Rehire", who: "Tatiana Rusu", detail: "Rehired as Sales Associate, Stores. Manager: Anneliese Vogt. Previously Sales Associate (left Dec 2025).", when: 0 },
   { type: "Transfer", who: "Jonah Feldman", detail: "From Sales Associate to Stock Associate, Stores. Same manager. Effective today.", when: 0 },
-  { type: "Termination", who: "April Nakamura", detail: "Involuntary, following a cash-office variance review. Effective today, 7:00 AM.", when: 0 },
+  { type: "Termination", who: "April Nakamura", detail: "Involuntary, following a cash-office variance review. Effective today, 9:00 AM.", when: 0 },
   { type: "Leave of absence", who: "Leon Baptiste", detail: "Leave begins today. Expected return: Dec 7, 2026.", when: 0 },
   { type: "Contract end", who: "Corey Blackwell", detail: "Seasonal assignment end date on file: " + fmtDay(2) + ". Sponsor: Keiko Hartley.", when: -1 },
   { type: "Termination", who: "Sabrina Cortez", detail: "Voluntary resignation. Last day: " + fmtDay(-9) + ".", when: -9 },
