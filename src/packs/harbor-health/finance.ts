@@ -80,6 +80,8 @@ export const IAM_KEY = [
   { kind: "excess", user: "jonathan.pike", note: "Pharmacy dispensing left over from a covering shift." },
   { kind: "sod", user: "wen.zhao", note: "EHR security admin who can also review the EHR audit trail." },
   { kind: "excess", user: "wen.zhao", note: "EHR audit reports aren't part of the EHR Analyst role." },
+  { kind: "excess", user: "delphine.okafor", note: "Lab results access isn't part of the Medical Assistant role." },
+  { kind: "excess", user: "tamara.lindsey", note: "EHR billing and finance reports aren't part of the Patient Access role." },
   { kind: "dormant", user: "theresa.quinlan", note: "Enabled; no sign-in for 121 days." },
   { kind: "dormant", user: "patrick.doyle", note: "Enabled; no sign-in for 96 days." },
   { kind: "leaver-active", user: "maya.estrada", note: "Resigned ten days ago; still enabled and signed in yesterday." },
