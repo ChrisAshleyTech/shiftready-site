@@ -87,6 +87,7 @@ export const IAM_KEY = [
   { kind: "sod", user: "kai.mahoe", note: "Identity provider admin with HR system access." },
   { kind: "excess", user: "kai.mahoe", note: "HR system access isn't part of the IT Administrator role." },
   { kind: "excess", user: "zoe.whitman", note: "Customer impersonation isn't part of the Customer Success Manager role." },
+  { kind: "excess", user: "seraphina.holt", note: "Production deploy and the support desk aren't part of the Software Engineer role." },
   { kind: "dormant", user: "chris.albrecht", note: "Enabled; no sign-in for 131 days." },
   { kind: "dormant", user: "lorenzo.gatti", note: "Enabled engineer account; no sign-in for 95 days." },
   { kind: "leaver-active", user: "sienna.park", note: "Resigned five days ago; still enabled and signed in yesterday." },
