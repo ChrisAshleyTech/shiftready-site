@@ -30,7 +30,7 @@ const PERFECT = {
 
 describe("Entra ID lab", () => {
   test("seed script data matches the simulator", () => {
-    const ps1 = readFileSync("public/lab/entra/Seed-RolevaraLab.ps1", "utf8");
+    const ps1 = readFileSync("lab-files/entra/Seed-RolevaraLab.ps1", "utf8");
     const json = ps1.match(/# BEGIN LAB DATA\r?\n\$Lab = @'\r?\n(.*)\r?\n'@/)?.[1];
     expect(JSON.parse(json!)).toEqual(spec);
   });

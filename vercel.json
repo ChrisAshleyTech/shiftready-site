@@ -2,6 +2,11 @@
   "framework": "vite",
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
+  "functions": { "api/lab-file.js": { "includeFiles": "lab-files/**" } },
+  "rewrites": [
+    { "source": "/labs/access", "destination": "/api/lab-access" },
+    { "source": "/lab-files/:lab/:file", "destination": "/api/lab-file?lab=:lab&file=:file" }
+  ],
   "headers": [
     {
       "source": "/(.*)",

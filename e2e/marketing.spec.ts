@@ -9,18 +9,23 @@ test("pricing: toggle, badges, coming-soon labels and waitlist tier selection", 
   await page.getByRole("radio", { name: /Yearly/ }).click();
   await expect(page.getByRole("radio", { name: /Yearly/ })).toHaveAttribute("aria-checked", "true");
   await expect(page.getByText("$129", { exact: true })).toBeVisible();
-  await expect(page.getByText("save 28%")).toBeVisible();
-  await expect(page.getByText("$169", { exact: true })).toBeVisible();
-  await expect(page.getByText("save 30%")).toBeVisible();
+  await expect(page.getByText("$249", { exact: true })).toBeVisible();
+  await expect(page.getByText("save 28%")).toHaveCount(2);
+  await page.getByRole("radio", { name: /Monthly/ }).click();
+  await expect(page.getByText("$29", { exact: true })).toBeVisible();
+  await expect(page.getByText("14-day free trial · Cancel anytime")).toBeVisible();
+  await expect(page.locator("main").getByText("Cancel anytime", { exact: true }).first()).toBeVisible();
+  await expect(page.getByText(/\$39|lab pack|one-time/i)).toHaveCount(0);
+  await expect(page.getByRole("heading", { name: "Show the work in the real console." })).toBeVisible();
+  await expect(page.getByRole("table", { name: "Pro compared with Pro + Labs" })).toContainText("Simulator + real tenants");
   await expect(page.getByText("Pro features are included free during early access.")).toBeVisible();
   expect(await page.getByText("Early access", { exact: true }).count()).toBeGreaterThanOrEqual(3);
-  await expect(page.locator("main").getByText(/Okta|AWS|Active Directory/)).toHaveCount(0);
+  await expect(page.locator("main").getByText(/Active Directory/)).toHaveCount(0);
   await expect(page.getByRole("link", { name: "Start free" }).last()).toHaveAttribute("href", "/app/");
   await page.getByRole("button", { name: "Join Pro + Labs waitlist" }).click();
-  await expect(page.locator("#tier")).toHaveValue("labs-yearly");
+  await expect(page.locator("#tier")).toHaveValue("labs-monthly");
   await expect(page.locator("#email")).toBeFocused();
-  await page.getByRole("button", { name: "Join the lab pack waitlist" }).click();
-  await expect(page.locator("#tier")).toHaveValue("pack");
+  await expect(page.locator("#tier option")).toHaveText(["Release updates only", "Pro, monthly ($15/mo)", "Pro, yearly ($129/yr)", "Pro + Labs, monthly ($29/mo)", "Pro + Labs, yearly ($249/yr)"]);
   await page.locator("#email").fill("not-an-email");
   await page.getByRole("button", { name: "Join the waitlist" }).click();
   await expect(page.locator("#email-error")).toHaveText("Enter an email address in the format name@example.com.");
@@ -70,7 +75,7 @@ test("landing: sections in order and photo credits", async ({ page }) => {
 });
 
 // Enterprise copy rules for every marketing page: third person, no personal content or
-// testimonials, no "Coming soon" (early access only), no unlisted platforms.
+// testimonials, and "Coming soon" only for the Active Directory lab on /labs.
 const PAGES: [string, RegExp][] = [["/", /Identity and access skills/], ["/pricing/", /Start free. Upgrade/], ["/tracks/", /Role-based tracks/], ["/industries/", /Six industries/], ["/labs/", /real identity platform/], ["/resources/", /How Rolevara works/], ["/privacy/", /Privacy policy/], ["/terms/", /Terms of use/]];
 for (const [path, h1] of PAGES) {
   test(`copy rules: ${path}`, async ({ page }) => {
@@ -80,8 +85,8 @@ for (const [path, h1] of PAGES) {
     const text = (await page.locator("body").innerText()).replace(/Rolevara is not affiliated with[^\n]*/g, "");
     expect(text).not.toMatch(/\b(We|we|We're|we're|We'll|we'll|Our|our|I|I'm|I've|me|my)\b/);
     expect(text).not.toMatch(/founder|Christopher|Ashley|testimonial|learner stories|built by/i);
-    expect(text).not.toMatch(/coming soon/i);
-    expect(text).not.toMatch(/\bOkta\b|\bAWS\b|Active Directory/);
+    if (path === "/labs/") expect(text.match(/coming soon/gi)).toHaveLength(1);
+    else expect(text).not.toMatch(/coming soon|Active Directory/i);
   });
 }
 
@@ -98,7 +103,7 @@ test("mega-nav: dropdowns open, arrow keys move, Escape closes and returns focus
   await expect(tracks).toHaveAttribute("aria-expanded", "false");
   await expect(tracks).toBeFocused();
   await page.getByRole("button", { name: "Platform labs" }).click();
-  await expect(page.locator("[data-menu-item]")).toHaveCount(1);
+  await expect(page.locator("[data-menu-item]")).toHaveCount(3);
   await page.getByRole("button", { name: "Industries" }).click();
   await expect(page.locator("[data-menu-item]")).toHaveCount(6);
   await page.mouse.click(5, 600);

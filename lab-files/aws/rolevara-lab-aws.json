@@ -1,0 +1,379 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "Pacific Crest Logistics (Rolevara lab). 7 IAM users and 9 IAM groups with no permissions attached. Generated from the Rolevara simulator; do not edit by hand.",
+  "Parameters": {
+    "LabPassword": {
+      "Type": "String",
+      "NoEcho": true,
+      "MinLength": 20,
+      "Description": "Console password for the seeded users that start with console access. seed_rolevara_lab.py generates a random one; nobody signs in as these users."
+    }
+  },
+  "Resources": {
+    "GroupAPPCargoWiseOps": {
+      "Type": "AWS::IAM::Group",
+      "Properties": {
+        "GroupName": "APP-CargoWise-Ops",
+        "Path": "/rolevara-lab/"
+      }
+    },
+    "GroupAPPConcurUser": {
+      "Type": "AWS::IAM::Group",
+      "Properties": {
+        "GroupName": "APP-Concur-User",
+        "Path": "/rolevara-lab/"
+      }
+    },
+    "GroupAPPFinanceReports": {
+      "Type": "AWS::IAM::Group",
+      "Properties": {
+        "GroupName": "APP-Finance-Reports",
+        "Path": "/rolevara-lab/"
+      }
+    },
+    "GroupAPPM365E3": {
+      "Type": "AWS::IAM::Group",
+      "Properties": {
+        "GroupName": "APP-M365-E3",
+        "Path": "/rolevara-lab/"
+      }
+    },
+    "GroupAPPSAPAPEntry": {
+      "Type": "AWS::IAM::Group",
+      "Properties": {
+        "GroupName": "APP-SAP-AP-Entry",
+        "Path": "/rolevara-lab/"
+      }
+    },
+    "GroupAPPSalesforceUser": {
+      "Type": "AWS::IAM::Group",
+      "Properties": {
+        "GroupName": "APP-Salesforce-User",
+        "Path": "/rolevara-lab/"
+      }
+    },
+    "GroupAPPWMSUser": {
+      "Type": "AWS::IAM::Group",
+      "Properties": {
+        "GroupName": "APP-WMS-User",
+        "Path": "/rolevara-lab/"
+      }
+    },
+    "GroupAPPWorkdayHR": {
+      "Type": "AWS::IAM::Group",
+      "Properties": {
+        "GroupName": "APP-Workday-HR",
+        "Path": "/rolevara-lab/"
+      }
+    },
+    "GroupGRPAllStaff": {
+      "Type": "AWS::IAM::Group",
+      "Properties": {
+        "GroupName": "GRP-All-Staff",
+        "Path": "/rolevara-lab/"
+      }
+    },
+    "Usermarialopez": {
+      "Type": "AWS::IAM::User",
+      "Properties": {
+        "UserName": "maria.lopez",
+        "Path": "/rolevara-lab/",
+        "Groups": [],
+        "Tags": [
+          {
+            "Key": "rolevara-lab",
+            "Value": "pacific-crest"
+          },
+          {
+            "Key": "DisplayName",
+            "Value": "Maria Lopez"
+          },
+          {
+            "Key": "EmployeeId",
+            "Value": "10401"
+          },
+          {
+            "Key": "Department",
+            "Value": "Finance"
+          },
+          {
+            "Key": "JobTitle",
+            "Value": "AP Clerk"
+          }
+        ]
+      }
+    },
+    "Userroberthayes": {
+      "Type": "AWS::IAM::User",
+      "Properties": {
+        "UserName": "robert.hayes",
+        "Path": "/rolevara-lab/",
+        "Groups": [
+          {
+            "Ref": "GroupGRPAllStaff"
+          },
+          {
+            "Ref": "GroupAPPM365E3"
+          },
+          {
+            "Ref": "GroupAPPCargoWiseOps"
+          },
+          {
+            "Ref": "GroupAPPWMSUser"
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "rolevara-lab",
+            "Value": "pacific-crest"
+          },
+          {
+            "Key": "DisplayName",
+            "Value": "Robert Hayes"
+          },
+          {
+            "Key": "EmployeeId",
+            "Value": "10322"
+          },
+          {
+            "Key": "Department",
+            "Value": "Operations"
+          },
+          {
+            "Key": "JobTitle",
+            "Value": "Dispatcher"
+          }
+        ],
+        "LoginProfile": {
+          "Password": {
+            "Ref": "LabPassword"
+          },
+          "PasswordResetRequired": true
+        }
+      }
+    },
+    "Usertanyawright": {
+      "Type": "AWS::IAM::User",
+      "Properties": {
+        "UserName": "tanya.wright",
+        "Path": "/rolevara-lab/",
+        "Groups": [
+          {
+            "Ref": "GroupGRPAllStaff"
+          },
+          {
+            "Ref": "GroupAPPM365E3"
+          },
+          {
+            "Ref": "GroupAPPSalesforceUser"
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "rolevara-lab",
+            "Value": "pacific-crest"
+          },
+          {
+            "Key": "DisplayName",
+            "Value": "Tanya Wright"
+          },
+          {
+            "Key": "EmployeeId",
+            "Value": "10257"
+          },
+          {
+            "Key": "Department",
+            "Value": "Sales"
+          },
+          {
+            "Key": "JobTitle",
+            "Value": "Account Executive"
+          }
+        ],
+        "LoginProfile": {
+          "Password": {
+            "Ref": "LabPassword"
+          },
+          "PasswordResetRequired": true
+        }
+      }
+    },
+    "Usersofiaramirez": {
+      "Type": "AWS::IAM::User",
+      "Properties": {
+        "UserName": "sofia.ramirez",
+        "Path": "/rolevara-lab/",
+        "Groups": [
+          {
+            "Ref": "GroupGRPAllStaff"
+          },
+          {
+            "Ref": "GroupAPPSalesforceUser"
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "rolevara-lab",
+            "Value": "pacific-crest"
+          },
+          {
+            "Key": "DisplayName",
+            "Value": "Sofia Ramirez"
+          },
+          {
+            "Key": "EmployeeId",
+            "Value": "10218"
+          },
+          {
+            "Key": "Department",
+            "Value": "Sales"
+          },
+          {
+            "Key": "JobTitle",
+            "Value": "Account Executive"
+          }
+        ]
+      }
+    },
+    "Userracheladams": {
+      "Type": "AWS::IAM::User",
+      "Properties": {
+        "UserName": "rachel.adams",
+        "Path": "/rolevara-lab/",
+        "Groups": [
+          {
+            "Ref": "GroupGRPAllStaff"
+          },
+          {
+            "Ref": "GroupAPPM365E3"
+          },
+          {
+            "Ref": "GroupAPPSalesforceUser"
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "rolevara-lab",
+            "Value": "pacific-crest"
+          },
+          {
+            "Key": "DisplayName",
+            "Value": "Rachel Adams"
+          },
+          {
+            "Key": "EmployeeId",
+            "Value": "10249"
+          },
+          {
+            "Key": "Department",
+            "Value": "Sales"
+          },
+          {
+            "Key": "JobTitle",
+            "Value": "Account Executive"
+          }
+        ],
+        "LoginProfile": {
+          "Password": {
+            "Ref": "LabPassword"
+          },
+          "PasswordResetRequired": true
+        }
+      }
+    },
+    "Userethanmoore": {
+      "Type": "AWS::IAM::User",
+      "Properties": {
+        "UserName": "ethan.moore",
+        "Path": "/rolevara-lab/",
+        "Groups": [],
+        "Tags": [
+          {
+            "Key": "rolevara-lab",
+            "Value": "pacific-crest"
+          },
+          {
+            "Key": "DisplayName",
+            "Value": "Ethan Moore"
+          },
+          {
+            "Key": "EmployeeId",
+            "Value": "10402"
+          },
+          {
+            "Key": "Department",
+            "Value": "Operations"
+          },
+          {
+            "Key": "JobTitle",
+            "Value": "Dispatcher"
+          }
+        ]
+      }
+    },
+    "Userbobturner": {
+      "Type": "AWS::IAM::User",
+      "Properties": {
+        "UserName": "bob.turner",
+        "Path": "/rolevara-lab/",
+        "Groups": [
+          {
+            "Ref": "GroupGRPAllStaff"
+          },
+          {
+            "Ref": "GroupAPPM365E3"
+          },
+          {
+            "Ref": "GroupAPPCargoWiseOps"
+          },
+          {
+            "Ref": "GroupAPPWMSUser"
+          },
+          {
+            "Ref": "GroupAPPSAPAPEntry"
+          },
+          {
+            "Ref": "GroupAPPFinanceReports"
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "rolevara-lab",
+            "Value": "pacific-crest"
+          },
+          {
+            "Key": "DisplayName",
+            "Value": "Bob Turner"
+          },
+          {
+            "Key": "EmployeeId",
+            "Value": "10312"
+          },
+          {
+            "Key": "Department",
+            "Value": "Operations"
+          },
+          {
+            "Key": "JobTitle",
+            "Value": "Dispatcher"
+          }
+        ],
+        "LoginProfile": {
+          "Password": {
+            "Ref": "LabPassword"
+          },
+          "PasswordResetRequired": true
+        }
+      }
+    },
+    "Keyroberthayes": {
+      "Type": "AWS::IAM::AccessKey",
+      "Properties": {
+        "UserName": {
+          "Ref": "Userroberthayes"
+        },
+        "Status": "Active"
+      }
+    }
+  }
+}

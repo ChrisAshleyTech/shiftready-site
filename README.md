@@ -88,12 +88,35 @@ automated downloading.
 
 ## Pricing
 
-`src/marketing/plans.ts` holds the tiers, prices, feature statuses and add-on. Pricing is **display
-only**: nothing is gated or charged. Items that aren't built yet are marked "Coming soon". Full
+`src/marketing/plans.ts` holds the tiers and feature statuses; `PRICES` there is the only place
+prices are set (Free, Pro with a 14-day trial, Pro + Labs; "Cancel anytime" on paid plans). Pricing is
+**display only**: nothing is charged. Items that aren't built yet are marked "Coming soon". Full
 hints, the tutor and the readiness report are marked "Included free during early access".
 "Start free" opens the app. Paid buttons pre-select the tier and billing period in the waitlist form,
 which sends `email`, `tier` and `role` to `FORM_ENDPOINT` in `src/marketing/config.ts` (empty =
 preview mode: the form validates but doesn't send).
+
+## Platform labs and tester access
+
+Three labs (Microsoft Entra ID, Okta, AWS IAM) share the Pacific Crest seed data and grading in
+`src/app/lab/core.ts`; each platform parses its own read-only export (`entra.ts`, `okta.ts`,
+`aws.ts`). The scripts live in `lab-files/`, outside `public/`, so they are not in the site build.
+Vercel serves them from `api/lab-file.js` only to browsers holding tester access.
+
+Access is a private link, `/labs/access?key=...`, signed with `LAB_ACCESS_SECRET` (Vercel project
+environment variable, 32+ characters; without it every link is refused). The link sets an HttpOnly
+cookie and opens `/app/#/labs`. Make the secret and links locally:
+
+```sh
+node scripts/make-lab-link.mjs --new-secret          # paste into Vercel as LAB_ACCESS_SECRET
+LAB_ACCESS_SECRET=... node scripts/make-lab-link.mjs --to "tester@example.com" --days 30
+```
+
+Rotating the secret revokes every link. `TODO(labs-auth)` in `api/_lib/labAccess.js` covers the
+move to Supabase Auth with a paid-tier check and scripts and guide text served from storage. The
+public `/labs` page shows only each lab's overview. The AWS template
+(`lab-files/aws/rolevara-lab-aws.json`) is generated from `awsTemplate()`; `tests/awsLab.test.ts`
+fails if they drift.
 
 ## Develop
 

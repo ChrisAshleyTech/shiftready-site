@@ -96,7 +96,7 @@ function itemLabel(r: Route): string | null {
   if (r.name === "directory") return S.users[r.id]?.name ?? null;
   if (r.name === "groups" || r.name === "queue") return r.id;
   if (r.name === "grc") return r.id === "controls" ? "Controls and definitions" : GK[r.id]?.title ?? null;
-  if (r.name === "labs") return r.id === "entra" ? "Microsoft Entra ID" : null;
+  if (r.name === "labs") return ({ entra: "Microsoft Entra ID", okta: "Okta", aws: "AWS" } as Record<string, string>)[r.id] ?? null;
   if (r.name === "audit") return r.id === "controls" ? "Controls" : weekAudit()?.tasks.find(t => t.id === r.id)?.step ?? null;
   return null;
 }
