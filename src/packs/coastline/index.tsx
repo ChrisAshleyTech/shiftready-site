@@ -1,4 +1,4 @@
-// Coastline Credit Union: banking, GLBA via NCUA Part 748. Tickets are in development.
+// Coastline Credit Union: banking, GLBA via NCUA Part 748.
 import { iconByPrefix, noteByPrefix } from "../appIcons";
 import type { CompanyPack } from "../types";
 import { Mark } from "./mark";
@@ -10,7 +10,7 @@ export const pack: CompanyPack = {
   frameworks: "GLBA (NCUA Part 748), FFIEC",
   storageKey: "verdelit-sim-coastline-v1",
   domain: "coastlinecu.org",
-  hasTickets: false,
+  hasTickets: true,
   Mark,
   appIcon: iconByPrefix({
     "APP-Office-Suite": "suite", "APP-Finance-Reports": "chart", "APP-GL-Post": "ledger", "APP-AP": "receipt", "APP-Vendor-Master": "ledger",
@@ -29,6 +29,6 @@ export const pack: CompanyPack = {
     "APP-HR-Payroll": "Common HR and payroll systems are Paylocity, UKG and ADP.",
     "APP-Service-Desk": "Smaller institutions often use Freshservice, Jira Service Management or ServiceNow.",
   }),
-  load: async () => ({ company: await import("./company"), policy: await import("./policy") }),
+  load: async () => ({ company: await import("./company"), policy: await import("./policy"), tickets: (await import("./tickets.js")).set }),
   loadRecords: () => import("./finance"),
 };
