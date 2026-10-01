@@ -14,6 +14,7 @@ import { PageHeader, Html, Checks, Tag, SectionLabel, Empty } from "../component
 import { FrameworkPanel } from "../components/FrameworkPanel";
 import { path } from "../paths";
 import { ANALYST } from "../audit/jordan";
+import { company } from "../company";
 import {
   WEEK_CONTROLS, buildWeekAudit, retryTask, saveDraft, skipFriday, submitTask, unskipFriday, waTotals, weekAudit,
   type Answers, type Task,
@@ -114,8 +115,8 @@ export default function WeekAudit({ r }: { r: Route }) {
   const grc = path() === "grc", wa = weekAudit(), tt = waTotals();
   const header = (tabs?: React.ReactNode) => (
     <PageHeader icon={FileSearch} tint="bg-hue-sky/15 text-info" title={grc ? `Audit ${ANALYST.name}' week` : "Friday audit"}
-      sub={grc ? `You're Pacific Crest's internal auditor. ${ANALYST.name}, IAM Analyst, worked the Monday and Thursday service-desk shifts. Test the IAM controls against the evidence, write up what you find and review management's response.`
-        : "You switch sides for Friday: as internal auditor, you test your own Monday and Thursday against Pacific Crest's IAM controls. Optional."}>{tabs}</PageHeader>
+      sub={grc ? `You're ${company().name}'s internal auditor. ${ANALYST.name}, IAM Analyst, worked the Monday and Thursday service-desk shifts. Test the IAM controls against the evidence, write up what you find and review management's response.`
+        : `You switch sides for Friday: as internal auditor, you test your own Monday and Thursday against ${company().name}'s IAM controls. Optional.`}>{tabs}</PageHeader>
   );
 
   if (!grc && !wa) {

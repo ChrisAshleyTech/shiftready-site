@@ -1,15 +1,22 @@
 // Entra ID lab: the seed spec for a Microsoft Entra tenant, and grading of the read-only export.
 // Grading runs the simulator's own Monday ticket checks against the exported tenant state, so a
 // ticket done in Entra is scored exactly as the same ticket done in the app.
-import { buildUsers, ROLES } from "../../engine/company.js";
-import { TK } from "../../engine/tickets.js";
+// The lab is built on Pacific Crest, whichever company is active in the app.
+import * as Active from "../../engine/company.js";
+import * as PacificCrest from "../../packs/pacific-crest/company.js";
+import { T } from "../../packs/pacific-crest/tickets.js";
 import { S, setState } from "../../engine/store.js";
+
+const { buildUsers, ROLES } = PacificCrest;
+const TK: Record<string, any> = Object.fromEntries(T.map((t: any) => [t.id, t]));
 
 // Monday tickets that can be worked in the Entra admin center and checked from an export.
 export const LAB_TICKETS = ["REQ0018841", "REQ0018850", "REQ0018852", "REQ0018870", "REQ0018879", "REQ0018881"] as const;
 const LAB_USERS = ["maria.lopez", "robert.hayes", "tanya.wright", "sofia.ramirez", "rachel.adams", "ethan.moore", "bob.turner"];
 // Roles the tickets provision into, so every group the learner needs exists in the tenant.
 const TARGET_ROLES = ["Finance|AP Clerk", "Operations|Dispatcher", "HR|HR Generalist", "Sales|Account Executive"];
+
+export const labTitle = (id: string): string => TK[id].title;
 
 export type LabUser = { key: string; alias: string; name: string; empId: string; dept: string; title: string; enabled: boolean; groups: string[] };
 export type LabSpec = { company: string; users: LabUser[]; groups: string[] };
@@ -71,6 +78,10 @@ export function gradeExport(exp: LabExport): LabResult {
     });
   }
   const prev = S;
+  // Grading reads the engine's access matrix, so point it at Pacific Crest while grading.
+  const { ROLES: r, REQUESTABLE, SOD, ALL_GROUPS, BASE, fmtDay, buildUsers: b, HR_FEED } = Active;
+  const prevCompany = { ROLES: r, REQUESTABLE, SOD, ALL_GROUPS, BASE, fmtDay, buildUsers: b, HR_FEED };
+  Active.setCompanyData(PacificCrest);
   setState({ users, tickets: {}, log: [], active: null, clock: 480, grc: {} });
   try {
     const tickets = LAB_TICKETS.map(id => {
@@ -83,5 +94,5 @@ export function gradeExport(exp: LabExport): LabResult {
       return { id, title: t.title, lesson: t.lesson, checks, max, score: checks.reduce((s, c) => s + (c.pass ? c.pts : 0), 0) };
     });
     return { tickets, exportedAt: exp.exportedAt, score: tickets.reduce((s, t) => s + t.score, 0), max: tickets.reduce((s, t) => s + t.max, 0) };
-  } finally { setState(prev); }
+  } finally { setState(prev); Active.setCompanyData(prevCompany); }
 }

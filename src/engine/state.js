@@ -12,7 +12,9 @@ export let KEY = "pcl-iam-sim-v1";
 export let HAS_TICKETS = true;
 export function setCompanyState(key, hasTickets){ KEY = key; HAS_TICKETS = hasTickets; }
 export function fresh(){ return {users:buildUsers(),tickets:Object.fromEntries((HAS_TICKETS?T:[]).map(t=>[t.id,{status:"new",esc:[]}])),log:[],active:null,clock:480,grc:{}}; }
-function load(){ try{ const s=JSON.parse(localStorage.getItem(KEY)); if(s&&s.users&&s.tickets){ s.grc=s.grc||{}; return s; } }catch(e){} return fresh(); }
+// Progress saved before a company had tickets has none of them (and an older directory), so it
+// starts fresh.
+function load(){ try{ const s=JSON.parse(localStorage.getItem(KEY)); if(s&&s.users&&s.tickets&&!(HAS_TICKETS&&T.some(t=>!s.tickets[t.id]))){ s.grc=s.grc||{}; return s; } }catch(e){} return fresh(); }
 export function save(){ try{ localStorage.setItem(KEY,JSON.stringify(S)); }catch(e){} }
 
 export function init(){ setState(load()); if(S.shift==="thu") buildThu(); }

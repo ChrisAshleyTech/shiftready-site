@@ -9,6 +9,7 @@ import { S, U, C } from "@/engine/store.js";
 import { ROLES, buildUsers } from "@/engine/company.js";
 import { TK } from "@/engine/tickets.js";
 import { save } from "@/engine/state.js";
+import { SET } from "@/engine/ticketSet.js";
 import { ANALYST } from "./jordan";
 
 export type Who = "self" | "jordan";
@@ -58,20 +59,9 @@ function stateAt(uid: string, upto: number, base: any) {
 }
 const list = (gs: string[]) => gs.length ? gs.slice().sort().join(", ") : "None";
 
-// ---------- Populations (Pacific Crest ticket set) ----------
-const CALLERS = ["INC0041207", "INC0041209", "INC0041212", "INC0041220"];
-const JML: [string, string, string][] = [
-  ["REQ0018841", "maria.lopez", "Finance|AP Clerk"], ["REQ0018852", "tanya.wright", "Operations|Dispatcher"],
-  ["REQ0018870", "sofia.ramirez", "HR|HR Generalist"], ["REQ0018881", "ethan.moore", "Operations|Dispatcher"],
-  ["REQ0018912", "rachel.adams", "Sales|Account Executive"],
-];
-const LEAVERS: [string, string][] = [["REQ0018850", "robert.hayes"], ["INC0041231", "brian.walsh"]];
-const REQUESTS: [string, string, string | null][] = [
-  ["REQ0018855", "lisa.morales", "APP-SAP-AP-Approve"], ["REQ0018858", "omar.hassan", "APP-Salesforce-Reports"],
-  ["REQ0018866", "tyler.brooks", "ROLE-Global-Admin"], ["REQ0018873", "marcus.bell", null],
-  ["REQ0018910", "aisha.brown", "APP-WMS-Admin"],
-];
-export const POPULATION = { "APD-03": CALLERS.length, "APD-01": JML.length, "APD-02": LEAVERS.length, "ACC-01": REQUESTS.length } as const;
+// ---------- Populations (from the active company's ticket set) ----------
+const AUD = () => SET.audit;
+export const population = () => ({ "APD-03": AUD().callers.length, "APD-01": AUD().jml.length, "APD-02": AUD().leavers.length, "ACC-01": AUD().requests.length });
 
 const APD03_OPTS = ["Pass", "Exception: credential changed before the caller was verified", "Exception: credential changed for a caller who failed verification"];
 const APD01_OPTS = ["Pass", "Exception: access beyond the role", "Exception: role access missing", "Exception: access beyond the role and role access missing"];
@@ -134,32 +124,28 @@ function acc01([tid, , grp]: [string, string, string | null]): Row {
 
 // ---------- Finding content, by control ----------
 const fired = (k: string) => (S.thu || []).some((x: any) => x.key === k);
-const FINDING: Record<string, { pop: string; criteria: string; cause: string; effects: [string, string][]; generic: string; rec: string; resp: string }> = {
+const FINDING: Record<string, { pop: string; criteria: string; cause: string; generic: string; rec: string; resp: string }> = {
   "APD-03": { pop: "caller-initiated credential",
     criteria: "The runbook requires caller identity to be checked against the directory and recorded on the ticket before any credential change (control APD-03).",
     cause: "Verification is a manual step the directory doesn't enforce, so a credential can be changed before verification is recorded.",
-    effects: [["james", "An unverified reset let an attacker into James Carter's mailbox for three days (INC0041329)."], ["cfo", "An attacker impersonating the CFO got a $250,000 wire approved (INC0041320)."]],
     generic: "Anyone impersonating an employee on the phone could take over that employee's account.",
     rec: "Block credential changes in the directory until verification is recorded on the ticket, and review a weekly report of resets against verification entries.",
     resp: "We've reminded the desk to verify callers first. We consider this closed." },
   "APD-02": { pop: "leaver",
     criteria: "The leaver policy requires the account to be disabled, sessions revoked and all access removed on the termination date (control APD-02).",
     cause: "Offboarding is worked by hand from a checklist, and nothing checks that every step was completed before the ticket closes.",
-    effects: [["robert", "Robert Hayes opened 41 shipment records from home the night after his termination (INC0041308)."], ["brian", "A former employee exported 12,000 Salesforce contacts (INC0041311)."]],
     generic: "Former employees could keep reaching company systems and data after they leave.",
     rec: "Disable and revoke automatically from the HR termination event, and reconcile HR terminations to enabled accounts every day.",
     resp: "The analyst has been coached on the leaver checklist. No further action is planned." },
   "ACC-01": { pop: "access request",
     criteria: "The access policy allows only requestable access through requests, after recorded approval. SoD conflicts, admin roles and shared accounts are never granted on approval alone (control ACC-01).",
     cause: "The desk treats a manager's approval as enough. The request tool doesn't check whether access is requestable or conflicts with SoD rules.",
-    effects: [["lisa", "Lisa Morales approved her own $48,200 invoice (INC0041314)."], ["tyler", "A standing Global Admin account was used to forward the CFO's mail externally (INC0041318)."]],
     generic: "Users can end up with admin rights or conflicting access that nobody reviews until it's misused.",
     rec: "Enforce the requestable list and SoD rules in the request workflow so they can't be overridden by approval, and review every admin grant weekly.",
     resp: "Managers approved these requests, so the desk acted correctly. We don't agree with the finding." },
   "APD-01": { pop: "joiner, mover and returner",
     criteria: "The access matrix sets each role's birthright groups. Joiners, movers and returners get exactly those groups, and movers lose the old role's access (control APD-01).",
     cause: "Moves are processed by adding the new role's groups. Nothing prompts the analyst to remove the old role's access.",
-    effects: [["tanya", "Tanya Wright exported her old territory's Sales leads after moving to Operations (REQ0018921)."], ["ethan", "A new Dispatcher opened payroll reports with access copied from a peer (REQ0018915)."]],
     generic: "Access builds up beyond what each job needs (privilege creep).",
     rec: "Process moves by replacing the role, not adding to it, and compare every joiner and mover ticket's result with the access matrix before it closes.",
     resp: "We'll fix it in the next quarterly access review." },
@@ -177,10 +163,15 @@ export function buildWeekAudit(who: Who): WeekAudit {
   const self = who === "self";
   const A = self ? "you" : ANALYST.first, As = self ? "your" : `${ANALYST.first}'s`;
   const base = buildUsers();
+  const aud = AUD(), mgr = `${aud.manager.name} (${aud.manager.title})`;
   const tested: Record<string, Row[]> = {
-    "APD-03": CALLERS.map(apd03), "APD-01": JML.map(r => apd01(r, base)),
-    "APD-02": LEAVERS.map(r => apd02(r, base)), "ACC-01": REQUESTS.map(acc01),
+    "APD-03": aud.callers.map(apd03), "APD-01": aud.jml.map(r => apd01(r, base)),
+    "APD-02": aud.leavers.map(r => apd02(r, base)), "ACC-01": aud.requests.map(acc01),
   };
+  // A sampling question's options, and the indexes that belong in the population.
+  const pick = (c: "APD-03" | "APD-02") => ({ opts: aud.sampling[c].map(([id]) => `${id} · ${title(id)}`),
+    correct: aud.sampling[c].flatMap(([, inPop], i) => (inPop ? [i] : [])) });
+  const p03 = pick("APD-03"), p02 = pick("APD-02");
   const exc = (c: string) => tested[c].filter(r => r.correct !== 0);
   const unticketed = LOG().filter(e => !e.ticket).length;
   const top = ["APD-03", "APD-02", "ACC-01", "APD-01"].reduce((best, c) => (exc(c).length > exc(best).length ? c : best), "APD-03");
@@ -188,7 +179,7 @@ export function buildWeekAudit(who: Who): WeekAudit {
 
   const walkthrough: Task = {
     id: "W1", step: "Walkthrough", title: "Walk through a caller reset", ctrl: "APD-03", kind: "quiz", topics: ["testing", "verify"],
-    intro: `<p>Before testing, follow one transaction end to end. Victor Alvarez (IT Manager) walks you through how the desk handles a caller who needs a password reset:</p><ol><li>The call is logged as a ticket and the analyst selects <b>Start work</b>.</li><li>The analyst compares the caller's employee ID and manager with the directory record.</li><li>If both match, the analyst selects <b>Mark identity verified</b>, which writes an entry to the audit log.</li><li>The analyst resets the credential in the directory. The change is logged against the ticket.</li><li>The analyst resolves the ticket with a note.</li></ol><p>The controls in scope are listed under <b>Controls</b>.</p>`,
+    intro: `<p>Before testing, follow one transaction end to end. ${mgr} walks you through how the desk handles a caller who needs a password reset:</p><ol><li>The call is logged as a ticket and the analyst selects <b>Start work</b>.</li><li>The analyst compares the caller's employee ID and manager with the directory record.</li><li>If both match, the analyst selects <b>Mark identity verified</b>, which writes an entry to the audit log.</li><li>The analyst resets the credential in the directory. The change is logged against the ticket.</li><li>The analyst resolves the ticket with a note.</li></ol><p>The controls in scope are listed under <b>Controls</b>.</p>`,
     qs: [
       { q: "Which step is the key control for caller-initiated credential changes?", short: "Key control", correct: 1, pts: 2,
         opts: ["Logging the call as a ticket", "Comparing the caller's details with the directory and recording the verification before the change", "Resolving the ticket with a note", "Telling the caller their temporary password"] },
@@ -206,12 +197,10 @@ export function buildWeekAudit(who: Who): WeekAudit {
     id: "W2", step: "Sample selection", title: "Define the populations and pick the sample", ctrl: "All", kind: "quiz", topics: ["testing", "evidence"],
     intro: `<p>The audit period is ${As} Monday and Thursday shifts. Before you test anything, decide which tickets belong in each control's population and how many to test.</p>`,
     qs: [
-      { q: "Which tickets belong in the APD-03 population (caller-initiated credential changes)? Select all that apply.", short: "APD-03 population", multi: true, correct: [0, 2, 4, 6],
-        opts: [`INC0041207 · ${title("INC0041207")}`, `REQ0018850 · ${title("REQ0018850")}`, `INC0041209 · ${title("INC0041209")}`, `INC0041240 · ${title("INC0041240")}`, `INC0041212 · ${title("INC0041212")}`, `REQ0018841 · ${title("REQ0018841")}`, `INC0041220 · ${title("INC0041220")}`] },
-      { q: "Which tickets belong in the APD-02 leaver population? Select all that apply.", short: "APD-02 population", multi: true, correct: [0, 3],
-        opts: [`REQ0018850 · ${title("REQ0018850")}`, `REQ0018879 · ${title("REQ0018879")}`, `REQ0018852 · ${title("REQ0018852")}`, `INC0041231 · ${title("INC0041231")}`] },
-      { q: `The APD-01 population has ${JML.length} joiner, mover and returner tickets. How many do you test?`, short: "Sample size", correct: 0, pts: 2,
-        opts: [`All ${JML.length}. The population is small, so test every item.`, "1. The walkthrough covers the rest.", "2. A 40% sample is standard.", "None. HR integration tickets are automated."] },
+      { q: "Which tickets belong in the APD-03 population (caller-initiated credential changes)? Select all that apply.", short: "APD-03 population", multi: true, correct: p03.correct, opts: p03.opts },
+      { q: "Which tickets belong in the APD-02 leaver population? Select all that apply.", short: "APD-02 population", multi: true, correct: p02.correct, opts: p02.opts },
+      { q: `The APD-01 population has ${aud.jml.length} joiner, mover and returner tickets. How many do you test?`, short: "Sample size", correct: 0, pts: 2,
+        opts: [`All ${aud.jml.length}. The population is small, so test every item.`, "1. The walkthrough covers the rest.", "2. A 40% sample is standard.", "None. HR integration tickets are automated."] },
       { q: "Where should the list of tickets in the period come from?", short: "Population source", correct: 0, pts: 2,
         opts: ["A system export of tickets for the period, with the query and run date, reconciled to the audit log", `A list ${self ? "you write" : `${ANALYST.first} writes`} of the tickets worked`, "Whatever tickets you can remember"] },
     ],
@@ -242,9 +231,9 @@ export function buildWeekAudit(who: Who): WeekAudit {
   };
 
   const f = FINDING[top];
-  const n = POPULATION[top as keyof typeof POPULATION];
+  const n = tested[top].length;
   const ids = exc(top).map(r => r.name.split(" · ")[0]).join(", ");
-  const effect = f.effects.find(([k]) => fired(k))?.[1] ?? f.generic;
+  const effect = (aud.effects[top] ?? []).find(([k]) => fired(k))?.[1] ?? f.generic;
   const finding: Task = totalExc ? {
     id: "W5", step: "Finding", title: `Write the ${top} finding`, ctrl: top, kind: "quiz", topics: ["finding"],
     intro: `<p>${top} had the most exceptions: ${topN} of ${n} tickets tested. Build the finding. Pick the strongest statement for each element.</p>`,
@@ -282,7 +271,7 @@ export function buildWeekAudit(who: Who): WeekAudit {
 
   const response: Task = {
     id: "W7", step: "Management response", title: "Evaluate the management response", ctrl: totalExc ? top : "All", kind: "quiz", topics: ["remediation"],
-    evidence: [["Response from Victor Alvarez (IT Manager)", `"${totalExc ? f.resp : "Thanks. We'll keep doing what we're doing."}"`]],
+    evidence: [[`Response from ${mgr}`, `"${totalExc ? f.resp : "Thanks. We'll keep doing what we're doing."}"`]],
     intro: "<p>You shared the draft finding with management. Evaluate their response before the report goes out.</p>",
     qs: [
       { q: "Is the response adequate?", short: "Adequacy", correct: 1, pts: 2,

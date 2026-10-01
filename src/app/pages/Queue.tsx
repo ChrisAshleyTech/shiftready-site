@@ -22,7 +22,7 @@ import { PageHeader, Pri, Status, Mode, Score, Tag, UserTags, Checks, Html, Sect
 import { MatrixTable, SodTable } from "./Reference";
 import { IllusQueue } from "@/components/brand/illustrations";
 import { FrameworkPanel } from "../components/FrameworkPanel";
-import { TICKET_TOPICS } from "../frameworks";
+import { ticketTopics } from "../frameworks";
 import { path, showFrameworks } from "../paths";
 
 const useWide = () => {
@@ -264,7 +264,7 @@ function Ticket({ id, wide }: { id: string; wide: boolean }) {
                   <span>Another ticket is active. Make this one active before working on it, so changes are logged against it.</span>
                   <Button variant="outline" onClick={() => A.resume(id)}>Make this the active ticket</Button></div>)
             : <Working key={id} id={id} />}
-          {showFrameworks() && <FrameworkPanel topics={TICKET_TOPICS[id] || []} graded={closed} />}
+          {showFrameworks() && <FrameworkPanel topics={ticketTopics(id)} graded={closed} />}
         </TabsContent>
         <TabsContent value="activity" className="pt-5"><Activity id={id} /></TabsContent>
         <TabsContent value="hints" className="pt-5"><Hints id={id} /></TabsContent>

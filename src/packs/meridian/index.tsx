@@ -9,6 +9,7 @@ export const pack: CompanyPack = {
   industry: "Aerospace and defense",
   frameworks: "CMMC Level 2, NIST SP 800-171",
   storageKey: "verdelit-sim-meridian-v1",
+  domain: "meridianaero.com",
   hasTickets: false,
   Mark,
   appIcon: iconByPrefix({

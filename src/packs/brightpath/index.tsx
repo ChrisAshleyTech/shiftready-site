@@ -9,6 +9,7 @@ export const pack: CompanyPack = {
   industry: "Software",
   frameworks: "SOC 2",
   storageKey: "verdelit-sim-brightpath-v1",
+  domain: "brightpath.io",
   hasTickets: false,
   Mark,
   appIcon: iconByPrefix({

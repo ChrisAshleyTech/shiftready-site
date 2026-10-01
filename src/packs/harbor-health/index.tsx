@@ -9,6 +9,7 @@ export const pack: CompanyPack = {
   industry: "Healthcare",
   frameworks: "HIPAA Security Rule",
   storageKey: "verdelit-sim-harbor-health-v1",
+  domain: "harborhealth.org",
   hasTickets: false,
   Mark,
   appIcon: iconByPrefix({

@@ -7,13 +7,15 @@ import { finalScore, hintsUsed } from "./state.js";
 import { HINTS } from "./hints.js";
 import { skillScores, summary } from "./skills.js";
 import { G } from "./grc.js";
+import { SET } from "./ticketSet.js";
 
 export function buildReport(name){
   const s = summary(), sk = skillScores();
   const tickets = list => list.map(t => { const ts = S.tickets[t.id];
     // [id, final score x10, max, hint tiers used, 1 resolved / 2 rejected / 0 open, skill, title (Thursday only)]
     const row = [t.id, ts.checks ? Math.round(finalScore(ts) * 10) : -1, ts.max || 0, hintsUsed(ts), ts.checks ? (ts.status === "resolved" ? 1 : 2) : 0, (HINTS[t.id] || {}).skill || ""];
-    if (!T.includes(t)) row.push(t.title);
+    // Pacific Crest's Monday titles are known to every reader; other companies' are stored.
+    if (!T.includes(t) || SET.id !== "pacific-crest") row.push(t.title);
     return row; });
   const shift = (x, list) => x ? { pct: x.pct, sc: x.sc, mx: x.mx, done: x.done, n: list.length, solo: x.solo, assisted: x.assisted } : null;
   return {
@@ -40,5 +42,5 @@ export function decodeReport(str){
   } catch (e) {}
   return null;
 }
-// Monday titles are static, so they aren't stored in the link.
+// Pacific Crest's Monday titles are static, so they aren't stored in the link.
 export const ticketTitle = row => row[6] || (TK[row[0]] ? TK[row[0]].title : row[0]);

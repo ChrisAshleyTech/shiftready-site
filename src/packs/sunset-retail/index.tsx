@@ -9,6 +9,7 @@ export const pack: CompanyPack = {
   industry: "Retail",
   frameworks: "PCI DSS v4.0.1, SOX ITGC",
   storageKey: "verdelit-sim-sunset-retail-v1",
+  domain: "sunsetretail.com",
   hasTickets: false,
   Mark,
   appIcon: iconByPrefix({

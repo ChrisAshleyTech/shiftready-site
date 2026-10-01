@@ -11,3 +11,4 @@ export function verifiedBefore(tid: string, acts: string[], target: string): boo
 export function approvalBefore(tid: string, test: (e: any) => boolean): boolean;
 export const esc: (ts: any, who: string) => boolean;
 export const sodConflicts: (id: string) => string[][];
+export const monEsc: (tid: string, who: string) => boolean;

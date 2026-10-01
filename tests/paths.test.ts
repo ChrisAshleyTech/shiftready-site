@@ -6,10 +6,10 @@ import { T, TK } from "../src/engine/tickets.js";
 import { startThursday, THU_T, BASE_THU, CONSEQ } from "../src/engine/thursday.js";
 import * as st from "../src/engine/state.js";
 import { encodeReport, decodeReport } from "../src/engine/report.js";
-import { playJordanWeek, MISTAKES } from "../src/app/audit/jordan";
+import { playJordanWeek, mistakes } from "../src/app/audit/jordan";
 import { buildWeekAudit, gradeTask, submitTask, waTotals, type Task, type Answers } from "../src/app/audit/weekAudit";
 import { stateKey } from "../src/app/pathStore";
-import { TOPICS, TICKET_TOPICS } from "../src/app/frameworks";
+import { TOPICS, ticketTopics } from "../src/app/frameworks";
 // @ts-ignore: plain JS test helper
 import { PLAYBOOK } from "./playbook.js";
 
@@ -26,7 +26,7 @@ describe("Jordan Reyes' week", () => {
     const all = [...T, ...THU_T];
     all.forEach((t: any) => expect(S.tickets[t.id].checks, t.id).toBeTruthy());
     const imperfect = all.filter((t: any) => S.tickets[t.id].score < S.tickets[t.id].max).map((t: any) => t.id).sort();
-    expect(imperfect).toEqual(Object.keys(MISTAKES).filter(k => k !== "unticketed").sort());
+    expect(imperfect).toEqual(Object.keys(mistakes()).filter(k => k !== "unticketed").sort());
   });
   it("Monday's mistakes come back on Thursday", () => {
     playJordanWeek();
@@ -110,7 +110,7 @@ describe("paths", () => {
 describe("framework panels", () => {
   it("every Monday and Thursday ticket maps to known topics", () => {
     const ids = [...T.map((t: any) => t.id), ...BASE_THU.map((t: any) => t.id), ...CONSEQ.map((c: any) => c.make("james.carter").id)];
-    ids.forEach(id => { expect(TICKET_TOPICS[id], id).toBeTruthy(); TICKET_TOPICS[id].forEach(k => expect(TOPICS[k], `${id}: ${k}`).toBeTruthy()); });
+    ids.forEach(id => { expect(ticketTopics(id).length, id).toBeGreaterThan(0); ticketTopics(id).forEach(k => expect(TOPICS[k], `${id}: ${k}`).toBeTruthy()); });
   });
   it("quotes only public-domain text; ISO, SOC 2 and PCI get summaries", () => {
     Object.values(TOPICS).flatMap(t => t.refs).forEach(r => {

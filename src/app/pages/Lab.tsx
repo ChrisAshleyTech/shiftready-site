@@ -7,8 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { EarlyAccess } from "@/components/brand/EarlyAccess";
-import { TK } from "@/engine/tickets.js";
-import { LAB_TICKETS, ExportError, gradeExport, labSpec, parseExport, type LabResult } from "../lab/entra";
+import { LAB_TICKETS, labTitle, ExportError, gradeExport, labSpec, parseExport, type LabResult } from "../lab/entra";
 import { PageHeader, Checks, SectionLabel, Tag } from "../components/bits";
 
 const SCRIPTS = [
@@ -111,7 +110,7 @@ function RunScripts() {
         <ul className="divide-y rounded-lg border">
           {LAB_TICKETS.map(id => (
             <li key={id} className="space-y-1 px-4 py-3">
-              <div className="flex flex-wrap items-center gap-2"><Tag className="font-mono">{id}</Tag><span className="font-medium">{TK[id].title}</span></div>
+              <div className="flex flex-wrap items-center gap-2"><Tag className="font-mono">{id}</Tag><span className="font-medium">{labTitle(id)}</span></div>
               <p className="text-sm text-muted-foreground">{TODO[id]}</p>
             </li>
           ))}

@@ -17,6 +17,7 @@ import { Meter, Tag } from "../components/bits";
 import { PathPicker } from "../components/PathPicker";
 import { IllusWeek } from "@/components/brand/illustrations";
 import { company } from "../company";
+import { brandFor, deskShort } from "@/packs/brands";
 import { path, pathChosen, pathInfo } from "../paths";
 import { weekAudit, waTotals } from "../audit/weekAudit";
 import { ANALYST } from "../audit/jordan";
@@ -80,7 +81,7 @@ function iamHero(): Hero {
         p: "You're the internal auditor now, testing your own Monday and Thursday. Report what the evidence shows, including your own mistakes.",
         a: <><Button asChild size="lg" className={ON_BLUE}><a href="#/audit">Continue the Friday audit <ArrowRight /></a></Button><Button asChild size="lg" variant="outline" className={ON_BLUE_OUTLINE}><a href="#/week">Week summary</a></Button></>, prog: wt }
     : { k: "Thursday complete · Friday is next", t: `Week score: ${pct(s.weekPct)}. Now audit it.`,
-        p: "On Friday you switch sides. As the internal auditor, you test your own week against Pacific Crest's IAM controls. It's optional: you can skip straight to the week summary.",
+        p: `On Friday you switch sides. As the internal auditor, you test your own week against ${company().name}'s IAM controls. It's optional: you can skip straight to the week summary.`,
         a: <><Button asChild size="lg" className={ON_BLUE}><a href="#/audit">Start the Friday audit <ArrowRight /></a></Button><Button asChild size="lg" variant="outline" className={ON_BLUE_OUTLINE}><a href="#/week">Skip to the week summary</a></Button></> };
   return { k: "Week complete", t: `Week score: ${pct(s.weekPct)}`,
     p: p === "iam-grc" && wa ? `Friday audit: ${pct(wt.pct)}. Your week summary and readiness report are ready.` : "Your week summary and readiness report are ready to share.",
@@ -95,8 +96,8 @@ function grcHero(): Hero {
     a: <><Button asChild size="lg" className={ON_BLUE}><a href={`#/audit/${wa.tasks[0].id}`}>Start with the walkthrough <ArrowRight /></a></Button><Button asChild size="lg" variant="outline" className={ON_BLUE_OUTLINE}><a href="#/log">Look at the audit log</a></Button></> };
   if (next) return { k: "Audit in progress", t: `${wt.done} of ${wt.n} tasks submitted`, p: `Score so far ${pct(wt.pct)}.`,
     a: <><Button asChild size="lg" className={ON_BLUE}><a href={`#/audit/${next.id}`}>Next: {next.step} <ArrowRight /></a></Button><Button asChild size="lg" variant="outline" className={ON_BLUE_OUTLINE}><a href="#/log">Audit log</a></Button></>, prog: wt };
-  return { k: "Audit complete", t: `Audit score: ${pct(wt.pct)}`, p: "Your readiness report is ready to share. The Q3 SOX audit desk has ten more audit tasks if you want more practice.",
-    a: <><Button asChild size="lg" className={ON_BLUE}><a href="#/report">View your readiness report <ArrowRight /></a></Button><Button asChild size="lg" variant="outline" className={ON_BLUE_OUTLINE}><a href="#/grc">Open the Q3 SOX desk</a></Button></> };
+  return { k: "Audit complete", t: `Audit score: ${pct(wt.pct)}`, p: `Your readiness report is ready to share. The ${brandFor(company().id).desk} has ${G.length} more audit tasks if you want more practice.`,
+    a: <><Button asChild size="lg" className={ON_BLUE}><a href="#/report">View your readiness report <ArrowRight /></a></Button><Button asChild size="lg" variant="outline" className={ON_BLUE_OUTLINE}><a href="#/grc">Open the {deskShort(company().id)}</a></Button></> };
 }
 
 function days(): Day[] {
@@ -163,7 +164,7 @@ export default function Home() {
           <Stat k="Audit score" v={pct(wt.pct)} d={`${wt.done}/${wt.n} tasks submitted`} />
           <Stat k="Tickets in scope" v={String(T.length + THU_T.length)} d={`${ANALYST.first}'s Monday and Thursday`} />
           <Stat k="Audit log" v={String(S.log.length)} d="Entries to test against" />
-          <Stat k="Q3 SOX desk" v={pct(summary().grc.pct)} d={`${summary().grc.done}/${G.length} extra tasks`} />
+          <Stat k={deskShort(company().id).replace(/^./, c => c.toUpperCase())} v={pct(summary().grc.pct)} d={`${summary().grc.done}/${G.length} extra tasks`} />
         </> : <>
           <Stat k="Monday" v={pct(s.mon.pct)} d={`${s.mon.done}/${T.length} closed`} />
           <Stat k="Thursday" v={S.shift === "thu" ? pct(s.thu.pct) : "–"} d={S.shift === "thu" ? `${s.thu.done}/${THU_T.length} closed` : "Unlocks after Monday"} />
@@ -188,7 +189,7 @@ export default function Home() {
               </li>
             ))}
           </ol>
-          {p === "iam-grc" && <p className="text-sm text-muted-foreground">More audit practice: the <a className="text-primary underline-offset-2 hover:underline" href="#/grc">Q3 SOX audit desk</a> has {G.length} tasks on Pacific Crest's SOX controls.</p>}
+          {p === "iam-grc" && <p className="text-sm text-muted-foreground">More audit practice: the <a className="text-primary underline-offset-2 hover:underline" href="#/grc">{brandFor(company().id).desk}</a> has {G.length} tasks on {company().name}'s access controls.</p>}
         </section>
 
         {grc && wa ? (

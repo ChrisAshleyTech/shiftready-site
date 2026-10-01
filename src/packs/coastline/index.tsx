@@ -9,6 +9,7 @@ export const pack: CompanyPack = {
   industry: "Banking",
   frameworks: "GLBA (NCUA Part 748), FFIEC",
   storageKey: "verdelit-sim-coastline-v1",
+  domain: "coastlinecu.org",
   hasTickets: false,
   Mark,
   appIcon: iconByPrefix({

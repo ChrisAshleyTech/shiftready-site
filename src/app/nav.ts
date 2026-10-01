@@ -1,6 +1,8 @@
 // Route map for the admin-center layout: nav sections, breadcrumb trail and page titles.
 import { BookOpenText, CalendarCheck, ClipboardCheck, FileBarChart2, FileSearch, FlaskConical, Home, Inbox, ListChecks, ScrollText, Settings, Users, UsersRound, Workflow, type LucideIcon } from "lucide-react";
 import { inPath, path } from "./paths";
+import { company } from "./company";
+import { brandFor } from "@/packs/brands";
 
 export type NavItem = { k: string; label: string; icon: LucideIcon; early?: boolean };
 export type NavSection = { label: string; items: NavItem[] };
@@ -16,8 +18,10 @@ export const NAV: NavSection[] = [
   { label: "Account", items: [{ k: "settings", label: "Settings", icon: Settings }] },
 ];
 
-// The week audit is the learner's own Friday on IAM + GRC, and Jordan's week on GRC only.
-const label = (i: NavItem) => (i.k === "audit" && path() === "grc" ? "Audit Jordan's week" : i.label);
+// The week audit is the learner's own Friday on IAM + GRC, and Jordan's week on GRC only. The GRC
+// desk is named after the company's audit.
+const label = (i: NavItem) => (i.k === "audit" && path() === "grc" ? "Audit Jordan's week" : i.k === "grc" ? deskName() : i.label);
+const deskName = () => { const d = brandFor(company().id).desk; return d[0].toUpperCase() + d.slice(1); };
 const byKey = Object.fromEntries(NAV.flatMap(s => s.items.map(i => [i.k, { ...i, section: s.label }])));
 export const pageInfo = (k: string) => { const i = byKey[k] as (NavItem & { section: string }) | undefined; return i && { ...i, label: label(i) }; };
 // The nav for the current path: screens outside it are hidden, and empty sections dropped.

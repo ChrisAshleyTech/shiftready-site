@@ -6,6 +6,8 @@
 //   - ISO/IEC 27001:2022, SOC 2 (AICPA Trust Services Criteria) and PCI DSS v4.0.1 are copyrighted,
 //     so we show only the ID (and ISO's control name) with our own plain-English summary, and link to
 //     the official source. PCI DSS IDs were checked against Microsoft's PCI DSS v4 mapping pages.
+import { SET } from "@/engine/ticketSet.js";
+
 export type Fw = "nist" | "hipaa" | "iso" | "soc2" | "pci";
 export type Ref = { fw: Fw; id: string; name?: string; family: string; quote?: string; summary?: string };
 
@@ -162,19 +164,10 @@ export const TOPICS: Record<string, { label: string; why: string; refs: Ref[] }>
 };
 
 // Topics for each ticket (Pacific Crest).
-export const TICKET_TOPICS: Record<string, string[]> = {
-  REQ0018841: ["jml"], INC0041207: ["verify"], INC0041209: ["verify"], INC0041212: ["verify", "incident"],
-  REQ0018850: ["leaver"], REQ0018852: ["jml"], REQ0018855: ["sod", "request"], REQ0018858: ["request"],
-  INC0041220: ["verify", "incident"], REQ0018861: ["contractor"], TSK0007712: ["inactive", "service"],
-  INC0041231: ["leaver", "incident"], REQ0018866: ["privileged"], REQ0018870: ["jml"], REQ0018873: ["shared"],
-  REQ0018876: ["review"], REQ0018879: ["leave"], REQ0018881: ["jml"], REQ0018884: ["sod", "evidence"],
-  INC0041240: ["incident"],
-  REQ0018910: ["privileged", "request"], REQ0018912: ["jml"], INC0041302: ["inactive", "incident"],
-  INC0041305: ["service"], INC0041308: ["leaver", "incident"], INC0041311: ["leaver", "incident"],
-  INC0041314: ["sod", "incident"], REQ0018915: ["jml"], INC0041318: ["privileged", "incident"],
-  INC0041320: ["verify", "incident"], INC0041323: ["contractor"], INC0041326: ["incident"],
-  INC0041329: ["verify", "incident"], REQ0018918: ["review"], REQ0018921: ["jml"],
-};
+
+// Topics for a ticket at the active company.
+export const ticketTopics = (id: string): string[] => SET.topics[id] || [];
+
 
 // Unique references for a set of topics, grouped by framework in a fixed order.
 export function refsFor(topics: string[]) {
