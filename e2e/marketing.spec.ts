@@ -96,7 +96,7 @@ test("mega-nav: dropdowns open, arrow keys move, Escape closes and returns focus
   await tracks.click();
   await expect(tracks).toHaveAttribute("aria-expanded", "true");
   await expect(page.getByRole("link", { name: /GRC Audit/ })).toBeVisible();
-  await expect(page.getByRole("link", { name: /PAM/ }).first()).toContainText("Early access");
+  await expect(page.getByRole("link", { name: /PAM/ }).first()).not.toContainText("Early access");
   await page.keyboard.press("ArrowDown");
   await expect(page.locator("[data-menu-item]").first()).toBeFocused();
   await page.keyboard.press("Escape");
@@ -250,15 +250,15 @@ test("pre-rendered HTML contains the page content before JavaScript", async ({ r
   expect(html).toContain("Know you can do the job");
 });
 
-test("landing and Tracks explain the paths: IAM, GRC and PAM (early access)", async ({ page }) => {
+test("landing and Tracks explain the paths: IAM, GRC and PAM", async ({ page }) => {
   for (const [p, link] of [["/", "/tracks/#grc"], ["/tracks/", "/app/"]] as const) {
     await page.goto(p);
     const s = page.getByRole("region", { name: "Choose your path" });
-    await expect(s.getByRole("heading", { level: 3 })).toHaveText(["IAM", "GRC", "PAMEarly access"]);
+    await expect(s.getByRole("heading", { level: 3 })).toHaveText(["IAM", "GRC", "PAM"]);
     await expect(s).toContainText("IAM + GRC");
     await expect(s).toContainText("GRC only");
     await expect(s.locator(`a[href="${link}"]`).first()).toBeVisible();
   }
-  // PAM isn't in the app yet, so the Tracks page doesn't send anyone there for it.
-  await expect(page.getByRole("region", { name: "Choose your path" }).getByRole("link")).toHaveCount(2);
+  // Every area is in the app now, so the Tracks page links each one there.
+  await expect(page.getByRole("region", { name: "Choose your path" }).getByRole("link")).toHaveCount(3);
 });

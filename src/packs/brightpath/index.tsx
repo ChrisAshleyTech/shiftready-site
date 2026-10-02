@@ -33,6 +33,8 @@ export const pack: CompanyPack = {
     "APP-HRIS": "Growing software companies often use Rippling, BambooHR or Workday.",
     "APP-ERP": "Finance often runs on NetSuite or QuickBooks, with Bill or Ramp for payables.",
   }),
+  fw: ["soc2", "iso"],
+  loadPam: async () => (await import("./pam.js")).pam,
   load: async () => ({ company: await import("./company"), policy: await import("./policy"), tickets: (await import("./tickets.js")).set }),
   loadRecords: () => import("./finance"),
 };

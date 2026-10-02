@@ -4,7 +4,7 @@ export type Item = { id: string; name: string; text: string; early?: boolean; hr
 export const TRACKS: Item[] = [
   { id: "iam-ops", name: "IAM Ops", text: "Service-desk identity operations: lifecycle, credentials, access requests and incidents across two shifts.", href: "/tracks/#iam-ops" },
   { id: "grc", name: "GRC Audit", text: "Test provisioning, termination and review controls, rate deficiencies, review a SOC 2 report and write findings.", href: "/tracks/#grc" },
-  { id: "pam", name: "PAM", text: "Just-in-time elevation, break-glass accounts, credential rotation and privileged session review.", early: true, href: "/tracks/#pam" },
+  { id: "pam", name: "PAM", text: "Just-in-time elevation, break-glass accounts, credential rotation and privileged session review.", href: "/tracks/#pam" },
 ];
 
 export type Industry = { id: string; name: string; industry: string; frameworks: string; early?: boolean };

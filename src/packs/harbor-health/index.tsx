@@ -30,6 +30,8 @@ export const pack: CompanyPack = {
     "APP-Service-Desk": "ServiceNow is the most common IT service desk in health systems.",
     "ROLE-EHR-BreakGlass": "Break-glass is a standard EHR feature: a reason is required, and every use appears in the privacy team's audit reports.",
   }),
+  fw: ["hipaa", "nist"],
+  loadPam: async () => (await import("./pam.js")).pam,
   load: async () => ({ company: await import("./company"), policy: await import("./policy"), tickets: (await import("./tickets.js")).set }),
   loadRecords: () => import("./finance"),
 };

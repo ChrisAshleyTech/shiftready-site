@@ -20,6 +20,8 @@ export const pack: CompanyPack = {
     "APP-SAP": "ledger", "APP-Salesforce": "crm", "APP-CargoWise": "truck", "APP-WMS": "boxes", "APP-Workday": "people",
     "APP-ServiceNow": "ticket", "GRP-": "group", "ROLE-": "key", "SVC-": "gear",
   }),
+  fw: ["nist", "sox"],
+  loadPam: async () => (await import("./pam.js")).pam,
   load: async () => ({ company, policy, tickets }),
   loadRecords: () => import("./finance"),
 };

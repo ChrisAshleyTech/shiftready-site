@@ -1,0 +1,97 @@
+// Brightpath SaaS's PAM shift. The kit (lib/pamKit.js) supplies grading, hints, the playbook and
+// the PAM runbook; this file is the story. Lessons cite the SOC 2 Trust Services Criteria and
+// ISO/IEC 27001:2022 Annex A.
+import { buildPam } from "../lib/pamKit.js";
+import * as company from "./company";
+import * as policy from "./policy";
+
+const TSC = id => ({ label: `SOC 2 ${id}`, href: "https://www.aicpa-cima.com/resources/landing/system-and-organization-controls-soc-suite-of-services" });
+const ISO = id => ({ label: `ISO/IEC 27001:2022 ${id}`, href: "https://www.iso.org/standard/27001" });
+const SRE = "Engineering|Site Reliability Engineer", ENG = ["GRP-All-Staff", "APP-Office-Suite", "APP-Chat", "GRP-Engineering", "APP-Code-Repo", "APP-Observability", "APP-Cloud-Console-ReadOnly", "APP-CI-CD-Deploy-Prod"];
+
+export const pam = buildPam({
+  id: "brightpath",
+  eligible: { [SRE]: ["ROLE-Cloud-Prod-Admin"], "IT|IT Administrator": ["ROLE-IdP-Admin"], "Security|Head of Security": ["ROLE-SIEM-Admin"], "Vendors|Database Vendor Support": ["ROLE-DB-Admin"] },
+  also: ["ROLE-Global-Admin"],
+  roles: { "Vendors|Database Vendor Support": ["GRP-Contractors"] },
+  cast: [
+    ["theo.marsh", "Theo Marsh", "BP-0161", SRE, "Raul Dominguez"],
+    ["nora.quist", "Nora Quist", "BP-0163", SRE, "Raul Dominguez", { groups: [...ENG, "ROLE-Cloud-Prod-Admin"] }],
+    ["ezra.kim", "Ezra Kim", "BP-0165", "Customer Success|Support Engineer", "Priya Shankar", { groups: ["GRP-All-Staff", "APP-Office-Suite", "APP-Chat", "APP-Support-Desk", "APP-Customer-Impersonation", "ROLE-Cloud-Prod-Admin"] }],
+    ["freya.lund", "Freya Lund", "BP-0167", SRE, "Raul Dominguez"],
+    ["omar.reyes", "Omar Reyes", "BP-0169", SRE, "Raul Dominguez", { groups: [...ENG, "ROLE-Cloud-Prod-Admin"], jit: { "ROLE-Cloud-Prod-Admin": 2 } }],
+    ["maddox.reed", "Maddox Reed", "BP-0171", "Engineering|Software Engineer", "Tamsin Okoro"],
+    ["sven.aalto", "Sven Aalto", "BPV-0081", "Vendors|Database Vendor Support", "Raul Dominguez (sponsor)", { type: "Contractor", enabled: false, expiry: 150, last: 19 }],
+    ["bg-admin-01", "bg-admin-01", "BG-01", null, "Adrienne Cole (owner)", { dept: "Security", title: "Break-glass account: emergency Global Admin", type: "Break-glass", groups: ["ROLE-Global-Admin"], enabled: false, mfa: false, last: 175 }],
+  ],
+  cite: { "pam-jit": [TSC("CC6.3"), ISO("A.8.2")], "pam-eligible": [TSC("CC6.2"), ISO("A.5.18")], "pam-breakglass": [TSC("CC6.1"), ISO("A.8.2")],
+    "pam-vault": [TSC("CC6.1"), ISO("A.5.17")], "pam-session": [TSC("CC7.2"), ISO("A.8.15")], "pam-vendor": [TSC("CC9.2"), ISO("A.5.19")], "pam-shared": [TSC("CC6.1"), ISO("A.5.16")] },
+  mon: {
+    jit: { id: "REQ0052101", uid: "theo.marsh", group: "ROLE-Cloud-Prod-Admin", hours: 2, change: "CHG0050871", approver: "Raul Dominguez",
+      what: "scale up the production database cluster before today's product launch", from: "Theo Marsh", channel: "Chat", opened: "6:50 AM",
+      lesson: "Activate an eligible role for the approved window only, with the approval on the ticket first. SOC 2 CC6.3; ISO 27001 A.8.2 (privileged access rights)." },
+    breakGlass: { id: "INC0085101", uid: "adrienne.cole", bg: "bg-admin-01", title: "Emergency: admins locked out, need break-glass", from: "Adrienne Cole", channel: "Phone", opened: "7:05 AM",
+      body: "<p>\"It's Adrienne. Our identity provider is having a major outage and none of the engineers can sign in to the cloud console. Customers are seeing errors and the status page is red. I'm declaring an emergency. I need bg-admin-01 enabled.\"</p>",
+      lesson: "Break-glass access is real admin power with no MFA in front of it. Verify the caller, enable only the documented account, and tell Security straight away. SOC 2 CC6.1." },
+    notEligible: { id: "REQ0052104", uid: "maddox.reed", group: "ROLE-Cloud-Prod-Admin", title: "Production admin for debugging", from: "Maddox Reed", channel: "Chat", opened: "7:25 AM",
+      body: "<p>I keep having to ask the SREs to pull logs and restart pods for me. If I had prod admin I could debug the billing service myself. Tamsin's approved it.</p>",
+      alt: "explain that Software Engineers aren't eligible for ROLE-Cloud-Prod-Admin. Production debugging goes through an SRE, or read-only observability access.",
+      lesson: "Eligibility for a privileged role comes from the job. A manager's approval can't add a role the job doesn't include. SOC 2 CC6.3 (least privilege)." },
+    rotate: { id: "REQ0052107", svc: "svc-ci-deployer", down: "Production deploys from the CI pipeline", title: "svc-ci-deployer key committed to a public repo", from: "Jun Takahashi", channel: "Chat", opened: "7:40 AM",
+      body: "<p>Secret scanning caught the <span class=\"mono\">svc-ci-deployer</span> credential in a commit to one of our public open-source repos 40 minutes ago. The commit has been reverted, but it's in the history and bots scrape these within minutes.</p><p>Please deal with the credential. The launch deploys go out through this account today.</p>",
+      lesson: "An exposed service credential is rotated, not disabled. Deploys keep working and the leaked secret stops working. SOC 2 CC6.1; ISO 27001 A.5.17 (authentication information)." },
+    standing: { id: "TSK0016101", holders: [["nora.quist", "ROLE-Cloud-Prod-Admin"], ["ezra.kim", "ROLE-Cloud-Prod-Admin"]], bg: "bg-admin-01", bgGroup: "ROLE-Global-Admin",
+      title: "PAM report: standing privileged memberships", from: "PAM vault (weekly report)", channel: "Automated", opened: "8:00 AM",
+      body: "<p>These accounts hold a vaulted role permanently instead of activating it:</p><ul><li><span class=\"mono\">nora.quist</span>: ROLE-Cloud-Prod-Admin (since the vault migration)</li><li><span class=\"mono\">ezra.kim</span>: ROLE-Cloud-Prod-Admin (added for a customer escalation in May)</li><li><span class=\"mono\">bg-admin-01</span>: ROLE-Global-Admin</li></ul><p>Clean up the standing access per the PAM runbook.</p>",
+      lesson: "Standing production admin is exactly what SOC 2 auditors test for. Remove it, except where the runbook documents an exception. SOC 2 CC6.2, CC6.3." },
+    adminLeaver: { id: "REQ0052110", uid: "hana.kobayashi", svc: "svc-db-backup", title: "Termination: Hana Kobayashi, Site Reliability Engineer", from: "HR system (automated)", channel: "HR integration", opened: "8:15 AM",
+      body: "<p>Involuntary termination, effective 11:00 AM today. Remove all access before the meeting.</p><p>PAM vault note: Hana checked out the <span class=\"mono\">svc-db-backup</span> password on Tuesday and it hasn't been rotated since.</p>",
+      lesson: "An admin leaver's access ends only when what they knew stops working: rotate any credential they checked out. SOC 2 CC6.2; ISO 27001 A.5.18." },
+    vendor: { id: "REQ0052113", uid: "sven.aalto", group: "ROLE-DB-Admin", hours: 2, title: "Vendor support session: database replication fix", from: "Raul Dominguez", channel: "Portal", opened: "8:30 AM",
+      body: "<p>Sven from our database vendor needs admin on the production database to fix the replication lag we've had since Friday. The session is booked from 9:00 to 11:00 AM. His account is off between sessions.</p>",
+      lesson: "Vendor access is opened for one approved session: sponsor approval, the account enabled, the role for the session only. SOC 2 CC9.2 (vendor risk); ISO 27001 A.5.19." },
+    noChange: { id: "REQ0052116", uid: "freya.lund", group: "ROLE-Cloud-Prod-Admin", target: "The production Kubernetes cluster", title: "Prod admin for the weekend", from: "Freya Lund", channel: "Chat", opened: "9:00 AM",
+      body: "<p>I want to clean up unused namespaces in the production cluster this weekend while traffic is low. Can you activate prod admin for me from Friday evening to Sunday night, about 48 hours? No change ticket, it's just tidying.</p>",
+      alt: "explain that eligibility isn't enough: the work needs an approved change, and activations are capped at 4 hours.",
+      lesson: "Eligible isn't approved. Privileged roles are activated for an approved change, for a short window. SOC 2 CC8.1 (change management), CC6.3." },
+    session: { id: "REQ0052119", title: "Weekly privileged session review", from: "Security team", channel: "Email", opened: "9:25 AM",
+      intro: "<p>Yesterday's recorded admin sessions are below. Check each one against the change or incident it was opened for, and send us the IDs of any session that went outside it.</p>",
+      rows: [
+        ["PSM-60402", "nora.quist", "CHG0050840: rotate the load balancer certificate", "prod-lb", "Uploaded the certificate, switched the listener, checked health", false],
+        ["PSM-60407", "ezra.kim", "INC0085050: a customer can't log in", "prod-db", "Reset the customer's login flag, <b>exported the customer table with every customer's email to a CSV</b>", true],
+        ["PSM-60411", "freya.lund", "CHG0050846: bump the API memory limit", "prod-k8s", "Edited the deployment, rolled it out", false],
+        ["PSM-60418", "omar.reyes", "CHG0050851: add a read replica", "prod-db", "Created the replica, <b>turned off cloud audit logging for the account</b>", true],
+        ["PSM-60423", "theo.marsh", "INC0085055: queue backlog", "prod-k8s", "Scaled the workers, watched the queue drain", false],
+      ],
+      lesson: "A recorded session only protects you if someone compares it with the reason it was opened. SOC 2 CC7.2 (monitor for anomalies); ISO 27001 A.8.15 (logging)." },
+    compromised: { id: "INC0085104", uid: "omar.reyes", group: "ROLE-Cloud-Prod-Admin", title: "SIEM alert: admin sign-in from abroad", from: "SIEM alert", channel: "Automated", opened: "9:45 AM",
+      body: "<p>At 6:04 AM <span class=\"mono\">omar.reyes</span> approved an MFA prompt after 35 push requests, signed in from an IP address in Russia, and activated ROLE-Cloud-Prod-Admin for 2 hours. Omar says he approved a prompt half asleep.</p>",
+      lesson: "A compromised admin account is contained when the attacker has nothing left: no session, password, MFA method or privileged role. Then Security takes it. SOC 2 CC7.4." },
+    shared: { id: "REQ0052122", uid: "callum.ridley", title: "Shared admin login for on-call", from: "Callum Ridley", channel: "Chat", opened: "10:00 AM",
+      body: "<p>The weekend on-call rotation keeps waiting for someone with IdP admin. Could we create a shared <span class=\"mono\">oncall-admin</span> account and pin the password in the on-call channel?</p>",
+      alt: "explain that admin passwords are never shared. On-call engineers check credentials out of the vault under their own accounts, or activate their eligible role just in time.",
+      lesson: "Shared admin credentials make every change anonymous and can't be taken back from one person. SOC 2 CC6.1; ISO 27001 A.5.16 (identity management)." },
+    auditQ: { id: "REQ0052125", group: "ROLE-Cloud-Prod-Admin", title: "SOC 2 auditor request: who holds prod admin", from: "SOC 2 auditor (via Adrienne Cole)", channel: "Email", opened: "10:15 AM",
+      body: "<p>For the SOC 2 Type II testing, please list every enabled account that holds <span class=\"mono\">ROLE-Cloud-Prod-Admin</span> right now, including any just-in-time activations still running. Usernames are fine.</p>",
+      lesson: "Audit evidence is pulled from the system as it stands. SOC 2 CC6.2, CC4.1." },
+  },
+  thu: {
+    bgClose: { id: "TSK0016104", from: "Adrienne Cole", channel: "Chat", opened: "10:40 AM",
+      body: "<p>The identity provider is back and engineers can sign in again. Emergency over as of 10:30 AM. Please close out bg-admin-01 per the break-glass procedure.</p>",
+      lesson: "Break-glass is closed as deliberately as it's opened: disabled, rotated and signed out. SOC 2 CC6.1." },
+    vendorEnd: { id: "TSK0016107", from: "Raul Dominguez", channel: "Chat", opened: "11:05 AM",
+      body: "<p>Sven fixed the replication lag and we've confirmed it. Session's done. Please close his access.</p>",
+      lesson: "Third-party access ends with the session. SOC 2 CC9.2." },
+  },
+  conseq: {
+    standingJit: { id: "INC0085110", from: "PAM vault", channel: "Automated", opened: "Afternoon" },
+    notEligible: { id: "INC0085113", from: "Security team", channel: "Email", opened: "Afternoon" },
+    svcDown: { id: "INC0085116", from: "Raul Dominguez", channel: "Chat", opened: "Afternoon" },
+    svcLeak: { id: "INC0085119", from: "SIEM alert", channel: "Automated", opened: "Afternoon" },
+    leaver: { id: "INC0085122", from: "Security team", channel: "Email", opened: "Afternoon" },
+    noChange: { id: "INC0085125", from: "Security team", channel: "Email", opened: "Afternoon" },
+    compromised: { id: "INC0085128", from: "SIEM alert", channel: "Automated", opened: "Afternoon" },
+    bgOpen: { id: "INC0085131", from: "PAM vault", channel: "Automated", opened: "Afternoon" },
+    vendorOpen: { id: "INC0085134", from: "Security team", channel: "Email", opened: "Afternoon" },
+  },
+}, company, policy);

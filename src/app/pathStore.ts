@@ -1,7 +1,7 @@
 // The learner's path: which parts of the job they work. Read before the engine loads saved
 // progress, because each path keeps its own progress at each company.
-export type PathId = "iam" | "iam-grc" | "grc";
-export const PATH_IDS: readonly PathId[] = ["iam", "iam-grc", "grc"];
+export type PathId = "iam" | "iam-grc" | "grc" | "pam";
+export const PATH_IDS: readonly PathId[] = ["iam", "iam-grc", "grc", "pam"];
 export const isPath = (x: unknown): x is PathId => PATH_IDS.includes(x as PathId);
 
 const STORE = "rolevara-path";

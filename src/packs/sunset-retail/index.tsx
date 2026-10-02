@@ -32,6 +32,8 @@ export const pack: CompanyPack = {
     "APP-LP-Video": "Loss prevention teams often pair camera systems with POS exception reporting (for example Agilence).",
     "APP-HRIS": "Retailers often use Workday or UKG for HR and payroll.",
   }),
+  fw: ["pci", "sox"],
+  loadPam: async () => (await import("./pam.js")).pam,
   load: async () => ({ company: await import("./company"), policy: await import("./policy"), tickets: (await import("./tickets.js")).set }),
   loadRecords: () => import("./finance"),
 };
