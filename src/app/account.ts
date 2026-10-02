@@ -27,11 +27,16 @@ const DAY = 864e5;
 export const TRIAL_DAYS = PRICES.pro.trialDays;
 export const TRIAL_NOTICE_DAY = 10;
 
+/** Whole days since sign-up, or null if the sign-up date is unknown. */
+export function daysSinceSignUp(now = Date.now()): number | null {
+  const at = signedUpAt();
+  return at == null ? null : Math.floor((now - at) / DAY);
+}
+
 /** Whole days left in the free trial (0 when it has ended), or null if the sign-up date is unknown. */
 export function trialDaysLeft(now = Date.now()): number | null {
-  const at = signedUpAt();
-  if (at == null) return null;
-  return Math.max(0, TRIAL_DAYS - Math.floor((now - at) / DAY));
+  const d = daysSinceSignUp(now);
+  return d == null ? null : Math.max(0, TRIAL_DAYS - d);
 }
 
 export function account(): Account | null {
@@ -48,6 +53,18 @@ export async function signUp(a: Omit<Account, "at">): Promise<void> {
   const secure = location.protocol === "https:" ? "; Secure" : "";
   document.cookie = `${COOKIE}=${Date.now()}; Max-Age=31536000; Path=/; SameSite=Lax${secure}`;
   try { localStorage.setItem(STORE, JSON.stringify({ ...a, at: new Date().toISOString() })); } catch { /* storage blocked */ }
+}
+
+/**
+ * The Pro + Labs upgrade offer due now: "offer" from day 30 after the trial, "reminder" from day 45.
+ * There are no payments yet, so everyone past the trial counts as continuing on Pro.
+ * TODO(accounts): only for paying Pro members, timed from their first payment.
+ */
+export function upgradeOffer(now = Date.now()): "offer" | "reminder" | null {
+  const d = daysSinceSignUp(now);
+  if (d == null) return null;
+  const sincePro = d - TRIAL_DAYS, u = PRICES.labsUpgrade;
+  return sincePro >= u.reminderDay ? "reminder" : sincePro >= u.offerDay ? "offer" : null;
 }
 
 export function signOut() {
