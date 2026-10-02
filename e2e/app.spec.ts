@@ -114,6 +114,24 @@ test("ticket tabs: activity records the work", async ({ page }) => {
   await expect(page.getByRole("tabpanel")).toContainText("Started work");
 });
 
+test("how it works: the tour walks the ticket workflow and can be skipped", async ({ page }) => {
+  await fresh(page);
+  await page.getByRole("button", { name: "How it works" }).click();
+  const tour = page.getByRole("dialog", { name: "How a shift works" });
+  await expect(tour).toBeVisible();
+  await tour.getByRole("button", { name: "Show me" }).click();
+  await page.getByRole("dialog", { name: "Your tools" }).getByRole("button", { name: "Next" }).click();
+  await expect(page.getByRole("dialog", { name: "1. Pick a ticket" })).toBeVisible();
+  await expect(page).toHaveURL(/#\/queue$/);
+  await page.keyboard.press("ArrowRight");
+  await expect(page.getByRole("dialog", { name: "2. Read the request" })).toBeVisible();
+  await expect(page).toHaveURL(/#\/queue\/[A-Z]+\d+$/);
+  await page.keyboard.press("Escape");
+  await expect(page.locator("[data-tour-overlay]")).toHaveCount(0);
+  // Read-only: the tour never starts a ticket.
+  await expect(page.getByRole("button", { name: "Start work" })).toBeVisible();
+});
+
 test("closing the auditor question without an answer shows an inline error", async ({ page }) => {
   await fresh(page, "#/queue/REQ0018884");
   await page.getByRole("button", { name: "Start work" }).click();

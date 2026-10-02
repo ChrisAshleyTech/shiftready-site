@@ -1,7 +1,7 @@
 // Admin-center shell: collapsible left nav grouped by section (21st Animated Sidebar), top bar with
 // global search and shift status, breadcrumbs, and the active-ticket bar.
 import { lazy, Suspense, useEffect, useRef, useState, type ComponentType } from "react";
-import { ArrowLeft, Moon, PanelLeft, Sun } from "lucide-react";
+import { ArrowLeft, CircleHelp, Moon, PanelLeft, Sun } from "lucide-react";
 import {
   AnimatedSidebar, AnimatedSidebarClose, AnimatedSidebarContent, AnimatedSidebarFooter, AnimatedSidebarGroup,
   AnimatedSidebarGroupContent, AnimatedSidebarGroupLabel, AnimatedSidebarHeader, AnimatedSidebarInset,
@@ -30,6 +30,8 @@ import { ticketNo, ticketName } from "./ticketLabel";
 import { CompanySwitcher } from "./components/CompanySwitcher";
 import { NoTickets, CompanyOverview } from "./components/NoTickets";
 import { company } from "./company";
+import { Tour } from "./components/Tour";
+import { startTour } from "./tour";
 import Home from "./pages/Home";
 // Other screens load on first use, so the charting library and large pages stay out of the
 // initial bundle.
@@ -144,7 +146,7 @@ function TopBar({ r }: { r: Route }) {
         </div>
       </div>
       <div className="flex min-w-0 flex-1 justify-center px-1 sm:px-2"><GlobalSearch /></div>
-      {c.hasTickets && <dl className="hidden items-center gap-5 xl:flex" aria-label={`${isG || isA ? "Audit" : "Shift"} progress`}>
+      {c.hasTickets && <dl data-tour="progress" className="hidden items-center gap-5 xl:flex" aria-label={`${isG || isA ? "Audit" : "Shift"} progress`}>
         {[[isG || isA ? "Submitted" : "Closed", `${tt.done}/${n}`], ["Points", num(tt.sc)], ["Score", pct(tt.pct)]].map(([k, v]) => (
           <div key={k} className="flex flex-col-reverse leading-tight">
             <dt className="text-[11px] uppercase tracking-[0.08em] text-muted-foreground">{k}</dt>
@@ -229,6 +231,9 @@ export default function App() {
         <AnimatedSidebarContent><Nav r={r} /></AnimatedSidebarContent>
         <AnimatedSidebarFooter className="border-none">
           <AnimatedSidebarMenu>
+            {pathChosen() && company().hasTickets && <AnimatedSidebarMenuItem>
+              <AnimatedSidebarMenuButton onSelect={startTour} icon={<CircleHelp className="size-4" />}>How it works</AnimatedSidebarMenuButton>
+            </AnimatedSidebarMenuItem>}
             <AnimatedSidebarMenuItem>
               <AnimatedSidebarMenuButton href="/" icon={<ArrowLeft className="size-4" />}>Rolevara site</AnimatedSidebarMenuButton>
             </AnimatedSidebarMenuItem>
@@ -248,6 +253,7 @@ export default function App() {
         <ActiveBar r={r} />
       </AnimatedSidebarInset>
       <Toaster position="bottom-center" closeButton />
+      <Tour route={r.name} />
     </AnimatedSidebarProvider>
   );
 }

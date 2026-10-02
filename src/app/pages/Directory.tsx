@@ -167,7 +167,7 @@ export default function Directory({ r }: { r: Route }) {
           {filtered && <Button variant="ghost" size="sm" onClick={clear}>Clear filters</Button>}
         </div>
         {list.length ? (
-          <div className="max-h-[calc(100svh-19rem)] overflow-auto rounded-lg border bg-card">
+          <div data-tour="users" className="max-h-[calc(100svh-19rem)] overflow-auto rounded-lg border bg-card">
             <Table>
               <caption className="sr-only">Accounts, sorted by {COLS.find(c => c[0] === key)![1]}</caption>
               <TableHeader className="sticky top-0 z-10 bg-card">
