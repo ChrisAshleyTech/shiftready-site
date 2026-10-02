@@ -3,13 +3,15 @@
 // sitemap.xml and robots.txt with the same SITE_URL. SITE_URL is the www host because Vercel serves
 // the site there and 308-redirects the bare domain to it; canonicals must not point at a redirect.
 import type { Plugin } from "vite";
+import { readdirSync } from "node:fs";
 
 export const SITE_URL = (process.env.SITE_URL || "https://www.rolevara.com").replace(/\/$/, "");
 const OG_IMAGE = "/og/rolevara-og.png";
 const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;");
 
 // Public, indexable pages for sitemap.xml. /report/ (learners' shared reports) is excluded and noindex.
-export const SITEMAP = ["/", "/tracks/", "/industries/", "/labs/", "/pricing/", "/resources/", "/app/", "/privacy/", "/terms/"];
+export const SITEMAP = ["/", "/tracks/", "/industries/", "/labs/", "/pricing/", "/resources/", "/app/", "/guides/",
+  ...readdirSync("guides", { withFileTypes: true }).filter(d => d.isDirectory()).map(d => `/guides/${d.name}/`), "/privacy/", "/terms/"];
 
 // Search and AI answer-engine crawlers are named explicitly so a later catch-all rule can't shut them
 // out by accident. Each gets the same rules as everyone else.

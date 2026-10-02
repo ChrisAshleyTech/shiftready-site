@@ -19,7 +19,7 @@ export function SiteFooter() {
         <div className="flex flex-wrap items-start justify-between gap-6">
           <div className="space-y-2"><Brand /><p>© 2026 Rolevara. All companies and people in Rolevara scenarios are fictional.</p></div>
           <nav aria-label="Footer" className="flex flex-wrap gap-x-5 gap-y-2 font-semibold">
-            {[["/tracks/", "Tracks"], ["/industries/", "Industries"], ["/labs/", "Platform labs"], ["/pricing/", "Pricing"], ["/resources/", "Resources"], ["/app/", "Open the app"], ["/privacy/", "Privacy"], ["/terms/", "Terms"]].map(([h, l]) =>
+            {[["/tracks/", "Tracks"], ["/industries/", "Industries"], ["/labs/", "Platform labs"], ["/pricing/", "Pricing"], ["/resources/", "Resources"], ["/guides/", "Guides"], ["/app/", "Open the app"], ["/privacy/", "Privacy"], ["/terms/", "Terms"]].map(([h, l]) =>
               <a key={h} className="hover:text-primary-strong hover:underline" href={h}>{l}</a>)}
           </nav>
         </div>

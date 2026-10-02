@@ -8,6 +8,7 @@ import { faqSchema, type QA } from "./Faq";
 import { FAQ as HOME_FAQ } from "../landing/Page";
 import { FAQ as RESOURCES_FAQ } from "../resources/Page";
 import { QA as PRICING_FAQ } from "../pricing/Page";
+import { GUIDES, guideHref } from "../guides/data";
 
 const TAGLINE = "Experience the role. Master the work.";
 const SUMMARY = "Rolevara is a browser-based job simulator for identity and access management (IAM), governance, risk and compliance (GRC) and privileged access management (PAM) roles. You work a realistic service desk ticket queue and audit for a fictional company, and every ticket is graded on its outcome and its process, so you know you can do the job before you get it.";
@@ -36,6 +37,16 @@ export const SCHEMA: Record<string, object> = {
   "tracks/index.html": graph(APP),
   "industries/index.html": graph(APP),
   "labs/index.html": graph(APP),
+  "guides/index.html": graph({ "@type": "ItemList", name: "Rolevara guides",
+    itemListElement: GUIDES.map((g, i) => ({ "@type": "ListItem", position: i + 1, url: SITE_URL + guideHref(g), name: g.title })) }),
+  ...Object.fromEntries(GUIDES.map(g => [`guides/${g.slug}/index.html`, graph(
+    { "@type": "Article", headline: g.title, description: g.lead, dateModified: g.updated, url: SITE_URL + guideHref(g),
+      author: { "@id": `${SITE_URL}/#org` }, publisher: { "@id": `${SITE_URL}/#org` }, mainEntityOfPage: SITE_URL + guideHref(g) },
+    { "@type": "BreadcrumbList", itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: `${SITE_URL}/` },
+      { "@type": "ListItem", position: 2, name: "Guides", item: `${SITE_URL}/guides/` },
+      { "@type": "ListItem", position: 3, name: g.title, item: SITE_URL + guideHref(g) }] },
+    faq(g.faq))])),
   "privacy/index.html": graph(),
   "terms/index.html": graph(),
 };
@@ -73,6 +84,9 @@ ${LAB_INFO.map(l => `- ${l.name}${l.status === "soon" ? " (coming soon)" : " (ea
 - [Platform labs](${SITE_URL}/labs/): Microsoft Entra ID, Okta and AWS labs
 - [Pricing](${SITE_URL}/pricing/)
 - [Resources](${SITE_URL}/resources/): how grading works, the runbook, a sample readiness report and accessibility
+
+## Guides
+${GUIDES.map(g => `- [${g.title}](${SITE_URL}${guideHref(g)}): ${g.lead}`).join("\n")}
 
 ## FAQ
 ${qa(HOME_FAQ)}

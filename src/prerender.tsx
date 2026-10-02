@@ -10,11 +10,15 @@ import Resources from "./resources/Page";
 import Privacy from "./privacy/Page";
 import Terms from "./terms/Page";
 import NotFound from "./notfound/Page";
+import GuidesIndex from "./guides/Index";
+import GuidePage from "./guides/Page";
+import { GUIDES } from "./guides/data";
 export { SCHEMA, LLMS_TXT } from "./marketing/schema";
 
 // Built HTML file -> page component.
 export const PAGES: Record<string, ComponentType> = {
   "index.html": Landing, "pricing/index.html": Pricing, "tracks/index.html": Tracks, "industries/index.html": Industries,
-  "labs/index.html": Labs, "resources/index.html": Resources, "privacy/index.html": Privacy, "terms/index.html": Terms, "404.html": NotFound,
+  "labs/index.html": Labs, "resources/index.html": Resources, "privacy/index.html": Privacy, "terms/index.html": Terms, "404.html": NotFound, "guides/index.html": GuidesIndex,
+  ...Object.fromEntries(GUIDES.map(g => [`guides/${g.slug}/index.html`, () => <GuidePage guide={g} />])),
 };
 export const render = (file: string) => { const P = PAGES[file]; return renderToString(<StrictMode><P /></StrictMode>); };

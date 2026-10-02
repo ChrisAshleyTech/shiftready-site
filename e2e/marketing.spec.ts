@@ -1,5 +1,6 @@
 // Landing and pricing: pricing display and waitlist tier selection, motion controls, reduced motion.
 import { test, expect } from "@playwright/test";
+import { GUIDES, guideHref } from "../src/guides/data";
 
 test("pricing: toggle, badges, coming-soon labels and waitlist tier selection", async ({ page }) => {
   await page.goto("/pricing/");
@@ -76,7 +77,8 @@ test("landing: sections in order and photo credits", async ({ page }) => {
 
 // Copy rules for every marketing page: second person ("you") or third, never "we"; no personal content or
 // testimonials, and "Coming soon" only for the Active Directory lab on /labs.
-const PAGES: [string, RegExp][] = [["/", /Know you can do the job/], ["/pricing/", /Start free. Upgrade/], ["/tracks/", /Pick the role you want/], ["/industries/", /Six companies/], ["/labs/", /real identity platform/], ["/resources/", /How Rolevara works/], ["/privacy/", /Privacy policy/], ["/terms/", /Terms of use/]];
+const PAGES: [string, RegExp][] = [["/", /Know you can do the job/], ["/pricing/", /Start free. Upgrade/], ["/tracks/", /Pick the role you want/], ["/industries/", /Six companies/], ["/labs/", /real identity platform/], ["/resources/", /How Rolevara works/], ["/privacy/", /Privacy policy/], ["/terms/", /Terms of use/],
+  ["/guides/", /Guides to IAM, GRC and PAM work/], ...GUIDES.map(g => [guideHref(g), new RegExp(g.title.split(",")[0].replace(/[()]/g, "\\$&"))] as [string, RegExp])];
 for (const [path, h1] of PAGES) {
   test(`copy rules: ${path}`, async ({ page }) => {
     const res = await page.goto(path);
@@ -144,7 +146,7 @@ test("footer: legal links and the non-affiliation disclaimer on every marketing 
   }
 });
 
-const ALL_PAGES = ["/", "/app/", "/report/", "/pricing/", "/tracks/", "/industries/", "/labs/", "/resources/", "/privacy/", "/terms/"];
+const ALL_PAGES = ["/", "/app/", "/report/", "/pricing/", "/tracks/", "/industries/", "/labs/", "/resources/", "/privacy/", "/terms/", "/guides/", ...GUIDES.map(guideHref)];
 test("meta: unique title and description, Open Graph, Twitter card, icons and manifest on every page", async ({ request }) => {
   const titles = new Set<string>(), descs = new Set<string>();
   for (const p of ALL_PAGES) {
@@ -218,7 +220,7 @@ test("waitlist form: field-level errors on blur and submit, live re-validation, 
 });
 
 test("one primary call to action per section on every marketing page", async ({ page }) => {
-  for (const p of ["/", "/pricing/", "/tracks/", "/industries/", "/labs/", "/resources/", "/privacy/", "/terms/", "/404.html"]) {
+  for (const p of ["/", "/pricing/", "/tracks/", "/industries/", "/labs/", "/resources/", "/privacy/", "/terms/", "/404.html", "/guides/", ...GUIDES.map(guideHref)]) {
     await page.goto(p);
     const counts = await page.locator("main section").evaluateAll(secs => secs.map(s => ({
       id: s.id || s.getAttribute("aria-labelledby") || s.getAttribute("aria-label") || "",
@@ -240,7 +242,7 @@ for (const rm of ["reduce", "no-preference"] as const) {
       page.on("console", m => { if (m.type() === "error" && !m.text().startsWith("Failed to load resource")) errors.push(m.text()); });
       page.on("response", r => { if (r.status() >= 400 && !r.url().includes("/_vercel/insights")) errors.push(`${r.status()} ${r.url()}`); });
       page.on("pageerror", e => errors.push(e.message));
-      for (const p of ["/", "/pricing/", "/tracks/", "/industries/", "/labs/", "/resources/", "/privacy/", "/terms/", "/404.html"]) {
+      for (const p of ["/", "/pricing/", "/tracks/", "/industries/", "/labs/", "/resources/", "/privacy/", "/terms/", "/404.html", "/guides/", GUIDES.map(guideHref)[0]]) {
         await page.goto(p); await page.waitForTimeout(500);
       }
       expect(errors.filter(e => !/_vercel\/insights/.test(e))).toEqual([]);

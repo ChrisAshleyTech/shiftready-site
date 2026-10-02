@@ -51,6 +51,7 @@ export const RESOURCES: Item[] = [
   { id: "grading", name: "How grading works", text: "Outcome and process checks, hint costs, and Solo and Assisted results.", href: "/resources/#grading" },
   { id: "runbook", name: "Runbook and access matrix", text: "The Pacific Crest policies every ticket is graded against.", href: "/app/#/policy" },
   { id: "sample-report", name: "Sample readiness report", text: "What a shared readiness report contains.", href: "/resources/#sample-report" },
+  { id: "guides", name: "Career guides", text: "IAM interviews, getting into IAM, GRC and PAM, and how-tos.", href: "/guides/" },
   { id: "faq", name: "FAQ", text: "Plans, labs, content and data.", href: "/resources/#faq" },
   { id: "accessibility", name: "Accessibility", text: "WCAG 2.2 AA target, reduced motion and keyboard support.", href: "/resources/#accessibility" },
 ];

@@ -3,7 +3,7 @@ import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import { seo } from "./seo.plugin";
 import { fileURLToPath } from "node:url";
-import { readFileSync } from "node:fs";
+import { readFileSync, readdirSync } from "node:fs";
 import type { Connect } from "vite";
 import { labAccess, labFile, labSession } from "./api/_lib/labApi.js";
 
@@ -34,6 +34,9 @@ const labApi: Connect.NextHandleFunction = async (req, res, next) => {
 };
 const labApiPlugin = { name: "lab-api", configureServer: (s: { middlewares: Connect.Server }) => { s.middlewares.use(labApi); }, configurePreviewServer: (s: { middlewares: Connect.Server }) => { s.middlewares.use(labApi); } };
 
+// Every guide is its own page: guides/index.html and guides/<slug>/index.html.
+const guideInputs = Object.fromEntries(readdirSync(r("./guides"), { withFileTypes: true }).filter(d => d.isDirectory()).map(d => [`guide-${d.name}`, r(`./guides/${d.name}/index.html`)]));
+
 // Multi-page build keeps the public URLs: / (landing), /app/ (simulator), /report/ (shared report).
 // The SSR build (for pre-rendering marketing pages) uses its own entry, so it skips the page inputs.
 export default defineConfig(({ isSsrBuild }) => ({
@@ -41,7 +44,7 @@ export default defineConfig(({ isSsrBuild }) => ({
   resolve: { alias: { "@": r("./src") } },
   build: isSsrBuild ? {} : {
     rollupOptions: {
-      input: { landing: r("./index.html"), app: r("./app/index.html"), report: r("./report/index.html"), pricing: r("./pricing/index.html"), tracks: r("./tracks/index.html"), industries: r("./industries/index.html"), labs: r("./labs/index.html"), resources: r("./resources/index.html"), privacy: r("./privacy/index.html"), terms: r("./terms/index.html"), notfound: r("./404.html") },
+      input: { landing: r("./index.html"), app: r("./app/index.html"), report: r("./report/index.html"), pricing: r("./pricing/index.html"), tracks: r("./tracks/index.html"), industries: r("./industries/index.html"), labs: r("./labs/index.html"), resources: r("./resources/index.html"), privacy: r("./privacy/index.html"), terms: r("./terms/index.html"), notfound: r("./404.html"), guides: r("./guides/index.html"), ...guideInputs },
     },
   },
   preview: { headers: siteHeaders },
