@@ -208,3 +208,4 @@ html[data-motion="paused"] .anim-drift { animation-play-state: paused; }
 @keyframes price-in { from { opacity: 0; transform: translateY(12px); } }
 .price-in { animation: price-in 260ms cubic-bezier(.22,1,.36,1); }
 @media (prefers-reduced-motion: reduce) { .price-in { animation: none; } }
+

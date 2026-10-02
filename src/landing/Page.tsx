@@ -1,4 +1,5 @@
-// Landing page. Second person, plain language. Flow follows the usual training-platform pattern:
+// Landing page. Second person, plain language. Opens with the home-to-office film (Intro.tsx), then
+// follows the usual training-platform pattern:
 // hero, what's covered, how it works, choose a path, what you practise, companies, who it's for,
 // pricing, FAQ, sign-up. Photos: Unsplash License (credited).
 import { ArrowRight, Bot, ClipboardCheck, FileBarChart2, KeyRound, ShieldAlert, UsersRound } from "lucide-react";
@@ -15,6 +16,7 @@ import { ChoosePath } from "@/marketing/ChoosePath";
 import { INDUSTRIES } from "@/marketing/catalog";
 import { cn } from "@/lib/utils";
 import { HeroVideo } from "./HeroVideo";
+import { Intro } from "./Intro";
 
 const CAPABILITIES: { icon: typeof UsersRound; tint: string; title: string; text: string; early?: boolean }[] = [
   { icon: UsersRound, tint: "bg-hue-blue/12 text-primary-strong", title: "Provisioning and lifecycle", text: "Set up, change and remove access for joiners, movers, leavers and rehires, using the company's role-based access matrix." },
@@ -55,6 +57,7 @@ export default function Landing() {
       <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-card focus:px-4 focus:py-2">Skip to content</a>
       <SiteHeader />
       <main id="main" tabIndex={-1} className="outline-none">
+        <Intro />
         {/* Hero on the brand's navy, using the dark palette for this section only. */}
         <section aria-labelledby="hero-h" data-theme="dark" className="bg-brand-band relative overflow-hidden text-foreground">
           <AnimatedBackdrop />

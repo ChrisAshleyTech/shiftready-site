@@ -12,3 +12,6 @@ dist-ssr/
 # Private planning doc, never committed
 docs/HUB.md
 __pycache__/
+scripts/intro-video/out/
+scripts/intro-video/clips/
+scripts/intro-video/voice/
