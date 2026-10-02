@@ -1,7 +1,7 @@
 // Admin-center shell: collapsible left nav grouped by section (21st Animated Sidebar), top bar with
 // global search and shift status, breadcrumbs, and the active-ticket bar.
 import { lazy, Suspense, useEffect, useRef, useState, type ComponentType } from "react";
-import { ArrowLeft, Moon, PanelLeft, Sun } from "lucide-react";
+import { ArrowLeft, Home as HomeIcon, Moon, PanelLeft, Sun } from "lucide-react";
 import {
   AnimatedSidebar, AnimatedSidebarClose, AnimatedSidebarContent, AnimatedSidebarFooter, AnimatedSidebarGroup,
   AnimatedSidebarGroupContent, AnimatedSidebarGroupLabel, AnimatedSidebarHeader, AnimatedSidebarInset,
@@ -152,6 +152,9 @@ function TopBar({ r }: { r: Route }) {
           </div>
         ))}
       </dl>}
+      <Button asChild variant="outline" className="h-9 gap-1.5 px-3 font-semibold">
+        <a href="/" aria-label="Home page"><HomeIcon aria-hidden className="size-4" /><span className="hidden sm:inline">Home</span></a>
+      </Button>
       <Button variant="ghost" size="icon" aria-label={theme === "dark" ? "Switch to light theme" : "Switch to dark theme"} onClick={() => setTheme(theme === "dark" ? "light" : "dark")}>
         {theme === "dark" ? <Sun className="size-4" /> : <Moon className="size-4" />}
       </Button>
