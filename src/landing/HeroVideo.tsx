@@ -54,7 +54,7 @@ export function HeroVideo() {
             <>
               <picture>
                 <source srcSet="/video/demo-poster.webp" type="image/webp" />
-                <img src="/video/demo-poster.jpg" width={1280} height={800} className="size-full object-cover" data-hero-still
+                <img src="/video/demo-poster.jpg" width={2560} height={1600} className="size-full object-cover" data-hero-still
                   alt="The ticket queue showing a new incident, Dormant account signed in from unknown IP, traced back to an earlier decision." />
               </picture>
               {mounted && <button type="button" onClick={() => setOptIn(true)} className="absolute bottom-4 left-4 inline-flex h-11 items-center gap-2 rounded-full bg-card/95 px-4 font-display text-sm font-bold shadow-lg ring-1 ring-border hover:bg-card">

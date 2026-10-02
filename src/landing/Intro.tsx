@@ -10,7 +10,7 @@ export function Intro() {
     <section aria-label="Welcome to Rolevara" data-theme="dark" data-intro className="bg-brand-band relative overflow-hidden text-foreground">
       <div aria-hidden className="pointer-events-none absolute left-1/2 top-1/3 size-[640px] -translate-x-1/2 rounded-full bg-hue-teal/15 blur-3xl" />
       <div className="relative mx-auto flex max-w-5xl flex-col items-center px-4 pb-12 pt-8 text-center md:px-6 md:pt-10">
-        <img src="/brand/rolevara-logo-dark.png" alt="Rolevara" width={675} height={144} className="h-11 w-auto md:h-14" />
+        <img src="/brand/rolevara-logo-dark.svg" alt="Rolevara" width={671} height={144} className="h-11 w-auto md:h-14" />
         <p className="mt-3 font-display text-lg font-semibold text-hue-teal md:text-xl">Experience the role. Master the work.</p>
 
         <div className="relative mt-6 w-full max-w-[880px]">

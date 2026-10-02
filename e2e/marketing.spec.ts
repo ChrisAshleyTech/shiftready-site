@@ -267,3 +267,10 @@ test("landing and Tracks explain the paths: IAM, GRC and PAM", async ({ page }) 
   // Every area is in the app now, so the Tracks page links each one there.
   await expect(page.getByRole("region", { name: "Choose your path" }).getByRole("link")).toHaveCount(3);
 });
+
+test("intro film: 1080p for larger screens, 720p for phones, each under 8 MB", async ({ request }) => {
+  for (const f of ["/video/intro.mp4", "/video/intro.webm", "/video/intro-720.mp4", "/video/intro-720.webm", "/video/intro-poster.webp", "/video/intro-poster.jpg"]) {
+    const r = await request.get(f); expect(r.ok(), f).toBe(true);
+    expect((await r.body()).length, f).toBeLessThan(8 * 1024 * 1024);
+  }
+});

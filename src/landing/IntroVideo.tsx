@@ -2,8 +2,8 @@
 // then the 3D Rolevara door R and the logo end card. It plays over soft music, and the only voice is
 // the closing line. Built by scripts/intro-video/ (see its README for the footage
 // and how to rebuild). It autoplays muted and loops (browsers only autoplay silent video); "Sound on"
-// unmutes it, and a caption carries the closing line. The shared Pause button stops it. The 2.3 MB file
-// loads only after the page has, so it never competes with first paint. With reduced motion, the poster
+// unmutes it, and a caption carries the closing line. The shared Pause button stops it. The 1080p film
+// (4-7 MB; 720p on phones) loads only after the page has, so it never competes with first paint. With reduced motion, the poster
 // (the end card) is shown with an opt-in play button. The picture is also described in text.
 import { useEffect, useRef, useState } from "react";
 import { Play, Volume2, VolumeX } from "lucide-react";
@@ -50,15 +50,18 @@ export function IntroVideo() {
         {showVideo ? (
           <video ref={video} className="size-full object-cover" muted={!sound} loop playsInline autoPlay={!reduce || optIn} controls={optIn}
             poster="/video/intro-poster.webp" preload="auto" aria-describedby="intro-desc" data-intro-video>
-            <source src="/video/intro.webm" type="video/webm" />
-            <source src="/video/intro.mp4" type="video/mp4" />
+            {/* 1080p from tablet width up; phones get the lighter 720p copy. */}
+            <source src="/video/intro.webm" type="video/webm" media="(min-width: 768px)" />
+            <source src="/video/intro.mp4" type="video/mp4" media="(min-width: 768px)" />
+            <source src="/video/intro-720.webm" type="video/webm" />
+            <source src="/video/intro-720.mp4" type="video/mp4" />
             <track kind="captions" src="/video/intro.vtt" srcLang="en" label="English" default />
           </video>
         ) : (
           <>
             <picture>
               <source srcSet="/video/intro-poster.webp" type="image/webp" />
-              <img src="/video/intro-poster.jpg" width={1280} height={720} className="size-full object-cover" data-intro-still
+              <img src="/video/intro-poster.jpg" width={1920} height={1080} className="size-full object-cover" data-intro-still
                 alt="The Rolevara logo with the tagline Experience the role. Master the work." />
             </picture>
             {mounted && reduce && <button type="button" onClick={() => setOptIn(true)} className="absolute bottom-4 left-4 inline-flex h-11 items-center gap-2 rounded-full bg-card/95 px-4 font-display text-sm font-bold text-foreground shadow-lg ring-1 ring-border hover:bg-card">
