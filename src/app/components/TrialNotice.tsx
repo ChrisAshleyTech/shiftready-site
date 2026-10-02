@@ -4,6 +4,7 @@ import { useState } from "react";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PRICES } from "@/marketing/plans";
+import { checkoutUrl } from "@/marketing/checkout";
 import { TRIAL_DAYS, TRIAL_NOTICE_DAY, trialDaysLeft, upgradeOffer } from "../account";
 
 const STORE = "rolevara-notice-dismissed";
@@ -15,7 +16,8 @@ function notice(): { key: string; text: string; cta: string; href: string } | nu
   if (offer) return {
     key: `upgrade-${offer}`,
     text: `${offer === "reminder" ? "Reminder: as" : "As"} a Pro member, add Platform Labs for $${u.monthly} a month for your first ${u.months} months (usually $${PRICES.labs.monthly}). Practice in real Entra ID, Okta and AWS tenants.`,
-    cta: "See Pro + Labs", href: "/labs/",
+    // Straight to the discounted Stripe checkout once its Payment Link is set.
+    ...(checkoutUrl("labs-upgrade") ? { cta: `Add Labs for $${u.monthly}/mo`, href: checkoutUrl("labs-upgrade")! } : { cta: "See Pro + Labs", href: "/labs/" }),
   };
   if (left > TRIAL_DAYS - TRIAL_NOTICE_DAY) return null;
   return {

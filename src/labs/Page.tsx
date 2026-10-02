@@ -9,6 +9,7 @@ import { MarketingFrame, PageHero } from "@/marketing/sections";
 import { WhyProLabs } from "@/marketing/WhyProLabs";
 import { LAB_INFO, type LabInfo } from "@/marketing/catalog";
 import { chooseTier } from "@/marketing/plans";
+import { checkoutUrl } from "@/marketing/checkout";
 
 const ComingSoon = () => (
   <span className="inline-flex h-5 items-center whitespace-nowrap rounded-full border border-dashed border-muted-foreground/50 px-2 align-middle font-display text-[11px] font-semibold tracking-wide text-muted-foreground">Coming soon</span>
@@ -50,7 +51,9 @@ export default function Page() {
         lead="Practice the Pacific Crest tickets in the consoles employers use: Microsoft Entra ID, Okta and AWS. Each lab seeds a free tenant you own, and your work is graded automatically.">
         {invalid && <p role="alert" className="max-w-3xl rounded-xl border border-bad/40 bg-bad/8 px-4 py-3 font-semibold text-bad">That lab access link is invalid or has expired. Ask for a new one.</p>}
         <div className="flex flex-wrap gap-3">
-          <Button asChild size="lg" className="font-bold"><a href="#waitlist" onClick={() => chooseTier("labs-monthly")}>Join the Pro + Labs waitlist <ArrowRight /></a></Button>
+          {checkoutUrl("labs-monthly")
+            ? <Button asChild size="lg" className="font-bold"><a href={checkoutUrl("labs-monthly")!}>Get Pro + Labs <ArrowRight /></a></Button>
+            : <Button asChild size="lg" className="font-bold"><a href="#waitlist" onClick={() => chooseTier("labs-monthly")}>Join the Pro + Labs waitlist <ArrowRight /></a></Button>}
           <Button asChild size="lg" variant="outline" className="border-2 border-primary font-bold text-primary-strong hover:bg-primary/5"><a href="#why-pro-labs">Why Pro + Labs</a></Button>
         </div>
       </PageHero>

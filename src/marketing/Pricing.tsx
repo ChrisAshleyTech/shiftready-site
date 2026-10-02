@@ -1,13 +1,21 @@
-// Pricing section (display only): monthly/yearly toggle and the three tiers.
+// Pricing section: monthly/yearly toggle and the three tiers. Paid buttons open Stripe checkout
+// when a Payment Link is set for that plan (config.ts), otherwise they join the waitlist.
 import { useState } from "react";
 import { Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Reveal } from "@/components/brand/motion";
 import { EarlyAccess } from "@/components/brand/EarlyAccess";
-import { CANCEL_ANYTIME, PRO_FOOTNOTE, TIERS, chooseTier, perMonthYearly, yearlySaving, type Billing, type Tier, type WaitlistTier } from "./plans";
+import { CANCEL_ANYTIME, PRO_FOOTNOTE, TIERS, perMonthYearly, yearlySaving, type Billing, type Tier } from "./plans";
+import { PAYMENTS_LIVE, choosePlan, hasCheckout } from "./checkout";
 
 const usd = (n: number) => "$" + (Number.isInteger(n) ? n : n.toFixed(2));
+
+/** Button label: checkout wording when the plan can be bought, the waitlist wording otherwise. */
+function cta(t: Tier, billing: Billing) {
+  if (t.id === "free" || !hasCheckout(`${t.id}-${billing}`)) return t.cta;
+  return t.trialDays ? `Start ${t.trialDays}-day free trial` : `Get ${t.name}`;
+}
 
 function Price({ t, billing }: { t: Tier; billing: Billing }) {
   const main = billing === "monthly" ? t.monthly : t.yearly;
@@ -33,7 +41,7 @@ export function Pricing({ headingLevel: H = "h2" }: { headingLevel?: "h1" | "h2"
       <div className="flex flex-col items-center gap-4 text-center">
         <p className="t-eyebrow">Pricing</p>
         <H id="pricing-h" className={H === "h1" ? "t-display" : "t-h1"}>Start free. Upgrade for every company, track and lab.</H>
-        <p className="t-lead max-w-2xl">Paid plans open from a waitlist. No payment details are collected.</p>
+        <p className="t-lead max-w-2xl">{PAYMENTS_LIVE ? "Secure checkout by Stripe. Cancel anytime." : "Paid plans open from a waitlist. No payment details are collected."}</p>
         <div role="radiogroup" aria-label="Billing period" className="inline-flex rounded-full border bg-card p-1 shadow-sm">
           {(["monthly", "yearly"] as const).map(b => (
             <button key={b} role="radio" aria-checked={billing === b} onClick={() => setBilling(b)}
@@ -52,9 +60,9 @@ export function Pricing({ headingLevel: H = "h2" }: { headingLevel?: "h1" | "h2"
             {t.id === "free"
               ? <Button asChild size="lg" variant="outline" className="h-12 border-2 border-primary text-base font-bold text-primary-strong hover:bg-primary/5"><a href="/app/">{t.cta}</a></Button>
               : t.badge
-                ? <Button size="lg" className="h-12 text-base font-bold" onClick={() => chooseTier(`${t.id}-${billing}` as WaitlistTier)}>{t.cta}</Button>
+                ? <Button size="lg" className="h-12 text-base font-bold" onClick={() => choosePlan(`${t.id as "pro" | "labs"}-${billing}`)}>{cta(t, billing)}</Button>
                 // One primary per section: only the featured plan is filled; the others are outlined.
-                : <Button size="lg" variant="outline" className="h-12 border-2 border-primary text-base font-bold text-primary-strong hover:bg-primary/5" onClick={() => chooseTier(`${t.id}-${billing}` as WaitlistTier)}>{t.cta}</Button>}
+                : <Button size="lg" variant="outline" className="h-12 border-2 border-primary text-base font-bold text-primary-strong hover:bg-primary/5" onClick={() => choosePlan(`${t.id as "pro" | "labs"}-${billing}`)}>{cta(t, billing)}</Button>}
             <ul className="space-y-3">{t.features.map(f => (
               <li key={f.text} className="flex gap-2.5 text-[15px]">
                 <Check className="mt-0.5 size-4 shrink-0 text-ok" strokeWidth={3} aria-hidden />
@@ -66,7 +74,7 @@ export function Pricing({ headingLevel: H = "h2" }: { headingLevel?: "h1" | "h2"
 
       <div className="t-meta space-y-1 text-center">
         <p>{PRO_FOOTNOTE}</p>
-        <p>Prices in USD. Display only: no charges are made, and joining a waitlist creates no obligation.</p>
+        <p>{PAYMENTS_LIVE ? "Prices in USD. Payments are processed by Stripe; card details never reach Rolevara." : "Prices in USD. Display only: no charges are made, and joining a waitlist creates no obligation."}</p>
       </div>
     </div>
   );
