@@ -11,3 +11,4 @@ dist-ssr/
 
 # Private planning doc, never committed
 docs/HUB.md
+__pycache__/
