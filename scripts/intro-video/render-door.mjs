@@ -1,4 +1,4 @@
-// Renders the 3D door R sequence (door3d.html) to PNG frames: 150 frames, 5 seconds at 30 fps, 1280x720.
+// Renders the 3D door R sequence (door3d.html) to PNG frames: 120 frames, 4 seconds at 30 fps, 1280x720.
 // Uses the installed Chrome, or the browser at CHROME_PATH. Run from the repo root:
 //   node scripts/intro-video/render-door.mjs   ->   scripts/intro-video/out/frames/f0000.png ...
 import { createServer } from "node:http";
@@ -6,7 +6,7 @@ import { mkdirSync, readFileSync } from "node:fs";
 import { extname, join, normalize } from "node:path";
 import { chromium } from "playwright";
 
-const ROOT = process.cwd(), OUT = "scripts/intro-video/out/frames", FRAMES = 150;
+const ROOT = process.cwd(), OUT = "scripts/intro-video/out/frames", FRAMES = 120;
 const TYPES = { ".html": "text/html", ".js": "text/javascript", ".svg": "image/svg+xml" };
 const server = createServer((req, res) => {
   try { const f = join(ROOT, normalize(decodeURIComponent(new URL(req.url, "http://x").pathname))); res.setHeader("content-type", TYPES[extname(f)] ?? "application/octet-stream"); res.end(readFileSync(f)); }
