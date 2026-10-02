@@ -9,8 +9,9 @@ export default function Page() {
       <section aria-labelledby="p-summary">
         <h2 id="p-summary">Summary</h2>
         <ul>
-          <li>No cookies are set.</li>
+          <li>No tracking or advertising cookies are set. One first-party cookie remembers that the simulator sign-up was completed.</li>
           <li>Simulator progress stays in the browser and is not sent to {LEGAL.operator}.</li>
+          <li>The simulator sign-up collects a name, an email address and a current role.</li>
           <li>The waitlist form collects an email address, a plan of interest and a current role.</li>
           <li>Page-view analytics are cookieless and aggregated.</li>
         </ul>
@@ -18,6 +19,10 @@ export default function Page() {
       <section aria-labelledby="p-waitlist">
         <h2 id="p-waitlist">Waitlist</h2>
         <p>When the waitlist form is submitted, the email address, plan of interest and current role are sent to <a href="https://formspree.io/legal/privacy-policy" rel="noopener" target="_blank">Formspree</a>, which processes form submissions on {LEGAL.operator}'s behalf. They are used only to send release notifications for the chosen plan and to understand who the product serves. They are kept until deletion is requested. A hidden anti-spam field is used to filter automated submissions; it is not stored.</p>
+      </section>
+      <section aria-labelledby="p-signup">
+        <h2 id="p-signup">Simulator sign-up</h2>
+        <p>Before the simulator opens, a free sign-up asks for a name, an email address and a current role. They are sent to <a href="https://formspree.io/legal/privacy-policy" rel="noopener" target="_blank">Formspree</a> on {LEGAL.operator}'s behalf, used to send product updates and to understand who the product serves, and kept until deletion is requested. A copy stays in the browser's local storage, and a first-party cookie named rolevara-member records when the sign-up was completed, so it isn't asked again and the days left in the free trial can be shown. "Sign out" in the app's Settings removes both from the browser.</p>
       </section>
       <section aria-labelledby="p-local">
         <h2 id="p-local">Data stored in the browser</h2>
@@ -37,7 +42,7 @@ export default function Page() {
       </section>
       <section aria-labelledby="p-rights">
         <h2 id="p-rights">Choices and rights</h2>
-        <p>Depending on location, rights may include access to, correction of, or deletion of personal information, and objection to its use. Waitlist data can be removed on request. <Contact /></p>
+        <p>Depending on location, rights may include access to, correction of, or deletion of personal information, and objection to its use. Sign-up and waitlist data can be removed on request. <Contact /></p>
       </section>
       <section aria-labelledby="p-children">
         <h2 id="p-children">Children</h2>

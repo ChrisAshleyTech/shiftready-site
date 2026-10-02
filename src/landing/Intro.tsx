@@ -1,9 +1,8 @@
 // Opening section above the hero: the logo and tagline, the home-to-office film, then one clear
-// "Start here" and the current offers. Offers read from plans.ts, so they follow any price change.
+// "Start here". The current offers are shown on the sign-up screen the button leads to.
 import { ArrowRight, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PauseButton } from "@/components/brand/motion";
-import { CANCEL_ANYTIME, PRICES, PRO_FOOTNOTE } from "@/marketing/plans";
 import { IntroVideo } from "./IntroVideo";
 
 export function Intro() {
@@ -23,23 +22,6 @@ export function Intro() {
           <a href="/app/" data-start-here>Start here <ArrowRight /></a>
         </Button>
 
-        <ul className="mt-6 grid w-full max-w-3xl gap-3 text-left sm:grid-cols-3">
-          <li className="rounded-2xl border border-hue-amber/50 bg-hue-amber/10 p-4">
-            <p className="text-xs font-bold uppercase tracking-wider text-hue-amber">Free trial</p>
-            <p className="mt-1 font-display font-semibold text-white">Try Pro free for {PRICES.pro.trialDays} days</p>
-            <p className="mt-1 text-sm text-muted-foreground">Then ${PRICES.pro.monthly} a month. {CANCEL_ANYTIME}.</p>
-          </li>
-          <li className="rounded-2xl border border-hue-teal/50 bg-hue-teal/10 p-4">
-            <p className="text-xs font-bold uppercase tracking-wider text-hue-teal">Early access</p>
-            <p className="mt-1 font-display font-semibold text-white">Pro features, free for now</p>
-            <p className="mt-1 text-sm text-muted-foreground">{PRO_FOOTNOTE}</p>
-          </li>
-          <li className="rounded-2xl border border-white/15 bg-white/5 p-4">
-            <p className="text-xs font-bold uppercase tracking-wider text-primary">Free plan</p>
-            <p className="mt-1 font-display font-semibold text-white">A full company to start</p>
-            <p className="mt-1 text-sm text-muted-foreground">Pacific Crest Logistics on all three paths, at no cost.</p>
-          </li>
-        </ul>
 
         <a href="#hero-h" className="mt-8 inline-flex flex-col items-center gap-1 text-sm font-semibold text-muted-foreground hover:text-white">
           See how it works<ChevronDown className="size-5" aria-hidden />

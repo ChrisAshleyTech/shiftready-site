@@ -1,7 +1,7 @@
 // Admin-center shell: collapsible left nav grouped by section (21st Animated Sidebar), top bar with
 // global search and shift status, breadcrumbs, and the active-ticket bar.
 import { lazy, Suspense, useEffect, useRef, useState, type ComponentType } from "react";
-import { ArrowLeft, Moon, PanelLeft, Sun } from "lucide-react";
+import { ArrowLeft, Home as HomeIcon, Moon, PanelLeft, Sun } from "lucide-react";
 import {
   AnimatedSidebar, AnimatedSidebarClose, AnimatedSidebarContent, AnimatedSidebarFooter, AnimatedSidebarGroup,
   AnimatedSidebarGroupContent, AnimatedSidebarGroupLabel, AnimatedSidebarHeader, AnimatedSidebarInset,
@@ -30,6 +30,7 @@ import { ticketNo, ticketName } from "./ticketLabel";
 import { CompanySwitcher } from "./components/CompanySwitcher";
 import { NoTickets, CompanyOverview } from "./components/NoTickets";
 import { company } from "./company";
+import { TrialNotice } from "./components/TrialNotice";
 import Home from "./pages/Home";
 // Other screens load on first use, so the charting library and large pages stay out of the
 // initial bundle.
@@ -152,6 +153,9 @@ function TopBar({ r }: { r: Route }) {
           </div>
         ))}
       </dl>}
+      <Button asChild variant="outline" className="h-9 gap-1.5 px-3 font-semibold">
+        <a href="/" aria-label="Home page"><HomeIcon aria-hidden className="size-4" /><span className="hidden sm:inline">Home</span></a>
+      </Button>
       <Button variant="ghost" size="icon" aria-label={theme === "dark" ? "Switch to light theme" : "Switch to dark theme"} onClick={() => setTheme(theme === "dark" ? "light" : "dark")}>
         {theme === "dark" ? <Sun className="size-4" /> : <Moon className="size-4" />}
       </Button>
@@ -238,6 +242,7 @@ export default function App() {
       </AnimatedSidebar>
       <AnimatedSidebarInset>
         <TopBar r={r} />
+        <TrialNotice />
         <div id="main" tabIndex={-1} className="mx-auto w-full max-w-[1480px] flex-1 px-4 py-6 outline-none md:px-6 md:py-7">
           <Crumbs r={r} />
           <Suspense fallback={<Loading />}>
