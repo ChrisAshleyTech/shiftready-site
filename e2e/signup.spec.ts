@@ -34,3 +34,19 @@ test("Home button in the top bar goes to the homepage", async ({ page }) => {
   await home.click();
   await expect(page).toHaveURL(/localhost:4173\/$/);
 });
+
+for (const [day, text] of [[9, null], [10, "Your free trial ends in 4 days."], [13, "Your free trial ends in 1 day."], [15, "Your free trial has ended."]] as const) {
+  test(`trial notice on day ${day}`, async ({ page, context }) => {
+    await context.addCookies([{ name: "rolevara-member", value: String(Date.now() - day * 864e5 - 60e3), domain: "localhost", path: "/" }]);
+    await page.goto("/app/#/home");
+    await expect(page.getByRole("link", { name: "Home page" })).toBeVisible();
+    const notice = page.getByText(/Your free trial/);
+    if (!text) { await expect(notice).toHaveCount(0); return; }
+    await expect(notice).toContainText(text);
+    await expect(page.getByRole("link", { name: "See plans" })).toHaveAttribute("href", "/pricing/");
+    await page.getByRole("button", { name: "Dismiss trial notice" }).click();
+    await page.reload();
+    await expect(page.getByRole("link", { name: "Home page" })).toBeVisible();
+    await expect(notice).toHaveCount(0);
+  });
+}

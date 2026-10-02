@@ -30,6 +30,7 @@ import { ticketNo, ticketName } from "./ticketLabel";
 import { CompanySwitcher } from "./components/CompanySwitcher";
 import { NoTickets, CompanyOverview } from "./components/NoTickets";
 import { company } from "./company";
+import { TrialNotice } from "./components/TrialNotice";
 import Home from "./pages/Home";
 // Other screens load on first use, so the charting library and large pages stay out of the
 // initial bundle.
@@ -241,6 +242,7 @@ export default function App() {
       </AnimatedSidebar>
       <AnimatedSidebarInset>
         <TopBar r={r} />
+        <TrialNotice />
         <div id="main" tabIndex={-1} className="mx-auto w-full max-w-[1480px] flex-1 px-4 py-6 outline-none md:px-6 md:py-7">
           <Crumbs r={r} />
           <Suspense fallback={<Loading />}>

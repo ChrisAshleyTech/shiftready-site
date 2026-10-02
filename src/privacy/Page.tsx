@@ -22,7 +22,7 @@ export default function Page() {
       </section>
       <section aria-labelledby="p-signup">
         <h2 id="p-signup">Simulator sign-up</h2>
-        <p>Before the simulator opens, a free sign-up asks for a name, an email address and a current role. They are sent to <a href="https://formspree.io/legal/privacy-policy" rel="noopener" target="_blank">Formspree</a> on {LEGAL.operator}'s behalf, used to send product updates and to understand who the product serves, and kept until deletion is requested. A copy stays in the browser's local storage, and a first-party cookie named rolevara-member records that the sign-up was completed so it isn't asked again. "Sign out" in the app's Settings removes both from the browser.</p>
+        <p>Before the simulator opens, a free sign-up asks for a name, an email address and a current role. They are sent to <a href="https://formspree.io/legal/privacy-policy" rel="noopener" target="_blank">Formspree</a> on {LEGAL.operator}'s behalf, used to send product updates and to understand who the product serves, and kept until deletion is requested. A copy stays in the browser's local storage, and a first-party cookie named rolevara-member records when the sign-up was completed, so it isn't asked again and the days left in the free trial can be shown. "Sign out" in the app's Settings removes both from the browser.</p>
       </section>
       <section aria-labelledby="p-local">
         <h2 id="p-local">Data stored in the browser</h2>

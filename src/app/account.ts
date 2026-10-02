@@ -1,16 +1,37 @@
 // Free account: a learner signs up (name and email) before the simulator opens. There is no server
-// login yet, so the sign-up is remembered in this browser: a first-party cookie marks it done (it
-// survives "Reset progress", which clears local storage) and the details stay in local storage.
+// login yet, so the sign-up is remembered in this browser: a first-party cookie holds the sign-up
+// time (it survives "Reset progress", which clears local storage) and the details stay in local storage.
 // TODO(accounts): real sign-in with server-side accounts, needed before paid tiers.
 import { FORM_ENDPOINT } from "@/marketing/config";
+import { PRICES } from "@/marketing/plans";
 
 export type Account = { name: string; email: string; role: string; at: string };
 
 const COOKIE = "rolevara-member";
 const STORE = "rolevara-account";
 
-export function signedUp(): boolean {
-  try { return document.cookie.split("; ").some(c => c === `${COOKIE}=1`); } catch { return false; }
+function cookie(): string | null {
+  try { return document.cookie.split("; ").find(c => c.startsWith(`${COOKIE}=`))?.slice(COOKIE.length + 1) || null; } catch { return null; }
+}
+
+export const signedUp = () => cookie() != null;
+
+/** When this browser signed up (ms), or null if unknown. */
+export function signedUpAt(): number | null {
+  const t = Number(cookie());
+  return t > 1e12 ? t : null;
+}
+
+const DAY = 864e5;
+/** The trial starts at sign-up. Show plan options from this day on. */
+export const TRIAL_DAYS = PRICES.pro.trialDays;
+export const TRIAL_NOTICE_DAY = 10;
+
+/** Whole days left in the free trial (0 when it has ended), or null if the sign-up date is unknown. */
+export function trialDaysLeft(now = Date.now()): number | null {
+  const at = signedUpAt();
+  if (at == null) return null;
+  return Math.max(0, TRIAL_DAYS - Math.floor((now - at) / DAY));
 }
 
 export function account(): Account | null {
@@ -25,7 +46,7 @@ export async function signUp(a: Omit<Account, "at">): Promise<void> {
     if (!r.ok) throw new Error("sign-up failed");
   }
   const secure = location.protocol === "https:" ? "; Secure" : "";
-  document.cookie = `${COOKIE}=1; Max-Age=31536000; Path=/; SameSite=Lax${secure}`;
+  document.cookie = `${COOKIE}=${Date.now()}; Max-Age=31536000; Path=/; SameSite=Lax${secure}`;
   try { localStorage.setItem(STORE, JSON.stringify({ ...a, at: new Date().toISOString() })); } catch { /* storage blocked */ }
 }
 
