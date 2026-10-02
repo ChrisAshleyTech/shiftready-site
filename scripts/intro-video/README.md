@@ -30,9 +30,8 @@ from Pexels into `clips/` under these names:
 
 ## Sound
 
-- `music.py` synthesizes the score (an original piece made in code, so there's no licence to track): uneasy
-  D minor with a heartbeat and ticking at home and on the commute, resolving to warm D major as she reaches
-  the office at 8.7 s, then a held chord under the closing line. There's no talking over the footage.
+- `music.py` synthesizes the soft music bed (an original piece made in code, so there's no licence to track).
+  There's no talking over the footage.
 - `narration.py` speaks `narration.txt` (only the closing line, "Rolevara. Experience the role. Master the work.") with Kokoro TTS v1.0 (Apache 2.0), voice `am_onyx`, slightly
   slowed. A recorded read of `narration.txt` can replace `out/voice-*.wav`. To set it up, run
   `pip install kokoro-onnx soundfile` and put `kokoro-v1.0.onnx` and `voices-v1.0.bin` from the

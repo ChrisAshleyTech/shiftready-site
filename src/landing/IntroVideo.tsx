@@ -1,6 +1,6 @@
 // Opening film for the landing page: real stock footage (working from home, the commute, the office),
-// then the 3D Rolevara door R and the logo end card. The music moves from uneasy to warm at the office,
-// and the only voice is the closing line. Built by scripts/intro-video/ (see its README for the footage
+// then the 3D Rolevara door R and the logo end card. It plays over soft music, and the only voice is
+// the closing line. Built by scripts/intro-video/ (see its README for the footage
 // and how to rebuild). It autoplays muted and loops (browsers only autoplay silent video); "Sound on"
 // unmutes it, and a caption carries the closing line. The shared Pause button stops it. The 2.3 MB file
 // loads only after the page has, so it never competes with first paint. With reduced motion, the poster
