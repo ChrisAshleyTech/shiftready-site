@@ -5,6 +5,9 @@ working from home, the commute, and an identity team at the office, then the 3D 
 and the logo end card, over music and one spoken line. The site autoplays it muted with captions
 (`public/video/intro.vtt`), and a "Sound on" button turns the audio on.
 
+The picture is built at 1920x1080 from the 4K clips (`intro.{mp4,webm}`), with a 720p copy
+(`intro-720.*`) that the page serves to phones.
+
 ## Footage
 
 Free stock clips from Pexels (Pexels License: free to use, no attribution required), chosen and

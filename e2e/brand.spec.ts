@@ -70,15 +70,16 @@ test("the dark theme swaps in the white-ink logo", async ({ page }) => {
   await page.goto("/404.html");
   await page.evaluate(() => { localStorage.clear(); localStorage.setItem("rolevara-theme", "dark"); });
   await page.goto("/");
-  await expect(page.locator("header").first().getByRole("img", { name: "Rolevara" })).toHaveAttribute("src", "/brand/rolevara-logo-dark.png");
+  await expect(page.locator("header").first().getByRole("img", { name: "Rolevara" })).toHaveAttribute("src", "/brand/rolevara-logo-dark.svg");
 });
 
 test("brand, icon and badge assets are served", async ({ request }) => {
   const files = ["/favicon.svg", "/favicon.ico", "/apple-touch-icon.png", "/icon-192.png", "/icon-512.png", "/icon-maskable-512.png", "/og/rolevara-og.png",
-    "/brand/rolevara-logo-tagline.png", ...["rolevara-logo", "rolevarasim-logo", "rolevara-mark"].flatMap(k => [`/brand/${k}.png`, `/brand/${k}-dark.png`]),
+    "/brand/rolevara-logo-tagline.png", ...["rolevara-logo", "rolevarasim-logo", "rolevara-mark"].flatMap(k => [`/brand/${k}.png`, `/brand/${k}-dark.png`, `/brand/${k}.svg`, `/brand/${k}-dark.svg`]),
     ...["beginner", "intermediate", "pro"].map(l => `/badges/rolevara-level-${l}.png`)];
   for (const f of files) expect((await request.get(f)).status(), f).toBe(200);
-  expect(await (await request.get("/favicon.svg")).text()).toContain("data:image/png;base64,");
+  // Vector favicon traced from the logo, not an embedded bitmap.
+  expect(await (await request.get("/favicon.svg")).text()).toMatch(/<path [^>]*d="M/);
 });
 
 test("level badges light one, two or three lights", async ({ page }) => {

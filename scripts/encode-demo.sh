@@ -1,14 +1,17 @@
 #!/bin/sh
-# Encodes scripts/.demo/raw.webm (from record-demo.mjs) into web-ready files in public/video/:
-# demo.mp4 (H.264), demo.webm (VP9), both silent, plus poster stills (WebP + JPEG).
+# Encodes the frames from record-demo.mjs (scripts/.demo/frames.txt, 2560x1600) into web-ready files in
+# public/video/: demo.mp4 (H.264) and demo.webm (VP9) at 1920x1200, both silent, plus 2x poster stills
+# (WebP + JPEG). POSTER_AT is seconds into the film.
 set -e
 FF="${FFMPEG:-ffmpeg}"
-IN=scripts/.demo/raw.webm
+IN=scripts/.demo/frames.txt
 OUT=public/video
-POSTER_AT="${POSTER_AT:-33.7}"
+POSTER_AT="${POSTER_AT:-31}"
+VF="fps=30,scale=1920:-2:flags=lanczos,format=yuv420p"
 mkdir -p "$OUT"
-"$FF" -hide_banner -loglevel error -y -i "$IN" -an -vf "fps=24,scale=1280:-2:flags=lanczos" -c:v libx264 -preset slow -crf 27 -pix_fmt yuv420p -movflags +faststart "$OUT/demo.mp4"
-"$FF" -hide_banner -loglevel error -y -i "$IN" -an -vf "fps=24,scale=1280:-2:flags=lanczos" -c:v libvpx-vp9 -b:v 0 -crf 40 -row-mt 1 -deadline good -cpu-used 2 "$OUT/demo.webm"
-"$FF" -hide_banner -loglevel error -y -ss "$POSTER_AT" -i "$IN" -frames:v 1 -vf "scale=1280:-2:flags=lanczos" -c:v libwebp -quality 82 "$OUT/demo-poster.webp"
-"$FF" -hide_banner -loglevel error -y -ss "$POSTER_AT" -i "$IN" -frames:v 1 -vf "scale=1280:-2:flags=lanczos,format=yuvj420p" -q:v 4 "$OUT/demo-poster.jpg"
+"$FF" -hide_banner -loglevel error -y -f concat -safe 0 -i "$IN" -vf "fps=30,format=yuv420p" -c:v libx264 -crf 12 -preset fast scripts/.demo/master.mp4
+"$FF" -hide_banner -loglevel error -y -i scripts/.demo/master.mp4 -an -vf "$VF" -c:v libx264 -preset slow -tune animation -crf 24 -pix_fmt yuv420p -movflags +faststart "$OUT/demo.mp4"
+"$FF" -hide_banner -loglevel error -y -i scripts/.demo/master.mp4 -an -vf "$VF" -c:v libvpx-vp9 -b:v 0 -crf 36 -row-mt 1 -deadline good -cpu-used 2 "$OUT/demo.webm"
+"$FF" -hide_banner -loglevel error -y -ss "$POSTER_AT" -i scripts/.demo/master.mp4 -frames:v 1 -c:v libwebp -quality 88 "$OUT/demo-poster.webp"
+"$FF" -hide_banner -loglevel error -y -ss "$POSTER_AT" -i scripts/.demo/master.mp4 -frames:v 1 -vf "format=yuvj420p" -q:v 3 "$OUT/demo-poster.jpg"
 ls -la "$OUT"

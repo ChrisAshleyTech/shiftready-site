@@ -1,6 +1,7 @@
 // Rolevara brand, from Christopher's logo artwork (brand-source/, built into public/brand/ by
 // scripts/make-brand-assets.mjs): the door R mark, the Rolevara logo for the website, the RolevaraSim
-// logo for the simulator, and the tagline. Each image has a dark-theme twin with the navy turned white.
+// logo for the simulator, and the tagline. Each logo is an SVG traced from his artwork
+// (scripts/make-vector-logos.mjs), so it stays sharp on any screen, with a dark-theme twin in white.
 import { cn } from "@/lib/utils";
 
 export const BRAND = "Rolevara";
@@ -13,8 +14,8 @@ function Themed({ name, alt, className, w, h }: { name: string; alt: string; cla
   const common = { alt, width: w, height: h, decoding: "async" as const };
   return (
     <>
-      <img src={`/brand/${name}.png`} {...common} className={cn("w-auto dark:hidden", className)} />
-      <img src={`/brand/${name}-dark.png`} {...common} className={cn("hidden w-auto dark:block", className)} />
+      <img src={`/brand/${name}.svg`} {...common} className={cn("w-auto dark:hidden", className)} />
+      <img src={`/brand/${name}-dark.svg`} {...common} className={cn("hidden w-auto dark:block", className)} />
     </>
   );
 }
@@ -27,8 +28,8 @@ export function Mark({ className, title = "" }: { className?: string; title?: st
 // The website logo (door R + Rolevara), or the simulator's (door R + RolevaraSim).
 export function Logo({ className, sim = false }: { className?: string; sim?: boolean }) {
   return sim
-    ? <Themed name="rolevarasim-logo" alt="RolevaraSim" w={802} h={144} className={className} />
-    : <Themed name="rolevara-logo" alt={BRAND} w={675} h={144} className={className} />;
+    ? <Themed name="rolevarasim-logo" alt="RolevaraSim" w={799} h={144} className={className} />
+    : <Themed name="rolevara-logo" alt={BRAND} w={671} h={144} className={className} />;
 }
 
 // Website logo with an optional tagline under it.
