@@ -1,4 +1,4 @@
-// Audit of a Monday-to-Thursday week: the learner's own on Friday (IAM + GRC, optional), or
+// Audit of a worked shift: the learner's own as a self-audit (IAM + GRC, optional), or
 // Jordan Reyes' on GRC only. Seven tasks, graded like a shift.
 import { Fragment, useState } from "react";
 import { toast } from "sonner";
