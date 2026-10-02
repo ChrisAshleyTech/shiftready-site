@@ -252,7 +252,7 @@ function Ticket({ id, wide }: { id: string; wide: boolean }) {
   return (
     <Card className="gap-6 p-5 md:p-6">
       <a href="#/queue" className="inline-flex items-center gap-1 text-sm font-medium text-primary lg:hidden"><ChevronLeft className="size-4" />All tickets</a>
-      <header className="space-y-2">
+      <header data-tour="ticket" className="space-y-2">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div className="flex flex-wrap items-center gap-2"><Pri p={t.pri} /><span className="font-mono text-sm text-muted-foreground">{ticketNo(t)}</span><Status st={statusOf(t)} /><Mode ts={ts} /></div>
           {!tutorOpen(wide) && <Button size="sm" variant="outline" onClick={() => toggleTutor(wide)}><MessageCircleQuestion />Ask the tutor</Button>}
@@ -261,7 +261,7 @@ function Ticket({ id, wide }: { id: string; wide: boolean }) {
         <p className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground"><span>{t.type}</span><span>From: {t.reopens ? TK[t.reopens].from : t.from}</span><span>Via: {t.reopens ? TK[t.reopens].channel : t.channel}</span><span>{t.reopens ? `Reopened ${t.opened}` : `Opened ${t.opened}`}</span></p>
       </header>
       <Tabs defaultValue="details">
-        <TabsList>
+        <TabsList data-tour="help">
           <TabsTrigger value="details">Details</TabsTrigger>
           <TabsTrigger value="activity">Activity ({S.log.filter((e: any) => e.ticket === id).length})</TabsTrigger>
           <TabsTrigger value="hints" id={`hints-tab-${id}`}>Hints{hintsUsed(ts) ? ` (${hintsUsed(ts)} used)` : ""}</TabsTrigger>
@@ -287,7 +287,7 @@ function Ticket({ id, wide }: { id: string; wide: boolean }) {
           )}
           {closed ? <Grade id={id} />
             : ts.status === "new" || ts.status === "reopened" ? (
-                <section className="space-y-2"><Button size="lg" onClick={() => A.startWork(id)}>{ts.status === "reopened" ? "Pick it back up" : "Start work"}</Button>
+                <section data-tour="start" className="space-y-2"><Button size="lg" onClick={() => A.startWork(id)}>{ts.status === "reopened" ? "Pick it back up" : "Start work"}</Button>
                   <p className="text-sm text-muted-foreground">Starting makes this the active ticket. Changes made in the directory are logged against it.</p></section>)
             : !active ? (
                 <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-warn/40 bg-warn/10 p-4 text-sm">
@@ -332,7 +332,7 @@ export default function Queue({ r }: { r: Route }) {
               <button key={k} aria-pressed={ui.qfilter === k} onClick={() => { ui.qfilter = k; commit(); }}
                 className={cn("rounded-md py-1.5 text-sm font-medium text-muted-foreground", ui.qfilter === k && "bg-background text-foreground shadow-sm")}>{l} <span className="font-mono text-xs">{n}</span></button>))}
           </div>
-          <nav aria-label="Tickets" className="space-y-2">
+          <nav aria-label="Tickets" data-tour="queue-list" className="space-y-2">
             {shown.length ? shown.map((t: any) => { const ts = S.tickets[t.id]; return (
               <a key={t.id} href={`#/queue/${t.id}`} aria-current={sel === t.id ? "page" : undefined}
                 className={cn("lift grid grid-cols-[auto_minmax(0,1fr)] gap-x-3 gap-y-1.5 rounded-xl border bg-card p-3.5 hover:border-primary/40", sel === t.id && "border-primary ring-1 ring-primary", ts.checks && "bg-muted/30")}>
