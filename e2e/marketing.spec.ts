@@ -18,7 +18,7 @@ test("pricing: toggle, badges, coming-soon labels and waitlist tier selection", 
   await expect(page.getByText(/\$39|lab pack|one-time/i)).toHaveCount(0);
   await expect(page.getByRole("heading", { name: "Show the work in the real console." })).toBeVisible();
   await expect(page.getByRole("table", { name: "Pro compared with Pro + Labs" })).toContainText("Simulator + real tenants");
-  await expect(page.getByText("Pro features are included free during early access.")).toBeVisible();
+  await expect(page.getByText("Pro features are included free during early access.", { exact: true })).toBeVisible();
   expect(await page.getByText("Early access", { exact: true }).count()).toBeGreaterThanOrEqual(3);
   await expect(page.locator("main").getByText(/Active Directory/)).toHaveCount(0);
   await expect(page.getByRole("link", { name: "Start free" }).last()).toHaveAttribute("href", "/app/");

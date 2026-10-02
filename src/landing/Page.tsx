@@ -3,7 +3,7 @@
 // hero, what's covered, how it works, choose a path, what you practise, companies, who it's for,
 // pricing, FAQ, sign-up. Photos: Unsplash License (credited).
 import { ArrowRight, Bot, ClipboardCheck, FileBarChart2, KeyRound, ShieldAlert, UsersRound } from "lucide-react";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Faq, type QA } from "@/marketing/Faq";
 import { Button } from "@/components/ui/button";
 import { AnimatedBackdrop, CountUp, MotionPauseProvider, PauseButton, Reveal } from "@/components/brand/motion";
 import { IllusShield, IllusReopen } from "@/components/brand/illustrations";
@@ -41,7 +41,7 @@ const STEPS = [
   ["Live with the results", "Tickets stay open until they're actually fixed. Miss something and the requester replies, or it comes back as an incident. The GRC track then audits the shift.", "bg-hue-amber"],
 ];
 
-const FAQ = [
+export const FAQ: QA = [
   ["Who is Rolevara for?", "Anyone working in, or moving into, identity and access: service desk analysts, IAM analysts and engineers, GRC and audit staff, and the team leads who train them."],
   ["Do you need a lab tenant?", "No. The simulator runs in your browser. The platform labs (Microsoft Entra ID, Okta and AWS) are an optional extra in Pro + Labs, run in a free tenant you own."],
   ["What does the free plan include?", "Pacific Crest Logistics on all three paths (IAM only, IAM + GRC, GRC only), with the full ticket queue, reopened tickets, follow-up incidents and the audits. Pro features are free during early access."],
@@ -164,9 +164,7 @@ export default function Landing() {
         <section id="faq" aria-labelledby="faq-h" className="scroll-mt-24 mx-auto grid max-w-7xl gap-10 px-4 py-20 md:px-6 lg:grid-cols-[1fr_1.4fr]">
           <Reveal className="space-y-4"><p className="t-eyebrow">FAQ</p><h2 id="faq-h" className="t-h1">Common questions</h2>
             <IllusShield className="h-44" /></Reveal>
-          <Accordion type="single" collapsible>
-            {FAQ.map(([q, a]) => <AccordionItem key={q} value={q}><AccordionTrigger className="font-display text-lg font-semibold">{q}</AccordionTrigger><AccordionContent className="text-base text-muted-foreground">{a}</AccordionContent></AccordionItem>)}
-          </Accordion>
+          <Faq items={FAQ} questionClassName="font-display text-lg font-semibold" />
         </section>
 
         <WaitlistBand />

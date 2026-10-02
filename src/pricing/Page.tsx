@@ -1,5 +1,5 @@
 // /pricing: the pricing section, pricing questions and the waitlist.
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Faq, type QA as FaqItems } from "@/marketing/Faq";
 import { MotionPauseProvider, AnimatedBackdrop } from "@/components/brand/motion";
 import { SiteHeader, SiteFooter } from "@/marketing/chrome";
 import { WaitlistBand } from "@/marketing/sections";
@@ -9,7 +9,7 @@ import { PRICES, TIERS, yearlySaving } from "@/marketing/plans";
 
 const [, pro, labs] = TIERS;
 
-const QA = [
+export const QA: FaqItems = [
   ["Can plans be purchased today?", "Not yet. Paid plans open from a waitlist, and no payment details are collected on this site."],
   ["What does the free tier include?", "Pacific Crest Logistics on all three paths (IAM only, IAM + GRC, GRC only), with the full ticket queue, reopened tickets, follow-up incidents and the audits. Pro features are included free during early access."],
   ["What is in early access?", "Five industry companies (Harbor Health Network, Meridian Aerospace, Coastline Credit Union, Brightpath SaaS and Sunset Retail Group), the PAM track, and the Microsoft Entra ID, Okta and AWS labs."],
@@ -31,9 +31,7 @@ export default function Page() {
         <WhyProLabs />
         <section aria-labelledby="pq-h" className="mx-auto max-w-3xl px-4 py-16 md:px-6">
           <h2 id="pq-h" className="t-h2">Pricing questions</h2>
-          <Accordion type="single" collapsible className="mt-6">
-            {QA.map(([q, a]) => <AccordionItem key={q} value={q}><AccordionTrigger className="font-display text-base font-bold">{q}</AccordionTrigger><AccordionContent className="text-base text-muted-foreground">{a}</AccordionContent></AccordionItem>)}
-          </Accordion>
+          <Faq items={QA} className="mt-6" questionClassName="font-display text-base font-bold" />
         </section>
         <WaitlistBand />
       </main>
