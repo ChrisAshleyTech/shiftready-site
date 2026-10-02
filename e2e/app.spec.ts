@@ -16,7 +16,7 @@ const go = (page: Page, hash: string) => page.evaluate(h => { location.hash = h;
 
 test("hints, penalties, Solo/Assisted, tutor, undo, search, results and report", async ({ page, context }) => {
   await fresh(page);
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Monday morning. Twenty tickets are waiting.");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("20 tickets are waiting.");
 
   // Nudge only: -10%, stays Solo.
   await go(page, "#/queue/INC0041207");

@@ -18,14 +18,15 @@ const nf = new Intl.NumberFormat("en-US", { maximumFractionDigits: 1 });
 const pct = (n: number | null | undefined) => (n == null ? "–" : n + "%");
 const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
 
-// Readiness band. Needs Monday complete; weighs the week score and how much was solved solo.
+// Readiness band. Needs the queue clear; weighs the shift score and how much was solved solo.
+// `mon` is the assigned tickets and `thu` what arrived during the shift (names kept for old links).
 export function band(d: any) {
-  const done = d.mon.done === d.mon.n, closed = d.mon.done + (d.thu ? d.thu.done : 0);
+  const closed = d.mon.done + (d.thu ? d.thu.done : 0), n = d.mon.n + (d.thu ? d.thu.n : 0), done = closed === n;
   const assisted = d.mon.assisted + (d.thu ? d.thu.assisted : 0);
-  if (!done) return { label: "In progress", tone: "neutral", note: `${d.mon.done} of ${d.mon.n} Monday tickets closed so far.` };
+  if (!done) return { label: "In progress", tone: "neutral", note: `${closed} of ${n} tickets closed so far.` };
   const share = closed ? assisted / closed : 0, p = d.week ?? 0;
   const [label, tone] = p >= 90 && share <= 0.1 ? ["Ready for a real queue", "ok"] : p >= 75 && share <= 0.25 ? ["Nearly ready", "ok"] : p >= 60 ? ["Developing", "warn"] : ["Early practice", "bad"];
-  return { label, tone, note: d.thu && d.thu.done === d.thu.n ? "Based on the full week." : "Based on Monday only. The Thursday shift isn't finished." };
+  return { label, tone, note: "Based on the full shift." };
 }
 
 function Tile({ k, v, d }: { k: string; v: string; d: string }) {
@@ -38,13 +39,13 @@ const chartConfig = { value: { label: "Score", color: "var(--chart-1)" } } satis
 // Path names for the header. Links made before paths existed have no path.
 const PATH_NAME: Record<string, string> = { iam: "IAM only path", "iam-grc": "IAM + GRC path", grc: "GRC only path" };
 
-// GRC only: audit readiness from the audit of Jordan Reyes' week.
+// GRC only: audit readiness from the audit of Jordan Reyes' shift.
 export function auditBand(d: any) {
   const a = d.audit;
   if (a.done < a.n) return { label: "In progress", tone: "neutral", note: `${a.done} of ${a.n} audit tasks submitted so far.` };
   const p = a.pct ?? 0;
   const label = p >= 90 ? "Ready for audit fieldwork" : p >= 75 ? "Nearly ready" : p >= 60 ? "Developing" : "Early practice";
-  return { label, tone: p >= 75 ? "ok" : p >= 60 ? "warn" : "bad", note: "Based on the full audit of an IAM analyst's week." };
+  return { label, tone: p >= 75 ? "ok" : p >= 60 ? "warn" : "bad", note: "Based on the full audit of an IAM analyst's shift." };
 }
 
 export function ReportView({ d, own = false }: { d: any; own?: boolean }) {
@@ -88,11 +89,11 @@ export function ReportView({ d, own = false }: { d: any; own?: boolean }) {
         ) : <div className="relative hidden rounded-3xl bg-white/95 p-4 md:block"><IllusChart className="h-36 w-auto" /></div>}
       </header>
       <section aria-label="Headline numbers" className={`grid grid-cols-2 gap-3 ${d.p === "iam-grc" ? "lg:grid-cols-3 xl:grid-cols-6" : d.p === "iam" ? "lg:grid-cols-4" : "lg:grid-cols-5"}`}>
-        <Tile k="Week score" v={pct(d.week)} d="After hint penalties" />
-        <Tile k="Monday" v={pct(d.mon.pct)} d={shift(d.mon)} />
-        <Tile k="Thursday" v={d.thu ? pct(d.thu.pct) : "–"} d={shift(d.thu)} />
-        <Tile k="Consequences" v={d.caused == null ? "–" : String(d.caused)} d={d.caused == null ? "Revealed on Thursday" : `caused · ${d.prevented} prevented`} />
-        {d.p === "iam-grc" && <Tile k="Friday audit" v={d.fri ? pct(d.fri.pct) : "–"} d={d.fri ? `${d.fri.done}/${d.fri.n} tasks · own week` : "Not attempted"} />}
+        <Tile k="Shift score" v={pct(d.week)} d="After hint penalties" />
+        <Tile k="Tickets" v={`${d.mon.done + (d.thu ? d.thu.done : 0)}/${d.mon.n + (d.thu ? d.thu.n : 0)}`} d={`closed · ${d.mon.solo + (d.thu ? d.thu.solo : 0)} solo · ${d.mon.assisted + (d.thu ? d.thu.assisted : 0)} assisted`} />
+        <Tile k="Reopened" v={d.reopened == null ? "–" : String(d.reopened)} d="Requester said the fix didn't work" />
+        <Tile k="Follow-ups caused" v={d.caused == null ? "–" : String(d.caused)} d={d.caused == null ? "None checked yet" : `${d.prevented} prevented`} />
+        {d.p === "iam-grc" && <Tile k="Self-audit" v={d.fri ? pct(d.fri.pct) : "–"} d={d.fri ? `${d.fri.done}/${d.fri.n} tasks · own shift` : "Not attempted"} />}
         {d.p !== "iam" && <Tile k={d.p ? desk(d.c) : "GRC audit"} v={d.grc ? pct(d.grc.pct) : "–"} d={d.grc ? `${d.grc.done}/${d.grc.n} tasks` : "Not attempted"} />}
       </section>
       <Card className="grid gap-6 p-5 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] md:p-6">
@@ -121,14 +122,14 @@ export function ReportView({ d, own = false }: { d: any; own?: boolean }) {
           <Table>
             <caption className="sr-only">Ticket results</caption>
             <TableHeader><TableRow><TableHead>Ticket</TableHead><TableHead>Result</TableHead><TableHead className="text-right">Score</TableHead><TableHead>Solo / Assisted</TableHead></TableRow></TableHeader>
-            <TableBody>{rows(d.tickets.slice(0, d.mon.n), "Monday")}{rows(d.tickets.slice(d.mon.n), "Thursday")}</TableBody>
+            <TableBody>{rows(d.tickets.slice(0, d.mon.n), "Assigned at the start of the shift")}{rows(d.tickets.slice(d.mon.n), "Arrived during the shift")}</TableBody>
           </Table>
         </div>
       </section>
       <section className="space-y-2 rounded-xl border border-dashed p-5 text-sm">
         <h2 className="font-sans text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">How to read this</h2>
         <p><b>Solo</b> means the ticket was closed without the exact-steps hint. <b>Assisted</b> means the learner revealed the exact steps. Smaller hints (a nudge or the policy clause) cost 10% or 25% of a ticket's score, and the ticket still counts as Solo.</p>
-        <p>Thursday's queue is generated from Monday's decisions. <b>Consequences caused</b> counts the Monday mistakes that came back as incidents.</p>
+        <p>The queue is live. When a fix doesn't work, the requester replies and the ticket is <b>reopened</b> until it's resolved, and it keeps the grade of its first resolution. <b>Follow-ups caused</b> counts the mistakes that came back later in the shift as new incidents or replies.</p>
         <p className="text-muted-foreground">This report was generated in the learner's own browser and isn't verified by Rolevara.{own ? "" : <> <a className="text-primary underline" href="/app/">Try the simulator yourself</a>.</>}</p>
       </section>
     </article>
@@ -171,7 +172,7 @@ function AuditReportView({ d, own }: { d: any; own: boolean }) {
       </section>
       <section className="space-y-2 rounded-xl border border-dashed p-5 text-sm">
         <h2 className="font-sans text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">How to read this</h2>
-        <p>The learner audited a simulated IAM analyst's Monday and Thursday: a walkthrough, sample selection, control testing against the audit log and directory, evidence evaluation, a written finding, risk ratings and a review of management's response. Answers are graded against the evidence in the simulated week.</p>
+        <p>The learner audited a simulated IAM analyst's shift: a walkthrough, sample selection, control testing against the audit log and directory, evidence evaluation, a written finding, risk ratings and a review of management's response. Answers are graded against the evidence in the simulated shift.</p>
         <p className="text-muted-foreground">This report was generated in the learner's own browser and isn't verified by Rolevara.{own ? "" : <> <a className="text-primary underline" href="/app/">Try the simulator yourself</a>.</>}</p>
       </section>
     </article>

@@ -105,7 +105,7 @@ export function Scripts({ lab, files }: { lab: LabId; files: readonly (readonly 
   );
 }
 
-/** The six Monday tickets, with what each asks for on this platform. */
+/** The six lab tickets, with what each asks for on this platform. */
 export function TicketList({ todo }: { todo: Record<string, string> }) {
   return (
     <ul className="divide-y rounded-lg border">
@@ -163,7 +163,7 @@ export function UploadResults({ guide }: { guide: LabGuide }) {
           <div className="flex flex-wrap items-end justify-between gap-3 rounded-lg border bg-muted/40 p-4">
             <div>
               <h2 id="lab-score" ref={heading} tabIndex={-1} className="font-semibold outline-none">Lab score</h2>
-              <p className="text-sm text-muted-foreground">Exported {new Date(result.exportedAt).toLocaleString()}. Graded with the same checks as the Monday shift.</p>
+              <p className="text-sm text-muted-foreground">Exported {new Date(result.exportedAt).toLocaleString()}. Graded with the same checks as the simulator.</p>
             </div>
             <div className="font-mono text-3xl">{result.score}/{result.max}</div>
           </div>

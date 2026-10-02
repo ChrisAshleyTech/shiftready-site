@@ -1,5 +1,5 @@
-// Paths: the first-visit picker, GRC only (auditing Jordan Reyes' week), switching paths without
-// losing progress, the optional Friday audit, the week summary, and framework panels.
+// Paths: the first-visit picker, GRC only (auditing Jordan Reyes' shift), switching paths without
+// losing progress, the optional self-audit, the shift summary, and framework panels.
 import { test, expect, type Page } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 // @ts-ignore: plain JS engine modules
@@ -9,7 +9,7 @@ import * as st from "../src/engine/state.js";
 // @ts-ignore
 import { T, TK } from "../src/engine/tickets.js";
 // @ts-ignore
-import { startThursday, THU_T } from "../src/engine/thursday.js";
+import { queueTickets } from "../src/engine/followups.js";
 // @ts-ignore
 import { PLAYBOOK } from "../tests/playbook.js";
 
@@ -19,17 +19,20 @@ const axe = async (page: Page) => {
   expect(r.violations.filter(v => v.impact === "serious" || v.impact === "critical").map(v => v.id)).toEqual([]);
 };
 
-// A finished Monday and Thursday, every ticket worked by the runbook.
-function finishedWeek() {
+// A finished shift, every ticket worked by the runbook, including whatever arrived.
+function finishedShift() {
   setState(st.fresh());
   const work = (id: string) => { st.tact("start", id); let r = PLAYBOOK[id](id); if (!Array.isArray(r)) r = [r]; st.closeTicket(id, r[0], { answer: TK[id].question ? r[1] : undefined }); };
   T.forEach((t: any) => work(t.id));
-  startThursday();
-  THU_T.forEach((t: any) => work(t.id));
+  for (let i = 0; i < 100; i++) {
+    const next = queueTickets().find((t: any) => !S.tickets[t.id].checks);
+    if (!next) break;
+    work(next.id);
+  }
   return JSON.stringify(S);
 }
 
-test("first visit: choose GRC only and audit Jordan Reyes' week", async ({ page }) => {
+test("first visit: choose GRC only and audit Jordan Reyes' shift", async ({ page }) => {
   await page.goto("/app/");
   await page.evaluate(() => localStorage.clear());
   await page.goto("/app/#/home");
@@ -38,12 +41,12 @@ test("first visit: choose GRC only and audit Jordan Reyes' week", async ({ page 
   await axe(page);
   await page.getByRole("button", { name: "Choose GRC only" }).click();
 
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Audit Jordan Reyes' week");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Audit Jordan Reyes' shift");
   const where = page.getByRole("region", { name: "Where you are" });
   await expect(where).toContainText("GRC only");
   await expect(where).toContainText("Pacific Crest Logistics");
   await expect(where).toContainText("Audit task 1: Walkthrough");
-  await expect(page.getByRole("link", { name: "Audit Jordan's week" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Audit Jordan's shift" })).toBeVisible();
   await expect(page.getByRole("link", { name: "Ticket queue" })).toHaveCount(0);
 
   // The queue belongs to the IAM paths; the directory is read-only evidence.
@@ -75,13 +78,13 @@ test("first visit: choose GRC only and audit Jordan Reyes' week", async ({ page 
   await expect(fw).toContainText("CA-2d");
   await expect(fw).toContainText("In plain English");
 
-  // Switch to IAM only: Monday starts fresh there. Switch back: the audit is still in progress.
+  // Switch to IAM only: the queue starts fresh there. Switch back: the audit is still in progress.
   await go(page, "#/settings");
   await axe(page);
   await page.getByRole("button", { name: "Switch to IAM only" }).click();
   await go(page, "#/home");
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Monday morning. Twenty tickets are waiting.");
-  await expect(page.getByRole("link", { name: /Audit Jordan's week|Friday audit/ })).toHaveCount(0);
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("20 tickets are waiting.");
+  await expect(page.getByRole("link", { name: /Audit Jordan's shift|Audit your shift/ })).toHaveCount(0);
   await go(page, "#/settings");
   await page.getByRole("button", { name: "Switch to GRC only" }).click();
   await go(page, "#/home");
@@ -93,14 +96,14 @@ test("first visit: choose GRC only and audit Jordan Reyes' week", async ({ page 
   await expect(page.getByRole("table")).toContainText("Walkthrough");
 });
 
-test("IAM + GRC: Friday is optional, the week summary follows, and tickets show framework panels", async ({ page }) => {
-  const week = finishedWeek();
+test("IAM + GRC: the self-audit is optional, the shift summary follows, and tickets show framework panels", async ({ page }) => {
+  const shift = finishedShift();
   await page.goto("/app/");
-  await page.evaluate(w => { localStorage.clear(); localStorage.setItem("rolevara-path", "iam-grc"); localStorage.setItem("pcl-iam-sim-v1", w); }, week);
+  await page.evaluate(w => { localStorage.clear(); localStorage.setItem("rolevara-path", "iam-grc"); localStorage.setItem("pcl-iam-sim-v1", w); }, shift);
   await page.goto("/app/#/home");
   await page.reload();
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(/Now audit it/);
-  await expect(page.getByRole("region", { name: "Where you are" })).toContainText("Friday: audit your own week (optional)");
+  await expect(page.getByRole("region", { name: "Where you are" })).toContainText("Audit your own shift (optional)");
 
   // A closed ticket's framework panel shows the requirement text.
   await go(page, "#/queue/INC0041207");
@@ -110,30 +113,30 @@ test("IAM + GRC: Friday is optional, the week summary follows, and tickets show 
   await axe(page);
 
   await go(page, "#/audit");
-  await page.getByRole("button", { name: "Skip Friday" }).click();
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Week summary");
+  await page.getByRole("button", { name: "Skip the audit" }).click();
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Shift summary");
   await expect(page.getByText("Skipped").first()).toBeVisible();
   await axe(page);
-  await page.getByRole("link", { name: "Do the Friday audit after all" }).click();
-  await page.getByRole("button", { name: "Do the Friday audit after all" }).click();
-  await page.getByRole("button", { name: "Start the Friday audit" }).click();
+  await page.getByRole("link", { name: "Audit your shift after all" }).click();
+  await page.getByRole("button", { name: "Audit your shift after all" }).click();
+  await page.getByRole("button", { name: "Start the audit" }).click();
   await expect(page.getByRole("heading", { name: "Walk through a caller reset" })).toBeVisible();
   await go(page, "#/audit/W7");
   await expect(page.getByRole("group", { name: /exceptions are in your own work/ })).toBeVisible();
 });
 
 test("IAM only: no audit screens and no framework panels", async ({ page }) => {
-  const week = finishedWeek();
+  const shift = finishedShift();
   await page.goto("/app/");
-  await page.evaluate(w => { localStorage.clear(); localStorage.setItem("rolevara-path", "iam"); localStorage.setItem("pcl-iam-sim-v1:iam", w); }, week);
+  await page.evaluate(w => { localStorage.clear(); localStorage.setItem("rolevara-path", "iam"); localStorage.setItem("pcl-iam-sim-v1:iam", w); }, shift);
   await page.goto("/app/#/queue/INC0041207");
   await page.reload();
   await expect(page.getByRole("heading", { name: /Forgot password/ })).toBeVisible();
   await expect(page.locator("[data-framework-panel]")).toHaveCount(0);
-  await expect(page.getByRole("link", { name: /Friday audit|SOX audit desk/ })).toHaveCount(0);
+  await expect(page.getByRole("link", { name: /Audit your shift|SOX audit desk/ })).toHaveCount(0);
   await go(page, "#/home");
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText(/Week score/);
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText(/Shift score/);
   await go(page, "#/week");
-  await expect(page.getByRole("heading", { name: "What your Monday caused" })).toBeVisible();
-  await expect(page.getByText("Every consequence was prevented", { exact: false })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "What came back to you" })).toBeVisible();
+  await expect(page.getByText("every follow-up was prevented", { exact: false })).toBeVisible();
 });

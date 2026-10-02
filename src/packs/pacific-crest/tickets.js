@@ -1,4 +1,4 @@
-// Pacific Crest Monday tickets. Ticket data and grading are extracted verbatim from the original simulator.
+// Pacific Crest's assigned tickets (the queue at the start of the shift). Ticket data and grading are extracted verbatim from the original simulator.
 import { S, U, has, C, roleCheck, firstIdx, verifiedBefore, approvalBefore, esc, sodConflicts } from "../../engine/store.js";
 import { ROLES } from "./company.js";
 

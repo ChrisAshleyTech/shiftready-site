@@ -1,6 +1,6 @@
 // Shared by every platform lab: the Pacific Crest seed data, and grading of a tenant's state.
 // Each platform (Entra, Okta, AWS) parses its own read-only export into LabState, then grading runs
-// the simulator's own Monday ticket checks, so a ticket done in a real console is scored exactly as
+// the simulator's own ticket checks, so a ticket done in a real console is scored exactly as
 // the same ticket done in the app.
 // The labs are built on Pacific Crest, whichever company is active in the app.
 import * as Active from "../../engine/company.js";
@@ -11,7 +11,7 @@ import { S, setState } from "../../engine/store.js";
 const { buildUsers, ROLES } = PacificCrest;
 const TK: Record<string, any> = Object.fromEntries(T.map((t: any) => [t.id, t]));
 
-// Monday tickets that can be worked in a real console and checked from a read-only export.
+// Assigned tickets that can be worked in a real console and checked from a read-only export.
 export const LAB_TICKETS = ["REQ0018841", "REQ0018850", "REQ0018852", "REQ0018870", "REQ0018879", "REQ0018881"] as const;
 export const LAB_USERS = ["maria.lopez", "robert.hayes", "tanya.wright", "sofia.ramirez", "rachel.adams", "ethan.moore", "bob.turner"];
 // Roles the tickets provision into, so every group the learner needs exists in the tenant.

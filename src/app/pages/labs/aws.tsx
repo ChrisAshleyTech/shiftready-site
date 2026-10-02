@@ -15,7 +15,7 @@ const RESOURCES = [
 
 export const AWS: LabGuide = {
   id: "aws", name: "AWS IAM lab", vendor: "Amazon Web Services",
-  sub: "Work six Pacific Crest Monday tickets in a free-tier AWS account, then grade a read-only check in your browser.",
+  sub: "Work six Pacific Crest tickets in a free-tier AWS account, then grade a read-only check in your browser.",
   resources: RESOURCES,
   upload: { file: "rolevara-aws-export.json", script: "check_rolevara_lab.py", grade: text => gradeAwsExport(parseAwsExport(text)) },
 };

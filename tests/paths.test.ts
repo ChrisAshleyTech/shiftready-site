@@ -1,9 +1,9 @@
-// Paths: Jordan Reyes' simulated week, the seven-task week audit (answer keys come from the
-// audited week's evidence), grading, GRC-only report links, per-path storage keys and framework data.
+// Paths: Jordan Reyes' simulated shift, the seven-task shift audit (answer keys come from the
+// audited shift's evidence), grading, GRC-only report links, per-path storage keys and framework data.
 import { describe, it, expect, beforeEach } from "vitest";
 import { S, setState } from "../src/engine/store.js";
 import { T, TK } from "../src/engine/tickets.js";
-import { startThursday, THU_T, BASE_THU, CONSEQ } from "../src/engine/thursday.js";
+import { FOLLOW, STANDING, CONSEQ, releaseAll, queueDone } from "../src/engine/followups.js";
 import * as st from "../src/engine/state.js";
 import { encodeReport, decodeReport } from "../src/engine/report.js";
 import { playJordanWeek, mistakes } from "../src/app/audit/jordan";
@@ -19,19 +19,19 @@ const rowsOf = (t: Task) => Object.fromEntries(t.rows!.map(r => [r.name.split(" 
 // The answer key as a learner would submit it.
 const perfect = (t: Task): Answers => Object.fromEntries((t.kind === "table" ? t.rows! : t.qs!).map((q: any, i) => [i, q.correct]));
 
-describe("Jordan Reyes' week", () => {
+describe("Jordan Reyes' shift", () => {
   it("closes every ticket, and only the planted mistakes lose points", () => {
     playJordanWeek();
-    expect(S.shift).toBe("thu");
-    const all = [...T, ...THU_T];
+    expect(queueDone()).toBe(true);
+    const all = [...T, ...FOLLOW];
     all.forEach((t: any) => expect(S.tickets[t.id].checks, t.id).toBeTruthy());
     const imperfect = all.filter((t: any) => S.tickets[t.id].score < S.tickets[t.id].max).map((t: any) => t.id).sort();
     expect(imperfect).toEqual(Object.keys(mistakes()).filter(k => k !== "unticketed").sort());
   });
-  it("Monday's mistakes come back on Thursday", () => {
+  it("the mistakes come back as follow-ups during the shift", () => {
     playJordanWeek();
     expect(S.thu.map((x: any) => x.key).sort()).toEqual(["james", "robert", "tanya"]);
-    expect(THU_T.map((t: any) => t.id)).toHaveLength(BASE_THU.length + 3);
+    expect(FOLLOW.map((t: any) => t.id)).toHaveLength(STANDING.length + 3);
   });
   it("makes exactly one change without a ticket", () => {
     playJordanWeek();
@@ -39,7 +39,7 @@ describe("Jordan Reyes' week", () => {
   });
 });
 
-describe("week audit of Jordan's week", () => {
+describe("shift audit of Jordan's shift", () => {
   beforeEach(() => { playJordanWeek(); });
   it("control testing finds the planted exceptions and nothing else", () => {
     const wa = buildWeekAudit("jordan"), w3 = wa.tasks.find(t => t.id === "W3")!;
@@ -81,12 +81,13 @@ describe("week audit of Jordan's week", () => {
   });
 });
 
-describe("Friday audit of a clean week", () => {
+describe("self-audit of a clean shift", () => {
   it("finds no exceptions and asks for a clean-result report", () => {
     const work = (id: string) => { st.tact("start", id); let r = PLAYBOOK[id](id); if (!Array.isArray(r)) r = [r]; st.closeTicket(id, r[0], { answer: TK[id].question ? r[1] : undefined }); };
     T.forEach((t: any) => work(t.id));
-    startThursday();
-    THU_T.forEach((t: any) => work(t.id));
+    FOLLOW.forEach((t: any) => work(t.id));
+    releaseAll();
+    expect(queueDone()).toBe(true);
     const wa = buildWeekAudit("self");
     expect(Object.values(rowsOf(wa.tasks.find(t => t.id === "W3")!)).every(v => v === 0)).toBe(true);
     expect(wa.tasks.find(t => t.id === "W4")!.qs![0].correct).toBe(0);
@@ -108,8 +109,8 @@ describe("paths", () => {
 });
 
 describe("framework panels", () => {
-  it("every Monday and Thursday ticket maps to known topics", () => {
-    const ids = [...T.map((t: any) => t.id), ...BASE_THU.map((t: any) => t.id), ...CONSEQ.map((c: any) => c.make("james.carter").id)];
+  it("every assigned and follow-up ticket maps to known topics", () => {
+    const ids = [...T.map((t: any) => t.id), ...STANDING.map((t: any) => t.id), ...CONSEQ.map((c: any) => c.make("james.carter").id)];
     ids.forEach(id => { expect(ticketTopics(id).length, id).toBeGreaterThan(0); ticketTopics(id).forEach(k => expect(TOPICS[k], `${id}: ${k}`).toBeTruthy()); });
   });
   it("quotes only public-domain text; ISO, SOC 2 and PCI get summaries", () => {

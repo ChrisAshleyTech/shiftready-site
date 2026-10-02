@@ -1,10 +1,10 @@
-// Learner home: the chosen path, company and next step, then where you are in the week.
+// Learner home: the chosen path, company and next step, then where you are in the shift.
 // On the first visit it shows the path picker instead.
 import type { ReactNode } from "react";
 import { ArrowRight, CalendarDays, CheckCircle2, Circle, Lock, RotateCcw } from "lucide-react";
 import { S } from "@/engine/store.js";
 import { T } from "@/engine/tickets.js";
-import { THU_T } from "@/engine/thursday.js";
+import { FOLLOW, CONSEQ, queueTickets } from "@/engine/followups.js";
 import { fmtDay } from "@/engine/company.js";
 import { G } from "@/engine/grc.js";
 import { skillScores, stage, summary, nextTicket } from "@/engine/skills.js";
@@ -12,16 +12,17 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { ui, commit, pct, plural, focusSoon } from "../sim";
-import { startThursday, resetProgress } from "../actions";
+import { resetProgress } from "../actions";
 import { Meter, Tag } from "../components/bits";
 import { PathPicker } from "../components/PathPicker";
-import { IllusWeek } from "@/components/brand/illustrations";
+import { IllusReopen } from "@/components/brand/illustrations";
 import { company } from "../company";
 import { brandFor, deskShort } from "@/packs/brands";
 import { path, pathChosen, pathInfo } from "../paths";
 import { weekAudit, waTotals } from "../audit/weekAudit";
 import { ANALYST } from "../audit/jordan";
 import { nextStep } from "../nextStep";
+import { ticketNo, ticketName } from "../ticketLabel";
 
 // Buttons on the blue banner.
 const ON_BLUE = "h-12 rounded-xl bg-white px-6 text-base font-bold text-brand-navy hover:bg-white/90";
@@ -56,43 +57,37 @@ function WhereYouAre() {
 }
 
 function iamHero(): Hero {
-  const st = stage(), s = summary(), p = path();
-  const next = nextTicket(S.shift === "thu" ? THU_T : T);
-  const t = S.shift === "thu" ? s.thu : s.mon;
+  const st = stage(), s = summary(), p = path(), q = queueTickets();
+  const next = nextTicket();
   const cont = next && (
-    <Button asChild size="lg" className={ON_BLUE}><a href={`#/queue/${next.id}`}>{S.active === next.id ? "Continue" : "Next"}: <span className="max-w-[28ch] truncate">{next.title}</span> <ArrowRight /></a></Button>
+    <Button asChild size="lg" className={ON_BLUE}><a href={`#/queue/${next.id}`}>{S.active === next.id ? "Continue" : "Next"}: <span className="max-w-[28ch] truncate">{ticketName(next)}</span> <ArrowRight /></a></Button>
   );
-  const wa = weekAudit(), wt = waTotals(), fridayOpen = p === "iam-grc" && !S.wa?.skipped && !(wa && wt.done === wt.n);
+  const wa = weekAudit(), wt = waTotals(), auditOpen = p === "iam-grc" && !S.wa?.skipped && !(wa && wt.done === wt.n);
+  const open = q.length - s.shift.done;
   if (st === "new") return {
-    k: "Monday, " + fmtDay(0) + " · 8:00 AM", t: "Monday morning. Twenty tickets are waiting.",
-    p: `You're the IAM analyst on the ${company().name} service desk. Open a ticket, start work, make the changes in the Directory, then resolve or reject it. Each ticket is graded on the outcome and the process, and what you do today decides Thursday's queue.`,
-    a: <><Button asChild size="lg" className={ON_BLUE}><a href={`#/queue/${next.id}`}>Start with {next.id} <ArrowRight /></a></Button><Button asChild size="lg" variant="outline" className={ON_BLUE_OUTLINE}><a href="#/policy">Read the runbook first</a></Button></> };
-  if (st === "mon") return { k: "Monday shift in progress", t: `${t.done} of ${T.length} tickets closed`,
-    p: `Score so far ${pct(t.pct)}. ${t.n - t.done ? plural(t.n - t.done, "ticket is", "tickets are") + " still open." : ""}`,
-    a: <>{cont}<Button asChild size="lg" variant="outline" className={ON_BLUE_OUTLINE}><a href="#/queue">Open the queue</a></Button></>, prog: t };
-  if (st === "mon-done") return { k: "Monday complete", t: `You scored ${pct(s.mon.pct)} on Monday.`,
-    p: "Your decisions carry forward. Thursday's queue is built from what you did on Monday: anything you missed comes back as an incident.",
-    a: <><Button size="lg" className={ON_BLUE} onClick={startThursday}>Start the Thursday shift <ArrowRight /></Button><Button asChild size="lg" variant="outline" className={ON_BLUE_OUTLINE}><a href="#/results">Review Monday first</a></Button></> };
-  if (st === "thu") return { k: "Thursday shift in progress", t: `${t.done} of ${THU_T.length} Thursday tickets closed`,
-    p: s.caused ? `${plural(s.caused, "Monday decision", "Monday decisions")} came back as tickets today.` : "Nothing you did on Monday came back to bite you.",
-    a: <>{cont}<Button asChild size="lg" variant="outline" className={ON_BLUE_OUTLINE}><a href="#/results">See what Monday caused</a></Button></>, prog: t };
-  if (fridayOpen) return wa
-    ? { k: "Friday, " + fmtDay(4) + " · audit in progress", t: `${wt.done} of ${wt.n} audit tasks submitted`,
-        p: "You're the internal auditor now, testing your own Monday and Thursday. Report what the evidence shows, including your own mistakes.",
-        a: <><Button asChild size="lg" className={ON_BLUE}><a href="#/audit">Continue the Friday audit <ArrowRight /></a></Button><Button asChild size="lg" variant="outline" className={ON_BLUE_OUTLINE}><a href="#/week">Week summary</a></Button></>, prog: wt }
-    : { k: "Thursday complete · Friday is next", t: `Week score: ${pct(s.weekPct)}. Now audit it.`,
-        p: `On Friday you switch sides. As the internal auditor, you test your own week against ${company().name}'s IAM controls. It's optional: you can skip straight to the week summary.`,
-        a: <><Button asChild size="lg" className={ON_BLUE}><a href="#/audit">Start the Friday audit <ArrowRight /></a></Button><Button asChild size="lg" variant="outline" className={ON_BLUE_OUTLINE}><a href="#/week">Skip to the week summary</a></Button></> };
-  return { k: "Week complete", t: `Week score: ${pct(s.weekPct)}`,
-    p: p === "iam-grc" && wa ? `Friday audit: ${pct(wt.pct)}. Your week summary and readiness report are ready.` : "Your week summary and readiness report are ready to share.",
-    a: <><Button asChild size="lg" className={ON_BLUE}><a href="#/week">View your week summary <ArrowRight /></a></Button><Button asChild size="lg" variant="outline" className={ON_BLUE_OUTLINE}><a href="#/report">Readiness report</a></Button></> };
+    k: `Service desk · ${fmtDay(0)} · 8:00 AM`, t: `${T.length} tickets are waiting.`,
+    p: `You're the IAM analyst on the ${company().name} service desk. Open a ticket, start work, make the changes in the Directory, then resolve or reject it. Like a real queue, nothing is finished just because you closed it: if a fix doesn't work, the requester replies and the ticket comes back, and missed steps turn into new incidents.`,
+    a: <><Button asChild size="lg" className={ON_BLUE}><a href={`#/queue/${next.id}`}>Start with {ticketNo(next)} <ArrowRight /></a></Button><Button asChild size="lg" variant="outline" className={ON_BLUE_OUTLINE}><a href="#/policy">Read the runbook first</a></Button></> };
+  if (st === "working") return { k: "Shift in progress", t: `${plural(open, "ticket", "tickets")} in the queue`,
+    p: [`Score so far ${pct(s.shift.pct)}.`, s.reopened ? `${plural(s.reopened, "ticket was", "tickets were")} reopened by the requester.` : "", s.caused ? `${plural(s.caused, "follow-up", "follow-ups")} came back from earlier work.` : ""].filter(Boolean).join(" "),
+    a: <>{cont}<Button asChild size="lg" variant="outline" className={ON_BLUE_OUTLINE}><a href="#/queue">Open the queue</a></Button></>, prog: { done: s.shift.done, n: q.length } };
+  if (auditOpen) return wa
+    ? { k: "Self-audit in progress", t: `${wt.done} of ${wt.n} audit tasks submitted`,
+        p: "You're the internal auditor now, testing your own shift. Report what the evidence shows, including your own mistakes.",
+        a: <><Button asChild size="lg" className={ON_BLUE}><a href="#/audit">Continue the audit <ArrowRight /></a></Button><Button asChild size="lg" variant="outline" className={ON_BLUE_OUTLINE}><a href="#/week">Shift summary</a></Button></>, prog: wt }
+    : { k: "Queue clear · audit is next", t: `Shift score: ${pct(s.shiftPct)}. Now audit it.`,
+        p: `Switch sides. As the internal auditor, you test your own shift against ${company().name}'s IAM controls. It's optional: you can skip straight to the shift summary.`,
+        a: <><Button asChild size="lg" className={ON_BLUE}><a href="#/audit">Audit your shift <ArrowRight /></a></Button><Button asChild size="lg" variant="outline" className={ON_BLUE_OUTLINE}><a href="#/week">Skip to the shift summary</a></Button></> };
+  return { k: "Queue clear", t: `Shift score: ${pct(s.shiftPct)}`,
+    p: p === "iam-grc" && wa ? `Self-audit: ${pct(wt.pct)}. Your shift summary and readiness report are ready.` : "Your shift summary and readiness report are ready to share.",
+    a: <><Button asChild size="lg" className={ON_BLUE}><a href="#/week">View your shift summary <ArrowRight /></a></Button><Button asChild size="lg" variant="outline" className={ON_BLUE_OUTLINE}><a href="#/report">Readiness report</a></Button></> };
 }
 
 function grcHero(): Hero {
   const wa = weekAudit()!, wt = waTotals();
   const next = wa.tasks.find(t => !wa.st[t.id]?.checks);
-  if (!wt.done) return { k: "Internal audit · " + fmtDay(4), t: `Audit ${ANALYST.name}' week`,
-    p: `${ANALYST.name}, IAM Analyst, worked Monday and Thursday on the ${company().name} service desk. You're the internal auditor. The audit log, directory and tickets hold the evidence. Work the seven tasks in order.`,
+  if (!wt.done) return { k: "Internal audit · " + fmtDay(1), t: `Audit ${ANALYST.name}' shift`,
+    p: `${ANALYST.name}, IAM Analyst, worked yesterday's shift on the ${company().name} service desk. You're the internal auditor. The audit log, directory and tickets hold the evidence. Work the seven tasks in order.`,
     a: <><Button asChild size="lg" className={ON_BLUE}><a href={`#/audit/${wa.tasks[0].id}`}>Start with the walkthrough <ArrowRight /></a></Button><Button asChild size="lg" variant="outline" className={ON_BLUE_OUTLINE}><a href="#/log">Look at the audit log</a></Button></> };
   if (next) return { k: "Audit in progress", t: `${wt.done} of ${wt.n} tasks submitted`, p: `Score so far ${pct(wt.pct)}.`,
     a: <><Button asChild size="lg" className={ON_BLUE}><a href={`#/audit/${next.id}`}>Next: {next.step} <ArrowRight /></a></Button><Button asChild size="lg" variant="outline" className={ON_BLUE_OUTLINE}><a href="#/log">Audit log</a></Button></>, prog: wt };
@@ -101,25 +96,25 @@ function grcHero(): Hero {
 }
 
 function days(): Day[] {
-  const s = summary(), p = path(), wa = weekAudit(), wt = waTotals();
-  const shiftBody = (x: any, n: number) => x.done ? <><span className="text-3xl font-extrabold tabular-nums">{pct(x.pct)}</span><span className="text-xs text-muted-foreground">{x.done}/{n} closed · {x.solo} solo · {x.assisted} assisted</span></> : <span className="text-sm text-muted-foreground">{n} tickets</span>;
+  const s = summary(), p = path(), wa = weekAudit(), wt = waTotals(), st = stage();
   const auditBody = wa ? (wt.done ? <><span className="text-3xl font-extrabold tabular-nums">{pct(wt.pct)}</span><span className="text-xs text-muted-foreground">{wt.done}/{wt.n} tasks submitted</span></> : <span className="text-sm text-muted-foreground">{wt.n} audit tasks. <a className="text-primary underline-offset-2 hover:underline" href="#/audit">Open the audit</a></span>) : null;
   if (p === "grc") return [
-    { name: `${ANALYST.first}'s Monday`, date: fmtDay(0), state: "done", body: <span className="text-sm text-muted-foreground">{T.length} tickets worked. Evidence in the <a className="text-primary underline-offset-2 hover:underline" href="#/log">audit log</a>.</span> },
-    { name: `${ANALYST.first}'s Thursday`, date: fmtDay(3), state: "done", body: <span className="text-sm text-muted-foreground">{THU_T.length} tickets worked, including what Monday caused.</span> },
-    { name: "Your audit", date: fmtDay(4), state: wt.done === wt.n ? "done" : "current", body: auditBody },
+    { name: `${ANALYST.first}'s queue`, date: fmtDay(0), state: "done", body: <span className="text-sm text-muted-foreground">{queueTickets().length} tickets worked, including {plural(FOLLOW.length, "follow-up", "follow-ups")}. Evidence in the <a className="text-primary underline-offset-2 hover:underline" href="#/log">audit log</a>.</span> },
+    { name: "Your audit", date: fmtDay(1), state: wt.done === wt.n ? "done" : "current", body: auditBody },
   ];
-  const thuDone = S.shift === "thu" && s.thu.done === THU_T.length;
+  const done = st === "done";
   const out: Day[] = [
-    { name: "Monday", date: fmtDay(0), state: S.shift === "thu" ? "done" : "current", body: shiftBody(s.mon, T.length) },
-    { name: "Thursday", date: fmtDay(3), state: S.shift === "thu" ? (thuDone ? "done" : "current") : "locked", body: S.shift === "thu" ? shiftBody(s.thu, THU_T.length) : <span className="text-sm text-muted-foreground">Unlocks when every Monday ticket is closed.</span> },
+    { name: "The queue", date: fmtDay(0), state: done ? "done" : "current",
+      body: s.shift.done ? <><span className="text-3xl font-extrabold tabular-nums">{pct(s.shift.pct)}</span><span className="text-xs text-muted-foreground">{s.shift.done}/{queueTickets().length} closed · {s.solo} solo · {s.assisted} assisted</span></> : <span className="text-sm text-muted-foreground">{T.length} tickets to start. More arrive as you work.</span> },
+    { name: "Follow-ups", date: "As you work", state: done ? "done" : s.caused || s.reopened ? "current" : "open",
+      body: <span className="text-sm text-muted-foreground">{s.caused || s.reopened ? `${plural(s.caused, "follow-up", "follow-ups")} came back from earlier work. ${plural(s.reopened, "ticket", "tickets")} reopened by requesters.` : `${CONSEQ.length} things your work can cause. Fix it right the first time and they never arrive.`}</span> },
   ];
-  if (p === "iam-grc") out.push({ name: "Friday audit", date: fmtDay(4),
-    state: S.wa?.skipped ? "skipped" : wa && wt.done === wt.n ? "done" : wa ? "current" : thuDone ? "open" : "locked",
+  if (p === "iam-grc") out.push({ name: "Self-audit", date: "After the queue",
+    state: S.wa?.skipped ? "skipped" : wa && wt.done === wt.n ? "done" : wa ? "current" : done ? "open" : "locked",
     body: S.wa?.skipped ? <span className="text-sm text-muted-foreground">Skipped. <a className="text-primary underline-offset-2 hover:underline" href="#/audit">Do it after all</a></span>
-      : auditBody ?? <span className="text-sm text-muted-foreground">{thuDone ? <>Audit your own week. <a className="text-primary underline-offset-2 hover:underline" href="#/audit">Start</a></> : "Unlocks when Thursday is done. Optional."}</span> });
-  out.push({ name: "Week summary", date: "Your week", state: thuDone && (p === "iam" || S.wa?.skipped || (wa && wt.done === wt.n)) ? "done" : thuDone ? "open" : "locked",
-    body: thuDone ? <span className="text-sm text-muted-foreground"><a className="text-primary underline-offset-2 hover:underline" href="#/week">See your week</a></span> : <span className="text-sm text-muted-foreground">Ready after Thursday.</span> });
+      : auditBody ?? <span className="text-sm text-muted-foreground">{done ? <>Audit your own shift. <a className="text-primary underline-offset-2 hover:underline" href="#/audit">Start</a></> : "Unlocks when the queue is clear. Optional."}</span> });
+  out.push({ name: "Shift summary", date: "Your shift", state: done && (p === "iam" || S.wa?.skipped || (wa && wt.done === wt.n)) ? "done" : done ? "open" : "locked",
+    body: done ? <span className="text-sm text-muted-foreground"><a className="text-primary underline-offset-2 hover:underline" href="#/week">See your shift</a></span> : <span className="text-sm text-muted-foreground">Ready when the queue is clear.</span> });
   return out;
 }
 
@@ -127,7 +122,7 @@ export default function Home() {
   if (!pathChosen()) return (
     <div className="space-y-8">
       <section className="space-y-3">
-        <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.14em] text-muted-foreground"><CalendarDays className="size-4" aria-hidden />{company().name} · week of {fmtDay(0)}</p>
+        <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.14em] text-muted-foreground"><CalendarDays className="size-4" aria-hidden />{company().name} · {fmtDay(0)}</p>
         <h1 tabIndex={-1} data-page-title className="text-3xl font-extrabold md:text-4xl">Choose your path</h1>
         <p className="max-w-[70ch] text-lg text-muted-foreground">Pick the job you want to practise. You can switch any time in Settings, and each path keeps its own progress. All three are free.</p>
       </section>
@@ -155,29 +150,29 @@ export default function Home() {
             {hero.prog && <div className="max-w-md pt-1"><div role="img" aria-label={`Progress: ${Math.round(hero.prog.done / hero.prog.n * 100)}%`} className="h-2 overflow-hidden rounded-full bg-white/25"><div className="h-full rounded-full bg-white" style={{ width: `${Math.round(hero.prog.done / hero.prog.n * 100)}%` }} /></div></div>}
             <div className="flex flex-wrap gap-3 pt-2 [&_a]:shadow-none [&_button]:shadow-none">{hero.a}</div>
           </div>
-          <div className="hidden rounded-3xl bg-white/95 p-4 lg:block"><IllusWeek className="h-40 w-auto" /></div>
+          <div className="hidden rounded-3xl bg-white/95 p-4 lg:block"><IllusReopen className="h-40 w-auto" /></div>
         </div>
       </section>
 
       <section aria-label="Headline numbers" className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         {grc ? <>
           <Stat k="Audit score" v={pct(wt.pct)} d={`${wt.done}/${wt.n} tasks submitted`} />
-          <Stat k="Tickets in scope" v={String(T.length + THU_T.length)} d={`${ANALYST.first}'s Monday and Thursday`} />
+          <Stat k="Tickets in scope" v={String(queueTickets().length)} d={`${ANALYST.first}'s shift, follow-ups included`} />
           <Stat k="Audit log" v={String(S.log.length)} d="Entries to test against" />
           <Stat k={deskShort(company().id).replace(/^./, c => c.toUpperCase())} v={pct(summary().grc.pct)} d={`${summary().grc.done}/${G.length} extra tasks`} />
         </> : <>
-          <Stat k="Monday" v={pct(s.mon.pct)} d={`${s.mon.done}/${T.length} closed`} />
-          <Stat k="Thursday" v={S.shift === "thu" ? pct(s.thu.pct) : "–"} d={S.shift === "thu" ? `${s.thu.done}/${THU_T.length} closed` : "Unlocks after Monday"} />
-          {p === "iam-grc" && wa ? <Stat k="Friday audit" v={pct(wt.pct)} d={`${wt.done}/${wt.n} tasks submitted`} />
+          <Stat k="Shift score" v={pct(s.shift.pct)} d={`${s.shift.done}/${queueTickets().length} closed`} />
+          <Stat k="Reopened" v={String(s.reopened)} d="Requester said the fix didn't work" />
+          {p === "iam-grc" && wa ? <Stat k="Self-audit" v={pct(wt.pct)} d={`${wt.done}/${wt.n} tasks submitted`} />
             : <Stat k="Solo · Assisted" v={`${s.solo} · ${s.assisted}`} d={`${plural(s.hints, "hint", "hints")} used`} />}
-          <Stat k="Caused by Monday" v={s.caused == null ? "–" : String(s.caused)} d={s.caused == null ? "Revealed on Thursday" : `${s.prevented} prevented`} />
+          <Stat k="Follow-ups caused" v={String(s.caused)} d={`${s.prevented} prevented${s.pending ? ` · ${s.pending} not checked yet` : ""}`} />
         </>}
       </section>
 
       <div className="grid gap-6 xl:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
         <section aria-labelledby="wk" className="space-y-3">
-          <h2 id="wk" className="font-sans text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">{grc ? "The week you're auditing" : "Your week"}</h2>
-          <ol className={cn("grid gap-3 md:grid-cols-3", ds.length === 4 && "md:grid-cols-2 2xl:grid-cols-4")}>
+          <h2 id="wk" className="font-sans text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">{grc ? "The shift you're auditing" : "Your shift"}</h2>
+          <ol className={cn("grid gap-3 md:grid-cols-3", ds.length === 4 && "md:grid-cols-2 2xl:grid-cols-4", ds.length === 2 && "md:grid-cols-2")}>
             {ds.map(d => (
               <li key={d.name} className={cn("lift flex flex-col gap-2 rounded-2xl border bg-card p-5", d.state === "current" && "border-primary/60 ring-1 ring-primary/40", (d.state === "locked" || d.state === "skipped") && "bg-muted/30")}>
                 <div className="flex items-center justify-between gap-2">
@@ -226,7 +221,7 @@ export default function Home() {
       </div>
 
       <section aria-labelledby="rs" className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-dashed p-4">
-        <div><h2 id="rs" className="text-base font-semibold">Start over</h2><p className="text-sm text-muted-foreground">{grc ? `Resets your audit of ${ANALYST.first}'s week` : "Resets your week"} on the {pathInfo().name} path at {company().name}{grc ? "" : ", including the audit desk"}. Other paths keep their progress. Saved in this browser only.</p></div>
+        <div><h2 id="rs" className="text-base font-semibold">Start over</h2><p className="text-sm text-muted-foreground">{grc ? `Resets your audit of ${ANALYST.first}'s shift` : "Resets your shift"} on the {pathInfo().name} path at {company().name}{grc ? "" : ", including the audit desk"}. Other paths keep their progress. Saved in this browser only.</p></div>
         {ui.confirmReset ? (
           <div role="group" aria-label="Confirm reset" className="flex flex-wrap items-center gap-2">
             <Tag tone="bad">Can't be undone</Tag>

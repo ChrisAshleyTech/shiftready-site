@@ -16,7 +16,7 @@ const RESOURCES = [
 
 export const ENTRA: LabGuide = {
   id: "entra", name: "Microsoft Entra ID lab", vendor: "Microsoft",
-  sub: "Work six Pacific Crest Monday tickets in a real Microsoft Entra tenant, then grade a read-only export in your browser.",
+  sub: "Work six Pacific Crest tickets in a real Microsoft Entra tenant, then grade a read-only export in your browser.",
   resources: RESOURCES,
   upload: { file: "rolevara-lab-export.json", script: "Export-RolevaraLab.ps1", grade: text => gradeExport(parseExport(text)) },
 };

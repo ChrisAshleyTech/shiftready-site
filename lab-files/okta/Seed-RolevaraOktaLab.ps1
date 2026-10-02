@@ -1,10 +1,10 @@
 #Requires -Version 7.0
 <#
 .SYNOPSIS
-  Seeds an Okta Integrator org with the Rolevara Pacific Crest Logistics Monday scenario.
+  Seeds an Okta Integrator org with the Rolevara Pacific Crest Logistics ticket scenario.
 
 .DESCRIPTION
-  Creates 7 users and 9 groups for six Monday tickets. Every group is tagged "Rolevara lab" in its
+  Creates 7 users and 9 groups for six lab tickets. Every group is tagged "Rolevara lab" in its
   description and every user in its Organization attribute, and each object ID is recorded in
   rolevara-okta-state.json next to this script. Keep that file: Check-RolevaraOktaLab.ps1 and
   Remove-RolevaraOktaLab.ps1 both need it.

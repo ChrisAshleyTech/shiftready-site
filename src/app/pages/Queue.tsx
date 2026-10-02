@@ -3,9 +3,9 @@ import { useEffect, useRef, useState, type FormEvent } from "react";
 import { Inbox, ArrowRight, Bot, ChevronLeft, Lightbulb, MessageCircleQuestion, Phone, Send, UserRound } from "lucide-react";
 import { S, U } from "@/engine/store.js";
 import { TK } from "@/engine/tickets.js";
-import { CONSEQ, curTickets } from "@/engine/thursday.js";
+import { CONSEQ, queueTickets, queueDone } from "@/engine/followups.js";
 import { HINT_TIERS, hintsUsed, hintCost, finalScore, isAssisted } from "@/engine/state.js";
-import { HINTS, CONSEQ_LINKS, hintSteps } from "@/engine/hints.js";
+import { HINTS, hintSteps } from "@/engine/hints.js";
 import { POLICY } from "@/engine/policy.js";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -24,6 +24,7 @@ import { IllusQueue } from "@/components/brand/illustrations";
 import { FrameworkPanel } from "../components/FrameworkPanel";
 import { ticketTopics } from "../frameworks";
 import { path, showFrameworks } from "../paths";
+import { ticketNo, ticketName, statusOf, supersededIds } from "../ticketLabel";
 
 const useWide = () => {
   const q = "(min-width: 1536px)"; // Tailwind 2xl: wide enough for list + ticket + docked tutor
@@ -54,7 +55,7 @@ function Tutor({ tid, onClose }: { tid: string; onClose?: () => void }) {
         {onClose && <Button variant="ghost" size="sm" onClick={onClose}>Close</Button>}
       </header>
       <div role="log" aria-live="polite" aria-label="Tutor conversation" id="tutor-log" className="min-h-40 flex-1 space-y-3 overflow-y-auto p-4 text-sm [&_a]:text-primary [&_a]:underline [&_ul]:ml-4 [&_ul]:list-disc [&_ul]:space-y-0.5">
-        {!log.length && <div><p className="mb-1 text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">Tutor</p><p>Stuck on <span className="font-mono">{tid}</span>? I can help you think it through. Pick a question below or type your own.</p></div>}
+        {!log.length && <div><p className="mb-1 text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">Tutor</p><p>Stuck on <span className="font-mono">{ticketNo(TK[tid])}</span>? I can help you think it through. Pick a question below or type your own.</p></div>}
         {log.map((m, i) => m.who === "me"
           ? <div key={i} className="ml-auto w-fit max-w-[85%] rounded-xl rounded-br-sm bg-primary/15 px-3 py-2" dangerouslySetInnerHTML={{ __html: m.html }} />
           : <div key={i} className="space-y-1.5"><p className="text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">Tutor</p><Html className="space-y-1.5" html={m.html} /></div>)}
@@ -132,15 +133,42 @@ function Hints({ id }: { id: string }) {
 }
 
 // ---------- Ticket detail ----------
-function ConsequenceNote({ id }: { id: string }) {
-  const key = Object.keys(CONSEQ_LINKS).find(k => CONSEQ_LINKS[k].thu === id);
-  if (!key || !(S.thu || []).some((x: any) => x.key === key)) return null;
-  const c = CONSEQ.find((x: any) => x.key === key);
-  return (
-    <div className="rounded-lg border border-bad/40 bg-bad/10 p-4 text-sm">
-      <p className="mb-1 text-[11px] font-semibold uppercase tracking-[0.1em] text-bad">Caused by your Monday shift</p>
-      {c.cause} <a href={`#/queue/${CONSEQ_LINKS[key].mon}`} onClick={() => { ui.view = "mon"; }} className="font-semibold text-primary-strong underline">See the Monday ticket</a>
+// A follow-up: what earlier work caused it. A reopen shows the requester's reply and the
+// original request; a related ticket links back to its source.
+function FollowUpNote({ id }: { id: string }) {
+  const t = TK[id];
+  if (!t.src) return null;
+  const cause = CONSEQ.find((x: any) => x.key === t.key)?.cause;
+  const src = TK[t.src];
+  return t.reopens ? (
+    <div className="space-y-3 rounded-lg border border-bad/40 bg-bad/10 p-4 text-sm">
+      <p className="text-[11px] font-semibold uppercase tracking-[0.1em] text-bad">Reopened · reply from {t.from}</p>
+      <p className="font-semibold">{t.title}</p>
+      <Html className="space-y-2" html={t.body} />
+      <details className="rounded-md border bg-card px-3 py-2"><summary className="cursor-pointer font-medium">Original request</summary>
+        <Html className="mt-2 space-y-2 text-muted-foreground" html={src.body} />
+        <a href={`#/queue/${src.id}`} className="mt-2 inline-block font-semibold text-primary-strong underline">See how you resolved it</a></details>
     </div>
+  ) : (
+    <div className="rounded-lg border border-bad/40 bg-bad/10 p-4 text-sm">
+      <p className="mb-1 text-[11px] font-semibold uppercase tracking-[0.1em] text-bad">Related to {t.src}</p>
+      {cause} <a href={`#/queue/${t.src}`} className="font-semibold text-primary-strong underline">See {src.id}</a>
+    </div>
+  );
+}
+
+// Replies that reopened this ticket because the fix didn't take.
+function Replies({ id }: { id: string }) {
+  const ts = S.tickets[id];
+  if (!ts.replies?.length) return null;
+  return (
+    <ol aria-label="Replies" className="space-y-2">
+      {ts.replies.map((r: any, i: number) => (
+        <li key={i} className="rounded-lg border border-bad/40 bg-bad/10 p-4 text-sm">
+          <p className="mb-1 text-[11px] font-semibold uppercase tracking-[0.1em] text-bad">Reopened · reply from {r.from} · {r.t}</p>
+          <p>"{r.text}"</p>
+        </li>))}
+    </ol>
   );
 }
 
@@ -175,7 +203,7 @@ function Working({ id }: { id: string }) {
           <Textarea ref={note} id={`note-${id}`} defaultValue={ts.note || ""} placeholder="What you did and why" /></div>
         {ui.closeError && <div id="close-error" role="alert" tabIndex={-1} className="rounded-lg border border-bad/40 bg-bad/10 px-4 py-3 text-sm">{ui.closeError}</div>}
         <div className="flex flex-wrap gap-2"><Button onClick={() => close("resolve")}>Resolve</Button><Button variant="outline" className="border-bad/60 text-bad hover:bg-bad/10 hover:text-bad" onClick={() => close("reject")}>Reject</Button></div>
-        <p className="text-sm text-muted-foreground">Reject when the request shouldn't be fulfilled. Closing grades the ticket, and it can't be reopened.</p>
+        <p className="text-sm text-muted-foreground">Reject when the request shouldn't be fulfilled. {ts.first ? "The first resolution's grade stands. If it still isn't fixed, it comes back again." : "Closing grades the ticket. If the fix doesn't work, the requester replies and it comes back to the queue."}</p>
       </section>
     </>
   );
@@ -192,6 +220,7 @@ function Grade({ id }: { id: string }) {
           <span className="scoremath text-sm text-muted-foreground">{used ? `Raw ${ts.score}/${ts.max} − ${Math.round(hintCost(ts) * 100)}% for the ${HINT_TIERS[used - 1].label.toLowerCase()} hint = ${num(finalScore(ts))}` : "No hints used"}</span>
         </div>
         <Checks checks={ts.checks} />
+        {ts.reopens > 0 && <p className="text-sm text-muted-foreground">Reopened {ts.reopens === 1 ? "once" : `${ts.reopens} times`} because the fix didn't work. The grade above is your first resolution.{ts.status !== "reopened" && ts.last ? " It's fixed now." : ""}</p>}
       </section>
       <div className="rounded-r-md border-l-2 border-primary bg-primary/8 px-4 py-2.5 text-sm"><b>Takeaway.</b> {t.lesson}</div>
       {ts.answer && <div className="rounded-lg border bg-muted/40 p-3 text-sm"><p className="mb-1 text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">Your answer</p>{ts.answer}</div>}
@@ -206,7 +235,7 @@ function Activity({ id }: { id: string }) {
   return (
     <div className="space-y-4">
       <dl className="grid grid-cols-[max-content_1fr] gap-x-6 gap-y-1.5 text-[15px]">
-        <dt className="text-muted-foreground">Status</dt><dd><Status st={ts.status} /></dd>
+        <dt className="text-muted-foreground">Status</dt><dd><Status st={statusOf(TK[id])} /></dd>
         <dt className="text-muted-foreground">Approval</dt><dd>{ts.approval || "Not requested"}</dd>
         <dt className="text-muted-foreground">Escalated to</dt><dd>{ts.esc.length ? ts.esc.join(", ") : "Not escalated"}</dd>
       </dl>
@@ -225,11 +254,11 @@ function Ticket({ id, wide }: { id: string; wide: boolean }) {
       <a href="#/queue" className="inline-flex items-center gap-1 text-sm font-medium text-primary lg:hidden"><ChevronLeft className="size-4" />All tickets</a>
       <header className="space-y-2">
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <div className="flex flex-wrap items-center gap-2"><Pri p={t.pri} /><span className="font-mono text-sm text-muted-foreground">{t.id}</span><Status st={ts.status} /><Mode ts={ts} /></div>
+          <div className="flex flex-wrap items-center gap-2"><Pri p={t.pri} /><span className="font-mono text-sm text-muted-foreground">{ticketNo(t)}</span><Status st={statusOf(t)} /><Mode ts={ts} /></div>
           {!tutorOpen(wide) && <Button size="sm" variant="outline" onClick={() => toggleTutor(wide)}><MessageCircleQuestion />Ask the tutor</Button>}
         </div>
-        <h2 id="t-h" data-panel-focus className="text-2xl font-semibold">{t.title}</h2>
-        <p className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground"><span>{t.type}</span><span>From: {t.from}</span><span>Via: {t.channel}</span><span>Opened {t.opened}</span></p>
+        <h2 id="t-h" data-panel-focus className="text-2xl font-semibold">{ticketName(t)}</h2>
+        <p className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground"><span>{t.type}</span><span>From: {t.reopens ? TK[t.reopens].from : t.from}</span><span>Via: {t.reopens ? TK[t.reopens].channel : t.channel}</span><span>{t.reopens ? `Reopened ${t.opened}` : `Opened ${t.opened}`}</span></p>
       </header>
       <Tabs defaultValue="details">
         <TabsList>
@@ -238,8 +267,9 @@ function Ticket({ id, wide }: { id: string; wide: boolean }) {
           <TabsTrigger value="hints" id={`hints-tab-${id}`}>Hints{hintsUsed(ts) ? ` (${hintsUsed(ts)} used)` : ""}</TabsTrigger>
         </TabsList>
         <TabsContent value="details" className="space-y-6 pt-5">
-          <ConsequenceNote id={id} />
-          <Html className="max-w-[68ch] space-y-2 [&_.mono]:font-mono [&_.mono]:text-sm" html={t.body} />
+          <FollowUpNote id={id} />
+          <Replies id={id} />
+          {!t.reopens && <Html className="max-w-[68ch] space-y-2 [&_.mono]:font-mono [&_.mono]:text-sm" html={t.body} />}
           {t.caller && (
             <div className="flex gap-3 rounded-lg border bg-muted/40 p-4 text-sm">
               <Phone className="mt-0.5 size-4 shrink-0 text-muted-foreground" aria-hidden />
@@ -256,8 +286,8 @@ function Ticket({ id, wide }: { id: string; wide: boolean }) {
             </section>
           )}
           {closed ? <Grade id={id} />
-            : ts.status === "new" ? (
-                <section className="space-y-2"><Button size="lg" onClick={() => A.startWork(id)}>Start work</Button>
+            : ts.status === "new" || ts.status === "reopened" ? (
+                <section className="space-y-2"><Button size="lg" onClick={() => A.startWork(id)}>{ts.status === "reopened" ? "Pick it back up" : "Start work"}</Button>
                   <p className="text-sm text-muted-foreground">Starting makes this the active ticket. Changes made in the directory are logged against it.</p></section>)
             : !active ? (
                 <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-warn/40 bg-warn/10 p-4 text-sm">
@@ -276,13 +306,13 @@ function Ticket({ id, wide }: { id: string; wide: boolean }) {
 // ---------- Page ----------
 export default function Queue({ r }: { r: Route }) {
   const wide = useWide();
-  const list = curTickets(ui.view);
+  // A source ticket that a requester reopened is listed once, as the reopened ticket.
+  const hide = supersededIds(), list = queueTickets().filter((t: any) => !hide.has(t.id));
   const sel = r.id && TK[r.id] && S.tickets[r.id] ? r.id : null;
-  const thu = S.shift === "thu";
   const closedN = list.filter((t: any) => S.tickets[t.id].checks).length;
   const shown = list.filter((t: any) => ui.qfilter === "all" || (ui.qfilter === "closed") === !!S.tickets[t.id].checks)
     .sort((a: any, b: any) => (S.tickets[a.id].checks ? 1 : 0) - (S.tickets[b.id].checks ? 1 : 0) || a.pri - b.pri);
-  const done = closedN === list.length;
+  const done = queueDone();
   const docked = wide && tutorOpen(wide) && sel;
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => { if (e.key === "Escape" && ui.hintConfirm) { ui.hintConfirm = null; commit(); } };
@@ -291,18 +321,9 @@ export default function Queue({ r }: { r: Route }) {
 
   return (
     <>
-      <PageHeader icon={Inbox} title={ui.view === "mon" && thu ? "Monday queue (review)" : thu ? "Thursday queue" : "Monday queue"}
-        sub={`${closedN} of ${list.length} closed. Work the P1s first. Start a ticket before changing accounts, so the audit log ties your changes to it.`}>
-        {thu && (
-          <div role="group" aria-label="Which shift" className="inline-flex rounded-lg border bg-muted/40 p-1">
-            {([["cur", "Thursday"], ["mon", "Monday (review)"]] as const).map(([v, l]) => (
-              <button key={v} aria-pressed={ui.view === v} onClick={() => { ui.view = v; commit(); }}
-                className={cn("rounded-md px-3 py-1.5 text-sm font-medium text-muted-foreground", ui.view === v && "bg-background text-foreground shadow-sm")}>{l}</button>))}
-          </div>
-        )}
-      </PageHeader>
-      {done && !thu && <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-primary/40 bg-primary/10 p-4 text-sm"><span><b>Monday complete.</b> Thursday's queue is built from what you did today.</span><span className="flex gap-2"><Button asChild variant="outline"><a href="#/results">Review results</a></Button><Button onClick={A.startThursday}>Start Thursday</Button></span></div>}
-      {done && thu && ui.view !== "mon" && <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-primary/40 bg-primary/10 p-4 text-sm"><span><b>Thursday complete.</b> {path() === "iam-grc" ? "Friday is next: audit your own week, or skip to the summary." : "Your week summary is ready."}</span><span className="flex gap-2"><Button asChild variant="outline"><a href="#/week">Week summary</a></Button>{path() === "iam-grc" ? <Button asChild><a href="#/audit">Friday audit</a></Button> : <Button asChild><a href="#/report">Readiness report</a></Button>}</span></div>}
+      <PageHeader icon={Inbox} title="Ticket queue"
+        sub={`${closedN} of ${list.length} closed. Work the P1s first, and start a ticket before changing accounts so the audit log ties your changes to it. New work and replies land here as you go.`} />
+      {done && <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-primary/40 bg-primary/10 p-4 text-sm"><span><b>Queue clear.</b> {path() === "iam-grc" ? "Next, audit your own shift, or skip to the summary." : "Your shift summary is ready."}</span><span className="flex gap-2"><Button asChild variant="outline"><a href="#/week">Shift summary</a></Button>{path() === "iam-grc" ? <Button asChild><a href="#/audit">Audit your shift</a></Button> : <Button asChild><a href="#/report">Readiness report</a></Button>}</span></div>}
 
       <div className={cn("grid gap-4 lg:grid-cols-[300px_minmax(0,1fr)]", docked && "2xl:grid-cols-[300px_minmax(0,1fr)_360px]")}>
         <div className={cn("min-w-0 space-y-2 lg:sticky lg:top-20 lg:max-h-[calc(100svh-6rem)] lg:overflow-y-auto lg:p-0.5", sel && "hidden lg:block")}>
@@ -316,9 +337,9 @@ export default function Queue({ r }: { r: Route }) {
               <a key={t.id} href={`#/queue/${t.id}`} aria-current={sel === t.id ? "page" : undefined}
                 className={cn("lift grid grid-cols-[auto_minmax(0,1fr)] gap-x-3 gap-y-1.5 rounded-xl border bg-card p-3.5 hover:border-primary/40", sel === t.id && "border-primary ring-1 ring-primary", ts.checks && "bg-muted/30")}>
                 <Pri p={t.pri} />
-                <span><span className={cn("block text-sm font-medium leading-snug", ts.checks && "text-muted-foreground")}>{t.title}</span>
-                  <span className="block truncate text-xs text-muted-foreground"><span className="font-mono">{t.id}</span> · {t.from}</span></span>
-                {(ts.status !== "new" || hintsUsed(ts) > 0) && <span className="col-start-2 flex flex-wrap gap-1">{ts.status !== "new" && <Status st={ts.status} />}<Score ts={ts} /><Mode ts={ts} />
+                <span><span className={cn("block text-sm font-medium leading-snug", ts.checks && "text-muted-foreground")}>{ticketName(t)}</span>
+                  <span className="block truncate text-xs text-muted-foreground"><span className="font-mono">{ticketNo(t)}</span> · {t.from}</span></span>
+                {(statusOf(t) !== "new" || hintsUsed(ts) > 0) && <span className="col-start-2 flex flex-wrap gap-1">{statusOf(t) !== "new" && <Status st={statusOf(t)} />}<Score ts={ts} /><Mode ts={ts} />
                   {!ts.checks && hintsUsed(ts) > 0 && !isAssisted(ts) && <Tag>{plural(hintsUsed(ts), "hint", "hints")}</Tag>}</span>}
               </a>); }) : <Empty art={IllusQueue} title={ui.qfilter === "open" ? "No open tickets" : "No closed tickets yet"}>{ui.qfilter === "open" ? "Nice work." : "Close a ticket and it shows up here."}</Empty>}
           </nav>
@@ -335,7 +356,7 @@ export default function Queue({ r }: { r: Route }) {
       {sel && !wide && (
         <Sheet open={tutorOpen(wide)} onOpenChange={o => { ui.tutorOpen = o; commit(); }}>
           <SheetContent side="right" className="w-full gap-0 p-0 sm:max-w-md">
-            <SheetHeader className="sr-only"><SheetTitle>Tutor</SheetTitle><SheetDescription>Guided tutor for {sel}</SheetDescription></SheetHeader>
+            <SheetHeader className="sr-only"><SheetTitle>Tutor</SheetTitle><SheetDescription>Guided tutor for {ticketNo(TK[sel])}</SheetDescription></SheetHeader>
             <Tutor tid={sel} />
           </SheetContent>
         </Sheet>

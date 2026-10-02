@@ -1,5 +1,5 @@
 // Connect your lab: the platform lab guides (Microsoft Entra ID, Okta, AWS). Each seeds a lab
-// tenant, has the learner work six Monday tickets in the real console, and grades a read-only export
+// tenant, has the learner work six assigned tickets in the real console, and grades a read-only export
 // in the browser. The guides open only with tester access; the scripts are served by the lab-file
 // endpoint to browsers that hold it (api/_lib/labAccess.js).
 //

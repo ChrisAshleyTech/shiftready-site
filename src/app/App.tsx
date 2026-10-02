@@ -15,17 +15,18 @@ import { useTheme } from "@/lib/theme";
 import { S } from "@/engine/store.js";
 import { fmtDay } from "@/engine/company.js";
 import { clockStr, totals } from "@/engine/state.js";
-import { curTickets } from "@/engine/thursday.js";
+import { queueTickets } from "@/engine/followups.js";
 import { TK } from "@/engine/tickets.js";
 import { G, GK, gTotals } from "@/engine/grc.js";
 import { SET } from "@/engine/ticketSet.js";
-import { useSim, useRoute, ui, num, pct, type Route } from "./sim";
+import { useSim, useRoute, num, pct, type Route } from "./sim";
 import { navFor, pageInfo } from "./nav";
 import { inPath, path, pathChosen, pathInfo } from "./paths";
 import { waTotals, weekAudit } from "./audit/weekAudit";
 import { Logo } from "./components/Logo";
 import { Logo as BrandLogo } from "@/components/brand/Rolevara";
 import { GlobalSearch } from "./components/GlobalSearch";
+import { ticketNo, ticketName } from "./ticketLabel";
 import { CompanySwitcher } from "./components/CompanySwitcher";
 import { NoTickets, CompanyOverview } from "./components/NoTickets";
 import { company } from "./company";
@@ -41,7 +42,7 @@ const Results = lazy(() => import("./pages/Results"));
 const Report = lazy(() => import("./pages/Report"));
 const Lab = lazy(() => import("./pages/Lab"));
 const WeekAudit = lazy(() => import("./pages/WeekAudit"));
-const WeekSummary = lazy(() => import("./pages/WeekSummary"));
+const ShiftSummary = lazy(() => import("./pages/ShiftSummary"));
 const Settings = lazy(() => import("./pages/Settings"));
 
 // Shown only if a screen takes more than 300 ms to load, to avoid a flash on fast connections.
@@ -53,7 +54,7 @@ function Loading() {
 
 const PAGES: Record<string, ComponentType<{ r: Route }>> = {
   home: Home, queue: Queue, directory: Directory, groups: Groups, policy: Reference, hr: Reference, log: Reference,
-  results: Results, report: Report, grc: Grc, labs: Lab, audit: WeekAudit, week: WeekSummary, settings: Settings,
+  results: Results, report: Report, grc: Grc, labs: Lab, audit: WeekAudit, week: ShiftSummary, settings: Settings,
 };
 
 // Screens that need the company's tickets.
@@ -61,7 +62,7 @@ const TICKET_PAGES = new Set(["queue", "results", "week", "audit", "report", "gr
 
 function badgeFor(k: string) {
   if (!company().hasTickets) return k === "log" ? S.log.length || null : null;
-  if (k === "queue") return curTickets(ui.view).filter((t: any) => !S.tickets[t.id].checks).length || null;
+  if (k === "queue") return queueTickets().filter((t: any) => !S.tickets[t.id].checks).length || null;
   if (k === "log") return S.log.length || null;
   if (k === "grc") return G.length - gTotals().done || null;
   if (k === "audit") { const t = waTotals(); return weekAudit() ? t.n - t.done || null : null; }
@@ -95,7 +96,8 @@ function Nav({ r }: { r: Route }) {
 function itemLabel(r: Route): string | null {
   if (!r.id) return null;
   if (r.name === "directory") return S.users[r.id]?.name ?? null;
-  if (r.name === "groups" || r.name === "queue") return r.id;
+  if (r.name === "groups") return r.id;
+  if (r.name === "queue") return TK[r.id] ? ticketNo(TK[r.id]) : r.id;
   if (r.name === "grc") return r.id === "controls" ? "Controls and definitions" : GK[r.id]?.title ?? null;
   if (r.name === "labs") return ({ entra: "Microsoft Entra ID", okta: "Okta", aws: "AWS" } as Record<string, string>)[r.id] ?? null;
   if (r.name === "audit") return r.id === "controls" ? "Controls" : weekAudit()?.tasks.find(t => t.id === r.id)?.step ?? null;
@@ -121,13 +123,12 @@ function Crumbs({ r }: { r: Route }) {
 function TopBar({ r }: { r: Route }) {
   const c = company();
   const isG = r.name === "grc" && c.hasTickets;
-  // The week audit is the whole shift on GRC only, and Friday on IAM + GRC.
+  // The shift audit is the whole job on GRC only, and an optional last step on IAM + GRC.
   const isA = c.hasTickets && !isG && (path() === "grc" || (r.name === "audit" && !!weekAudit()));
-  const list = c.hasTickets ? curTickets(ui.view) : [];
+  const list = c.hasTickets ? queueTickets() : [];
   const tt = isG ? gTotals() : isA ? waTotals() : totals(list);
-  const isThu = S.shift === "thu" && ui.view !== "mon";
-  const ctx = isG ? SET.grc.ctx : path() === "grc" ? "Internal audit · Jordan Reyes' week"
-    : isA ? `Friday, ${fmtDay(4)} · audit of your week` : `${isThu ? "Thursday, " + fmtDay(3) : "Monday, " + fmtDay(0)} · ${clockStr()}`;
+  const ctx = isG ? SET.grc.ctx : path() === "grc" ? "Internal audit · Jordan Reyes' shift"
+    : isA ? "Internal audit · your shift" : `Service desk · ${fmtDay(0)} · ${clockStr()}`;
   const n = isG ? G.length : isA ? waTotals().n : list.length;
   const { theme, setTheme } = useTheme();
   return (
@@ -176,8 +177,8 @@ function ActiveBar({ r }: { r: Route }) {
     <div className="sticky bottom-0 z-20 mt-auto border-t bg-card/95 px-4 py-2.5 backdrop-blur" style={{ paddingBottom: "calc(0.625rem + env(safe-area-inset-bottom, 0px))" }}>
       <div className="mx-auto flex max-w-[1480px] items-center justify-between gap-3">
         <div className="min-w-0">
-          <div className="text-xs text-muted-foreground">Active ticket · <span className="font-mono">{t.id}</span></div>
-          <div className="truncate text-sm font-semibold">{t.title}</div>
+          <div className="text-xs text-muted-foreground">Active ticket · <span className="font-mono">{ticketNo(t)}</span></div>
+          <div className="truncate text-sm font-semibold">{ticketName(t)}</div>
         </div>
         <Button asChild size="sm"><a href={`#/queue/${t.id}`}>Back to ticket</a></Button>
       </div>

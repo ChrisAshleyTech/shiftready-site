@@ -88,7 +88,7 @@ const CORE: Core[] = [
   ["corey.blackwell", "Corey Blackwell", "SRS-3301", "Stores|Seasonal Associate", "Keiko Hartley (sponsor)", { type: "Contractor", expiry: 2 }],
   ["imani.walker", "Imani Walker", "SR-100401", "Stores|Sales Associate", "Bernadette Quaye", { enabled: false, groups: [], last: null, mfa: false, preHire: true }],
   ["noel.garrido", "Noel Garrido", "SR-100402", "Ecommerce|Ecommerce Specialist", "Samir Haddad", { enabled: false, groups: [], last: null, mfa: false, preHire: true }],
-  // Week-one ticket cast (see tickets.js).
+  // The shift's ticket cast (see tickets.js).
   ["clarissa.wren", "Clarissa Wren", "SR-100161", "Finance|Staff Accountant", "Colleen McBride", { last: 3 }],
   ["bartholomew.finch", "Bartholomew Finch", "SR-100163", "Stores|Stock Associate", "Rafael Montoya", { locked: true }],
   ["isolde.marchbanks", "Isolde Marchbanks", "SR-100165", "Merchandising|Buyer", "Ingrid Solberg"],

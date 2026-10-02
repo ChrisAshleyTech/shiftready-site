@@ -4,7 +4,7 @@
 import { S, setState, U, C } from "./store.js";
 import { buildUsers, fmtDay } from "./company.js";
 import { T, TK } from "./tickets.js";
-import { buildThu, curTickets } from "./thursday.js";
+import { buildFollow, queueTickets, afterClose, migrate } from "./followups.js";
 
 // Each company saves its own progress. Pacific Crest keeps the original single-file simulator's key,
 // so existing progress carries over. Companies whose tickets are still in development start with none.
@@ -17,8 +17,8 @@ export function fresh(){ return {users:buildUsers(),tickets:Object.fromEntries((
 function load(){ try{ const s=JSON.parse(localStorage.getItem(KEY)); if(s&&s.users&&s.tickets&&!(HAS_TICKETS&&T.some(t=>!s.tickets[t.id]))){ s.grc=s.grc||{}; return s; } }catch(e){} return fresh(); }
 export function save(){ try{ localStorage.setItem(KEY,JSON.stringify(S)); }catch(e){} }
 
-export function init(){ setState(load()); if(S.shift==="thu") buildThu(); }
-export function resetAll(){ setState(fresh()); save(); }
+export function init(){ setState(load()); if(HAS_TICKETS){ migrate(); buildFollow(); } }
+export function resetAll(){ setState(fresh()); buildFollow(); save(); }
 
 export const clockStr=()=>{ const m=S.clock,h=Math.floor(m/60),mm=m%60; return ((h+11)%12+1)+":"+String(mm).padStart(2,"0")+(h<12?" AM":" PM"); };
 export function logIt(a,target,d){ S.clock+=2; S.log.push({n:S.log.length+1,t:clockStr(),ticket:S.active,a,target,d}); }
@@ -62,9 +62,11 @@ export function closeTicket(tid,kind,{note="",answer}={}){
   S.active=tid; logIt("close",null,kind==="resolve"?"Resolved":"Rejected");
   const checks=t.grade(ts);
   checks.push(C(kind===t.close, t.close==="resolve"?"Closed as resolved":"Closed as rejected (request shouldn't be fulfilled)", 1));
-  ts.status=kind==="resolve"?"resolved":"rejected"; ts.checks=checks;
-  ts.score=checks.filter(c=>c.pass).reduce((s,c)=>s+c.pts,0); ts.max=checks.reduce((s,c)=>s+c.pts,0);
-  S.active=null; save();
+  ts.status=kind==="resolve"?"resolved":"rejected";
+  // A reopened ticket keeps its first resolution's grade; this attempt is kept for review.
+  if(ts.first){ ts.last=checks; ts.checks=ts.first.checks; ts.score=ts.first.score; ts.max=ts.first.max; }
+  else { ts.checks=checks; ts.score=checks.filter(c=>c.pass).reduce((s,c)=>s+c.pts,0); ts.max=checks.reduce((s,c)=>s+c.pts,0); }
+  S.active=null; afterClose(tid); save();
   return null;
 }
 
@@ -91,9 +93,9 @@ export const round1 = x => Math.round(x*10)/10;
 export const finalScore = ts => ts.checks ? round1(ts.score*(1-hintCost(ts))) : null;
 
 // ---------- Totals ----------
-// Totals after hint penalties. `list` defaults to the current shift's tickets.
+// Totals after hint penalties. `list` defaults to the whole queue.
 export function totals(list){
-  list=list||curTickets(); let sc=0,mx=0,done=0,assisted=0,raw=0;
+  list=list||queueTickets(); let sc=0,mx=0,done=0,assisted=0,raw=0;
   list.forEach(t=>{const ts=S.tickets[t.id]; if(ts&&ts.checks){sc+=finalScore(ts);raw+=ts.score;mx+=ts.max;done++; if(isAssisted(ts)) assisted++;}});
   sc=round1(sc);
   return {sc,raw,mx,done,assisted,solo:done-assisted,n:list.length,pct:mx?Math.round(sc/mx*100):null};

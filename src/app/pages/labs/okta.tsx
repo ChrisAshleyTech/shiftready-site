@@ -15,7 +15,7 @@ const RESOURCES = [
 
 export const OKTA: LabGuide = {
   id: "okta", name: "Okta lab", vendor: "Okta",
-  sub: "Work six Pacific Crest Monday tickets in a free Okta Integrator org, then grade a read-only check in your browser.",
+  sub: "Work six Pacific Crest tickets in a free Okta Integrator org, then grade a read-only check in your browser.",
   resources: RESOURCES,
   upload: { file: "rolevara-okta-export.json", script: "Check-RolevaraOktaLab.ps1", grade: text => gradeOktaExport(parseOktaExport(text)) },
 };

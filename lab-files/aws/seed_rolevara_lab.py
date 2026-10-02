@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Seeds an AWS account with the Rolevara Pacific Crest Logistics Monday scenario.
+"""Seeds an AWS account with the Rolevara Pacific Crest Logistics ticket scenario.
 
 Run in AWS CloudShell, in the folder that holds rolevara-lab-aws.json:
 

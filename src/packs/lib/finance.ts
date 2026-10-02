@@ -71,7 +71,7 @@ export function employmentFor(users: Record<string, User>, base: Date, seed: num
     const today = dayIso(base, 0);
     let left = o.left;
     if (!left && !u.enabled && !u.preHire) left = dayIso(base, -(u.last ?? 400));
-    // Hired before their last sign-in (and before they left), between 2011 and a week before Monday.
+    // Hired before their last sign-in (and before they left), between 2011 and a week before the shift.
     const latest = u.preHire ? today : [dayIso(base, -((u.last ?? 0) + 7)), left ? addDays(left, -30) : today, managers.has(u.name) ? "2019-12-31" : today].sort()[0];
     const hired = o.hired ?? (u.preHire ? today : addDays("2011-01-03", int(r, 0, Math.max(0, daysBetween("2011-01-03", latest)))));
     out[u.id] = left ? { hired, left } : { hired };

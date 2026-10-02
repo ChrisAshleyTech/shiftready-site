@@ -3,13 +3,13 @@ import { useEffect, useState } from "react";
 import { BookOpenText, FileText, Search, User, UsersRound } from "lucide-react";
 import { CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { S } from "@/engine/store.js";
-import { T } from "@/engine/tickets.js";
-import { THU_T } from "@/engine/thursday.js";
+import { queueTickets } from "@/engine/followups.js";
 import { ALL_GROUPS } from "@/engine/company.js";
 import { POLICIES } from "@/engine/policy.js";
 import { NAV } from "../nav";
 import { go } from "../sim";
 import { company } from "../company";
+import { ticketNo, ticketName } from "../ticketLabel";
 
 export function GlobalSearch() {
   const [open, setOpen] = useState(false);
@@ -18,7 +18,7 @@ export function GlobalSearch() {
     addEventListener("keydown", onKey); return () => removeEventListener("keydown", onKey);
   }, []);
   const pick = (hash: string) => { setOpen(false); go(hash); };
-  const tickets = company().hasTickets ? T.concat(S.shift === "thu" ? THU_T : []) : [];
+  const tickets = company().hasTickets ? queueTickets() : [];
   return (
     <>
       <button type="button" onClick={() => setOpen(true)} aria-keyshortcuts="Control+K Meta+K"
@@ -37,7 +37,7 @@ export function GlobalSearch() {
           </CommandGroup>
           <CommandGroup heading="Tickets">
             {tickets.map((t: any) => (
-              <CommandItem key={t.id} value={`ticket ${t.id} ${t.title}`} onSelect={() => pick(`#/queue/${t.id}`)}><FileText aria-hidden /><span className="font-mono text-xs">{t.id}</span><span className="truncate">{t.title}</span></CommandItem>))}
+              <CommandItem key={t.id} value={`ticket ${t.id} ${ticketName(t)} ${t.title}`} onSelect={() => pick(`#/queue/${t.id}`)}><FileText aria-hidden /><span className="font-mono text-xs">{ticketNo(t)}</span><span className="truncate">{t.reopens ? `Reopened: ${t.title}` : t.title}</span></CommandItem>))}
           </CommandGroup>
           <CommandGroup heading="Users">
             {Object.values(S.users).map((u: any) => (

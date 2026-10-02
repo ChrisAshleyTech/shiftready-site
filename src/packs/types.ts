@@ -11,14 +11,19 @@ export type Play = (id: string) => string | string[];
 // (pacific-crest/set.js); the industry companies build theirs with lib/ticketKit.js.
 export type TicketSet = {
   id: string;
-  // Monday tickets, Thursday consequences and standing tickets, hints, and the GRC desk tasks.
-  T: any[]; CONSEQ: any[]; BASE_THU: any[]; HINTS: Record<string, any>; CONSEQ_LINKS: Record<string, { mon: string; thu: string }>; G: any[];
-  // Doing exactly what each ticket's exact-steps hint says. Tests and Jordan Reyes' week use it.
+  // The assigned tickets, the follow-ups they can cause, standing tickets that arrive partway
+  // through, hints, and the GRC desk tasks. CONSEQ_LINKS ties each follow-up to its source ticket;
+  // `reopen` follow-ups come back as a reply that reopens the source ticket.
+  T: any[]; CONSEQ: any[]; STANDING: any[]; HINTS: Record<string, any>; CONSEQ_LINKS: Record<string, { src: string; id: string; reopen?: boolean }>; G: any[];
+  // Requester replies: for a ticket whose fix didn't take, who writes back and what they say
+  // (null once it's fixed). The ticket reopens until it's actually fixed.
+  REPLIES: Record<string, (ts: any) => { from: string; text: string } | null>;
+  // Doing exactly what each ticket's exact-steps hint says. Tests and Jordan Reyes' shift use it.
   playbook: Record<string, Play>;
-  // Jordan Reyes' week: close notes, the plays that differ from the playbook (the planted
+  // Jordan Reyes' shift: close notes, the plays that differ from the playbook (the planted
   // mistakes), one change made without a ticket, and the mistakes for the answer key.
   jordan: { notes: Record<string, string>; plays: Record<string, Play>; unticketed: { after: string; act: [string, string] }; MISTAKES: Record<string, string> };
-  // The week audit: who walks the auditor through the process, the populations for each control,
+  // The shift audit: who walks the auditor through the process, the populations for each control,
   // the sampling questions' options and the incidents a finding can cite as its effect.
   audit: {
     manager: { name: string; title: string };

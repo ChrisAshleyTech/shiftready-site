@@ -2,9 +2,10 @@
 import { useEffect } from "react";
 import { BookOpenText, ScrollText, Workflow } from "lucide-react";
 import { IllusShield } from "@/components/brand/illustrations";
-import { S } from "@/engine/store.js";
+import { S, U } from "@/engine/store.js";
 import { ROLES, SOD, HR_FEED, fmtDay } from "@/engine/company.js";
 import { POLICIES } from "@/engine/policy.js";
+import { STANDING } from "@/engine/followups.js";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
@@ -66,7 +67,9 @@ function Policy({ r }: { r: Route }) {
 }
 
 function HR() {
-  const rows = (S.shift === "thu" ? [{ type: "Return from leave", who: "Rachel Adams", detail: "Leave ended early. Returns today.", when: 3 }] : []).concat(HR_FEED);
+  // The postponed leave lands in the HR feed when its ticket arrives in the queue.
+  const back = STANDING[1], uid = back && back.users[0];
+  const rows = (back && S.tickets[back.id] && uid ? [{ type: "Leave postponed", who: U(uid).name, detail: "Leave of absence postponed. Working today.", when: 0 }] : []).concat(HR_FEED);
   return (
     <>
       <PageHeader icon={Workflow} tint="bg-hue-amber/15 text-warn" title="HR feed" sub="Workday is the source of truth for joiners, movers and leavers. When a ticket and HR disagree, HR wins." />

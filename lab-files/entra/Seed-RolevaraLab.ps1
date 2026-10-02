@@ -1,9 +1,9 @@
 <#
 .SYNOPSIS
-  Seeds a Microsoft Entra lab tenant with the Rolevara Pacific Crest Logistics Monday scenario.
+  Seeds a Microsoft Entra lab tenant with the Rolevara Pacific Crest Logistics ticket scenario.
 
 .DESCRIPTION
-  Creates 7 users and 9 security groups for six Monday tickets. Every object is tagged
+  Creates 7 users and 9 security groups for six lab tickets. Every object is tagged
   "Rolevara lab", and its object ID is recorded in rolevara-lab-state.json next to this script.
   Keep that file: Export-RolevaraLab.ps1 and Remove-RolevaraLab.ps1 both need it.
 

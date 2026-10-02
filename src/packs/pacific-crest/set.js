@@ -1,12 +1,13 @@
-// Pacific Crest's ticket set: Monday and Thursday tickets, hints, the GRC audit desk, and what the
-// rest of the app needs to run them (a perfect playbook, Jordan Reyes' week, the week audit's
-// populations and framework topics). Other companies build theirs with lib/ticketKit.js.
+// Pacific Crest's ticket set: the assigned tickets, follow-ups, standing tickets, requester
+// replies, hints, the GRC audit desk, and what the rest of the app needs to run them (a perfect
+// playbook, Jordan Reyes' shift, the shift audit's populations and framework topics). Other companies build theirs with lib/ticketKit.js.
 import { S, U } from "../../engine/store.js";
 import { act, tact } from "../../engine/state.js";
 import { ROLES } from "./company.js";
 import { T } from "./tickets.js";
 import { TK } from "../../engine/tickets.js";
-import { CONSEQ, BASE_THU } from "./thursday.js";
+import { CONSEQ, STANDING } from "./followups.js";
+import { REPLIES } from "./replies.js";
 import { HINTS, CONSEQ_LINKS } from "./hints.js";
 import { G } from "./grc.js";
 
@@ -75,7 +76,7 @@ const notes = {
   REQ0018884: "List pulled from the directory.",
   INC0041240: "Contained and escalated.",
   REQ0018910: "Manager approved for the cycle count.",
-  REQ0018912: "Welcome back. Enabled, groups confirmed.",
+  REQ0018912: "Leave postponed. Enabled, groups confirmed.",
   INC0041308: "Disabled now. Security has the CargoWise activity.",
   INC0041329: "Contained. Security engaged.",
   REQ0018921: "Removed leftover Sales access.",
@@ -91,7 +92,7 @@ const jordan = {
     REQ0018850: () => { act("revoke", "robert.hayes"); setGroups("robert.hayes", []); return "resolve"; },
     // Added the Dispatcher role but left the old Sales access in place.
     REQ0018852: () => { act("job", "tanya.wright", "Operations|Dispatcher"); role("Operations|Dispatcher").forEach(g => act("addgrp", "tanya.wright", g)); return "resolve"; },
-    // Thursday: granted admin rights that aren't requestable because the manager approved.
+    // Granted admin rights that aren't requestable because the manager approved.
     REQ0018910: id => { tact("approval", id); act("addgrp", "aisha.brown", "APP-WMS-Admin"); return "resolve"; },
   },
   // Mid-morning, Marcus Bell asks at the desk for a password reset. Jordan does it without a ticket.
@@ -106,7 +107,7 @@ const jordan = {
   },
 };
 
-// The week audit's populations, sampling choices and the incidents each finding can cite.
+// The shift audit's populations, sampling choices and the incidents each finding can cite.
 const audit = {
   manager: { name: "Victor Alvarez", title: "IT Manager" },
   callers: ["INC0041207", "INC0041209", "INC0041212", "INC0041220"],
@@ -122,8 +123,8 @@ const audit = {
     "APD-02": [["REQ0018850", true], ["REQ0018879", false], ["REQ0018852", false], ["INC0041231", true]],
   },
   effects: {
-    "APD-03": [["james", "An unverified reset let an attacker into James Carter's mailbox for three days (INC0041329)."], ["cfo", "An attacker impersonating the CFO got a $250,000 wire approved (INC0041320)."]],
-    "APD-02": [["robert", "Robert Hayes opened 41 shipment records from home the night after his termination (INC0041308)."], ["brian", "A former employee exported 12,000 Salesforce contacts (INC0041311)."]],
+    "APD-03": [["james", "An unverified reset let an attacker into James Carter's mailbox (INC0041329)."], ["cfo", "An attacker impersonating the CFO got a $250,000 wire approved (INC0041320)."]],
+    "APD-02": [["robert", "Robert Hayes opened 41 shipment records from home after he was told of his termination (INC0041308)."], ["brian", "A former employee exported 12,000 Salesforce contacts (INC0041311)."]],
     "ACC-01": [["lisa", "Lisa Morales approved her own $48,200 invoice (INC0041314)."], ["tyler", "A standing Global Admin account was used to forward the CFO's mail externally (INC0041318)."]],
     "APD-01": [["tanya", "Tanya Wright exported her old territory's Sales leads after moving to Operations (REQ0018921)."], ["ethan", "A new Dispatcher opened payroll reports with access copied from a peer (REQ0018915)."]],
   },
@@ -155,4 +156,4 @@ const grc = {
     note: "Weigh the likelihood and size of a possible misstatement, the systems involved, and whether compensating controls operate." },
 };
 
-export const set = { id: "pacific-crest", T, CONSEQ, BASE_THU, HINTS, CONSEQ_LINKS, G, playbook, jordan, audit, topics, grc };
+export const set = { id: "pacific-crest", T, CONSEQ, STANDING, REPLIES, HINTS, CONSEQ_LINKS, G, playbook, jordan, audit, topics, grc };

@@ -25,7 +25,7 @@ export type LabInfo = {
 };
 export const LAB_INFO: LabInfo[] = [
   { id: "entra", name: "Microsoft Entra ID lab", short: "Microsoft Entra ID", status: "early",
-    overview: "Seed a Microsoft Entra tenant with the Pacific Crest directory, work six Monday tickets in the Entra admin center, and grade a read-only export.",
+    overview: "Seed a Microsoft Entra tenant with the Pacific Crest directory, work six Pacific Crest tickets in the Entra admin center, and grade a read-only export.",
     practice: ["Joiner, mover, leaver and rehire changes in a real directory", "Disabling accounts and revoking sessions for a leaver", "Provisioning from the access matrix, not by copying a coworker", "PowerShell with Microsoft Graph, run safely against a lab tenant"],
     time: "About 90 minutes, including tenant setup", needs: "A free Microsoft Entra tenant (Azure free account or Microsoft 365 developer tenant)",
     shot: { src: "/img/labs/entra-results.jpg", alt: "Lab score for the Entra ID lab: each ticket with its graded checks and a takeaway." } },

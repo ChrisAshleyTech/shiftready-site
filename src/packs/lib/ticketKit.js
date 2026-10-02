@@ -1,13 +1,14 @@
-// Builds an industry company's ticket set from its story. Every company works the same week as
-// Pacific Crest: twenty Monday tickets, two standing Thursday tickets and thirteen ways Monday can
-// come back on Thursday. The kit owns the mechanics (grading, hints, the playbook, Jordan Reyes'
-// mistakes, the week audit's populations and framework topics), so a company only writes who is
+// Builds an industry company's ticket set from its story. Every company works the same shift as
+// Pacific Crest: twenty assigned tickets, two standing tickets that arrive partway through, and
+// thirteen follow-ups a closed ticket can cause later in the shift. The kit owns the mechanics
+// (grading, hints, requester replies, the playbook, Jordan Reyes' mistakes, the shift audit's populations and framework topics), so a company only writes who is
 // involved and what happened. Grading mirrors Pacific Crest's tickets check for check.
-import { S, U, has, C, roleCheck, firstIdx, verifiedBefore, approvalBefore, esc, sodConflicts, monEsc } from "../../engine/store.js";
+import { S, U, has, C, roleCheck, firstIdx, verifiedBefore, approvalBefore, esc, sodConflicts, escalatedOn } from "../../engine/store.js";
 import { act, tact } from "../../engine/state.js";
 import { TK } from "../../engine/tickets.js";
+import * as R from "../../engine/replies.js";
 
-// The Monday slots, in queue order, and their ticket type and default priority.
+// The assigned slots (spec.mon), in queue order, and their ticket type and default priority.
 const MON = [
   ["joiner", "Request", 2], ["callerPw", "Incident", 3], ["callerLock", "Incident", 3], ["callerMfa", "Incident", 2],
   ["leaver", "Request", 1], ["mover", "Request", 3], ["sodReq", "Request", 3], ["request", "Request", 4],
@@ -15,7 +16,10 @@ const MON = [
   ["priv", "Request", 3], ["rehire", "Request", 2], ["shared", "Request", 4], ["review", "Request", 3],
   ["loa", "Request", 3], ["copy", "Request", 2], ["auditQ", "Question", 2], ["compromise", "Incident", 1],
 ];
-// Thursday's consequences, in the order they're checked, and the Monday slot each comes from.
+// The follow-ups, in the order they're checked, and the assigned slot each comes from.
+// Follow-ups a requester notices come back as a reply that reopens the source ticket.
+// Follow-ups that come back as a reply on the source ticket rather than as a new ticket.
+const REOPENS = ["copy", "contractor", "review", "mover"];
 const CON = [
   ["stale", "sweep", "Incident"], ["svc", "sweep", "Incident"], ["leaver", "leaver", "Incident"], ["recon", "recon", "Incident"],
   ["sodReq", "sodReq", "Incident"], ["copy", "copy", "Request"], ["priv", "priv", "Incident"], ["exec", "exec", "Incident"],
@@ -82,7 +86,7 @@ export function buildTicketSet(spec) {
     "Back on the ticket, select <b>Mark identity verified</b>. It has to be logged <i>before</i> any account change.",
   ];
 
-  // ---------------- Monday ----------------
+  // ---------------- Assigned tickets ----------------
   const mk = {
     joiner: s => base(s, "Request", 2, [s.uid], "resolve", { grade: () => [C(U(s.uid).enabled, "Account enabled", 2), roleCheck(s.uid, s.rk, 4), C(!sodConflicts(s.uid).length, "No SoD conflict created", 2)] }),
     callerPw: s => base(s, "Incident", 3, [s.uid], "resolve", { caller: caller(s.uid),
@@ -128,13 +132,13 @@ export function buildTicketSet(spec) {
   };
   const T = MON.map(([slot]) => mk[slot](M[slot]));
 
-  // ---------------- Thursday: standing tickets ----------------
-  const BASE_THU = [
+  // ---------------- Standing tickets (spec.thu), arriving partway through ----------------
+  const STANDING = [
     base(Th.adminReq, "Request", 3, [Th.adminReq.uid], "reject", { grade: () => [C(!has(Th.adminReq.uid, Th.adminReq.group), "Non-requestable admin access not granted", 4)] }),
     base(Th.loaReturn, "Request", 3, [M.loa.uid], "resolve", { grade: () => [C(U(M.loa.uid).enabled, "Account enabled", 2), roleCheck(M.loa.uid, rkOf(M.loa.uid), 4)] }),
   ];
 
-  // ---------------- Thursday: consequences ----------------
+  // ---------------- Follow-ups ----------------
   const fromOnly = role(M.mover.fromRk).filter(x => !role(M.mover.toRk).includes(x));
   const svcOwner = plain(P[M.sweep.svc].mgr);
   const cause = {
@@ -162,7 +166,7 @@ export function buildTicketSet(spec) {
     priv: () => has(M.priv.uid, M.priv.group) && M.priv.uid,
     exec: () => (U(M.exec.uid).mfaReset || U(M.exec.uid).pwReset) && M.exec.uid,
     contractor: () => (U(M.contractor.uid).expiry === null || U(M.contractor.uid).expiry <= 2) && M.contractor.uid,
-    compromise: () => { const u = U(M.compromise.uid); return !(u.revoked && u.pwReset && u.mfaReset && monEsc(M.compromise.id, SEC)) && M.compromise.uid; },
+    compromise: () => { const u = U(M.compromise.uid); return !(u.revoked && u.pwReset && u.mfaReset && escalatedOn(M.compromise.id, SEC)) && M.compromise.uid; },
     callerPw: () => U(M.callerPw.uid).pwReset && !verifiedBefore(M.callerPw.id, ["pwreset"], M.callerPw.uid) && M.callerPw.uid,
     review: () => has(M.review.uid, M.review.group) && M.review.uid,
     mover: () => fromOnly.some(x => has(M.mover.uid, x)) && M.mover.uid,
@@ -215,7 +219,7 @@ export function buildTicketSet(spec) {
   const HINTS = {};
   const addMon = (slot, clause, steps, nudge) => { const s = M[slot] ?? Th[slot]; HINTS[s.id] = H(slot, MON_HINT[slot], clause, steps, ws(s, nudge)); };
   const resolve = "Resolve the ticket.";
-  // Monday
+  // Assigned tickets
   { const s = M.joiner; addMon("joiner", { keys: ["joiners", "sod"], matrix: [s.rk] },
       ["Start work on the ticket.", `Open ${name(s.uid)} in the Directory and select <b>Enable</b>.`, `Add exactly these groups: ${mustRole(s.rk)}. Nothing else.`, "Resolve the ticket with a short note."],
       `The account already exists. Two things need to change on it: whether it can sign in, and what it can reach. Where do you find exactly what a ${titleOf(s.rk)} gets?`); }
@@ -283,15 +287,15 @@ export function buildTicketSet(spec) {
   { const s = M.compromise; addMon("compromise", { keys: ["compromised"] },
       ["Start work on the ticket.", `Open ${name(s.uid)}. Select <b>Revoke sessions</b>, <b>Reset password</b> and <b>Reset MFA</b>.`, "Escalate to the <b>Security team</b>.", resolve],
       "The attacker already has a session. List everything they could still hold: a session, a password, an MFA method. Then think about who else needs to know."); }
-  // Thursday standing tickets
+  // Standing tickets
   { const s = Th.adminReq; addMon("adminReq", { keys: ["requestable"], matrix: [rkOf(s.uid)] },
       [`Start work on the ticket. Don't add ${g(s.group)}: it isn't requestable, and it isn't part of the ${P[s.uid].title} role.`, `<b>Reject</b> the ticket. ${s.alt}`],
       "The manager approved it. Check whether this group is one that can be requested at all."); }
   { const s = Th.loaReturn, uid = M.loa.uid, rk = rkOf(uid); addMon("loaReturn", { keys: ["loa"], matrix: [rk] },
       () => { const have = U(uid).groups, want = role(rk), miss = want.filter(x => !have.includes(x)), extra = have.filter(x => !want.includes(x));
         return ["Start work on the ticket.", `Open ${name(uid)} and select <b>Enable</b>.`, miss.length ? `Add the missing ${titleOf(rk)} groups: ${list(miss)}.` : `The ${titleOf(rk)} groups are all still there. Nothing to add.`, ...(extra.length ? [`Remove ${list(extra)}.`] : []), resolve]; },
-      "How the leave was handled on Monday decides how much work this is. Compare what the account has now with the role."); }
-  // Thursday consequences
+      "How the leave was handled earlier decides how much work this is. Compare what the account has now with the role."); }
+  // Follow-ups
   const addCon = (key, clause, steps, nudge) => { const k = K[key]; HINTS[k.id] = H(key, CON_HINT[key], clause, steps, k.nudge ?? nudge); };
   addCon("stale", { keys: ["compromised", "inactive"] },
     () => { const tg = TK[K.stale.id] ? TK[K.stale.id].users[0] : null, n = tg ? U(tg).name : "the account";
@@ -302,7 +306,7 @@ export function buildTicketSet(spec) {
     "Production is down because of an account change. What restores service fastest, and whose decision is the account's future?");
   addCon("leaver", { keys: ["leavers", "compromised"], note: "Access after termination makes this a security incident as well as an offboarding gap." },
     () => ["Start work on the ticket.", `Open ${name(M.leaver.uid)}. Select <b>Disable</b> (if still enabled) and <b>Revoke sessions</b>.`, `Remove any remaining groups${U(M.leaver.uid).groups.length ? ": " + list(U(M.leaver.uid).groups) : ""}.`, "Escalate to the <b>Security team</b>.", resolve],
-    "This offboarding was left half done on Monday. Finish every part of it, and remember the activity after the termination.");
+    "This offboarding was left half done. Finish every part of it, and remember the activity after the termination.");
   addCon("recon", { keys: ["leavers", "compromised"] },
     () => ["Start work on the ticket.", `Open ${name(M.recon.uid)}. Select <b>Disable</b> and <b>Revoke sessions</b>.`, `Remove all groups${U(M.recon.uid).groups.length ? ": " + list(U(M.recon.uid).groups) : ""}.`, "Escalate to the <b>Security team</b>.", resolve],
     "Now it's a data-loss incident. Contain the account completely, then think about who needs to be involved.");
@@ -322,22 +326,48 @@ export function buildTicketSet(spec) {
     "The attacker controls the MFA method. Work through everything they could still hold, then bring in the right people fast.");
   addCon("contractor", { keys: ["contractors"] },
     ["Start work on the ticket.", "Select <b>Request manager approval</b> on this ticket first.", `Open ${name(M.contractor.uid)}, select <b>Enable</b>, and set Account expiry to ${g("90")} days.`, resolve],
-    "Same rules as Monday's request, with the account already expired. What has to be logged on <i>this</i> ticket before you change the expiry?");
+    "Same rules as the first time, with the account already expired. What has to be logged on the ticket again before you change the expiry?");
   addCon("compromise", { keys: ["compromised"] },
     ["Start work on the ticket.", `Open ${name(M.compromise.uid)}. Select <b>Revoke sessions</b>, <b>Reset password</b> and <b>Reset MFA</b>.`, "Escalate to the <b>Security team</b>.", resolve],
-    "Monday's containment was incomplete, and the attacker came back. This time, do every step.");
+    "The first containment was incomplete, and the attacker came back. This time, do every step.");
   addCon("callerPw", { keys: ["compromised", "verify"] },
     ["Start work on the ticket.", `Open ${name(M.callerPw.uid)}. Select <b>Revoke sessions</b> and <b>Reset password</b>.`, "Escalate to the <b>Security team</b>.", resolve],
     `Someone is in ${first(name(M.callerPw.uid))}'s account with a password the desk gave them. Kick them out, change what they know, and report it.`);
   addCon("review", { keys: [], note: "Access reviews: the reviewer's Revoke decision is the approval. Remove exactly the entitlement marked." },
     ["Start work on the ticket.", `Open ${name(M.review.uid)} and remove ${g(M.review.group)}.`, resolve],
-    "This is the revocation that didn't happen on Monday.");
+    "This is the revocation that didn't happen the first time.");
   addCon("mover", { keys: ["movers"], matrix: [M.mover.toRk] },
     () => { const want = role(M.mover.toRk), have = U(M.mover.uid).groups, ex = have.filter(x => !want.includes(x)), miss = want.filter(x => !have.includes(x));
       return ["Start work on the ticket.", `Open ${name(M.mover.uid)}.${ex.length ? " Remove " + list(ex) + "." : ""}${miss.length ? " Add " + list(miss) + "." : ""} The groups should match the ${titleOf(M.mover.toRk)} role exactly.`, resolve]; },
     "The new access is there. What's still there from the old role?");
 
-  const CONSEQ_LINKS = Object.fromEntries(CON.map(([key, slot]) => [key, { mon: M[slot].id, thu: K[key].id }]));
+  const CONSEQ_LINKS = Object.fromEntries(CON.map(([key, slot]) => [key, { src: M[slot].id, id: K[key].id, ...(REOPENS.includes(key) ? { reopen: true } : {}) }]));
+
+  // ---------------- Requester replies: who writes back when a fix didn't take ----------------
+  const REPLIES = {
+    [M.joiner.id]: R.starter(M.joiner.uid, role(M.joiner.rk), P[M.joiner.uid].mgr),
+    [M.callerPw.id]: R.pwReset(M.callerPw.uid, M.callerPw.from),
+    [M.callerLock.id]: R.unlock(M.callerLock.uid, M.callerLock.from),
+    [M.callerMfa.id]: R.mfa(M.callerMfa.uid, M.callerMfa.from),
+    [M.request.id]: R.granted(M.request.uid, M.request.group, M.request.from),
+    [M.rehire.id]: R.starter(M.rehire.uid, role(M.rehire.rk), P[M.rehire.uid].mgr),
+    [M.auditQ.id]: R.answer(ts => TK[M.auditQ.id].grade(ts)[0].pass, M.auditQ.from),
+    [Th.loaReturn.id]: R.starter(M.loa.uid, role(rkOf(M.loa.uid)), P[M.loa.uid].mgr),
+    [K.stale.id]: ts => R.contained(TK[K.stale.id].users[0], ["disabled", "revoked", "mfaReset"])(ts),
+    [K.svc.id]: R.restored(M.sweep.svc, K.svc.from, `The ${K.svc.restores} job`),
+    [K.leaver.id]: R.contained(M.leaver.uid, ["disabled", "revoked", "noGroups"]),
+    [K.recon.id]: R.contained(M.recon.uid, ["disabled", "revoked"]),
+    [K.sodReq.id]: R.contained(M.sodReq.uid, [[M.sodReq.uid, M.sodReq.group]]),
+    [K.copy.id]: () => R.removed(M.copy.uid, M.copy.extras, K.copy.from, `access a ${titleOf(M.copy.rk)} shouldn't have`)()
+      || R.removed(M.copy.peer, M.copy.extras, K.copy.from, `the leftover access ${first(name(M.copy.uid))} was copied from`)(),
+    [K.priv.id]: R.contained(M.priv.uid, [[M.priv.uid, M.priv.group], "revoked"]),
+    [K.exec.id]: R.contained(M.exec.uid, ["revoked", "mfaReset"]),
+    [K.contractor.id]: R.extended(M.contractor.uid, K.contractor.from),
+    [K.compromise.id]: R.contained(M.compromise.uid, ["revoked", "pwReset", "mfaReset"]),
+    [K.callerPw.id]: R.contained(M.callerPw.uid, ["revoked", "pwReset"]),
+    [K.review.id]: R.removed(M.review.uid, [M.review.group], K.review.from, `${M.review.group}, which the reviewer marked for revocation`),
+    [K.mover.id]: R.removed(M.mover.uid, fromOnly, K.mover.from, `the old ${titleOf(M.mover.fromRk)} access`),
+  };
 
   // ---------------- Playbook: doing exactly what the exact-steps hints say ----------------
   const playbook = {
@@ -378,7 +408,7 @@ export function buildTicketSet(spec) {
     [K.mover.id]: () => { setGroups(M.mover.uid, role(M.mover.toRk)); return "resolve"; },
   };
 
-  // ---------------- Jordan Reyes' week ----------------
+  // ---------------- Jordan Reyes' shift ----------------
   const notes = {
     [M.joiner.id]: `Enabled and provisioned from the ${titleOf(M.joiner.rk)} role.`,
     [M.callerPw.id]: "Caller verified. Temp password issued.",
@@ -401,7 +431,7 @@ export function buildTicketSet(spec) {
     [M.auditQ.id]: "List pulled from the directory.",
     [M.compromise.id]: "Contained and escalated.",
     [Th.adminReq.id]: Th.adminReq.jordanNote ?? "Manager approved.",
-    [Th.loaReturn.id]: "Welcome back. Enabled, groups confirmed.",
+    [Th.loaReturn.id]: "Leave postponed. Enabled, groups confirmed.",
     [K.leaver.id]: "Disabled now. Security has the activity.",
     [K.callerPw.id]: "Contained. Security engaged.",
     [K.mover.id]: `Removed leftover ${titleOf(M.mover.fromRk)} access.`,
@@ -417,7 +447,7 @@ export function buildTicketSet(spec) {
       [M.leaver.id]: () => { act("revoke", M.leaver.uid); setGroups(M.leaver.uid, []); return "resolve"; },
       // Added the new role but left the old role's access in place.
       [M.mover.id]: () => { act("job", M.mover.uid, M.mover.toRk); role(M.mover.toRk).forEach(x => act("addgrp", M.mover.uid, x)); return "resolve"; },
-      // Thursday: granted access that isn't requestable because the manager approved.
+      // Granted access that isn't requestable because the manager approved.
       [Th.adminReq.id]: id => { tact("approval", id); act("addgrp", Th.adminReq.uid, Th.adminReq.group); return "resolve"; },
     },
     // Mid-morning, the person behind the shared-login request asks at the desk for a password
@@ -433,7 +463,7 @@ export function buildTicketSet(spec) {
     },
   };
 
-  // ---------------- The week audit ----------------
+  // ---------------- The shift audit ----------------
   const audit = {
     manager: spec.audit.manager,
     callers: [M.callerPw.id, M.callerLock.id, M.callerMfa.id, M.exec.id],
@@ -459,7 +489,7 @@ export function buildTicketSet(spec) {
     ...Object.fromEntries(CON.map(([key]) => [K[key].id, CON_TOPICS[key]])),
   };
 
-  return { id: spec.id, T, CONSEQ, BASE_THU, HINTS, CONSEQ_LINKS, G: spec.grc.G, playbook, jordan, audit, topics,
+  return { id: spec.id, T, CONSEQ, STANDING, REPLIES, HINTS, CONSEQ_LINKS, G: spec.grc.G, playbook, jordan, audit, topics,
     grc: { ctx: spec.grc.ctx, intro: spec.grc.intro, levels: spec.grc.levels, ...(spec.grc.controls ? { controls: spec.grc.controls } : {}) },
     // The story the set was built from, for tests.
     story: { mon: M, thu: Th, conseq: K } };

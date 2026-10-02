@@ -16,7 +16,7 @@ let active: CompanyPack = DEFAULT_COMPANY;
 export const company = () => active;
 export { COMPANIES };
 
-// On the GRC-only path the saved week is Jordan Reyes' week, played once and then audited.
+// On the GRC-only path the saved shift is Jordan Reyes' shift, played once and then audited.
 export function ensureJordan() {
   if (path() !== "grc" || !active.hasTickets || S.jordan) return;
   playJordanWeek();
@@ -29,7 +29,7 @@ function loadState() {
   init();
   ensureJordan();
   // Per-screen UI state belongs to the previous company or path.
-  Object.assign(ui, { view: "cur", dirQ: "", dirDept: "All", dirStatus: "all", hintConfirm: null, closeError: null, confirmReset: false, freeHints: {}, tutor: {} });
+  Object.assign(ui, { dirQ: "", dirDept: "All", dirStatus: "all", hintConfirm: null, closeError: null, confirmReset: false, freeHints: {}, tutor: {} });
 }
 
 export async function selectCompany(id: string) {

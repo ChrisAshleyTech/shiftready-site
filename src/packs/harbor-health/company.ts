@@ -87,7 +87,7 @@ const CORE: Core[] = [
   ["jada.okonkwo", "Jada Okonkwo", "HHN-10401", "Clinical|Registered Nurse", "Keisha Holloway", { enabled: false, groups: [], last: null, mfa: false, preHire: true }],
   ["ben.castellanos", "Ben Castellanos", "HHN-10402", "Patient Access|Patient Access Representative", "Carmen Velasquez", { enabled: false, groups: [], last: null, mfa: false, preHire: true }],
   ["svc-hl7", "svc-hl7", "SVC-011", null, "Rashid Karimi (owner)", { dept: "IT", title: "Service account: HL7 interface engine", type: "Service", groups: ["SVC-HL7-Interface"], last: 0, mfa: false }],
-  // Monday's callers, requesters and planted cases (see tickets.js).
+  // The shift's callers, requesters and planted cases (see tickets.js).
   ["monique.dubois", "Monique Dubois", "HHN-10102", "Revenue Cycle|Billing Specialist", "Luis Arroyo", { last: 3 }],
   ["lorraine.pittman", "Lorraine Pittman", "HHN-10106", "Patient Access|Patient Access Representative", "Carmen Velasquez", { locked: true }],
   ["elias.morrow", "Elias Morrow", "HHN-10109", "Clinical|Physician", "Samuel Achterberg"],

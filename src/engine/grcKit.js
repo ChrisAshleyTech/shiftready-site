@@ -1,5 +1,5 @@
 // Shared building blocks for every company's GRC audit desk: answer options, row builders for the
-// sample tables, and task G4, which audits the learner's own IAM shift (or Jordan Reyes' week).
+// sample tables, and task G4, which audits the learner's own IAM shift (or Jordan Reyes' shift).
 import { T } from "./tickets.js";
 import { totals } from "./state.js";
 

@@ -1,9 +1,9 @@
-// Audit of one analyst's Monday-to-Thursday week: walkthrough, sample selection, control testing,
+// Audit of one analyst's shift: walkthrough, sample selection, control testing,
 // evidence evaluation, a finding, risk ratings and the management response.
 // The same seven tasks serve two paths:
-//   - IAM + GRC: the Friday audit of the learner's own week.
-//   - GRC only: the audit of Jordan Reyes' week (see jordan.ts).
-// Every answer key is computed from the audited week's audit log and ticket records when the
+//   - IAM + GRC: the optional audit of the learner's own shift.
+//   - GRC only: the audit of Jordan Reyes' shift (see jordan.ts).
+// Every answer key is computed from the audited shift's audit log and ticket records when the
 // audit starts, then frozen, so later changes can't move the evidence.
 import { S, U, C } from "@/engine/store.js";
 import { ROLES, buildUsers } from "@/engine/company.js";
@@ -195,7 +195,7 @@ export function buildWeekAudit(who: Who): WeekAudit {
 
   const sampling: Task = {
     id: "W2", step: "Sample selection", title: "Define the populations and pick the sample", ctrl: "All", kind: "quiz", topics: ["testing", "evidence"],
-    intro: `<p>The audit period is ${As} Monday and Thursday shifts. Before you test anything, decide which tickets belong in each control's population and how many to test.</p>`,
+    intro: `<p>The audit period is ${As} shift, follow-ups included. Before you test anything, decide which tickets belong in each control's population and how many to test.</p>`,
     qs: [
       { q: "Which tickets belong in the APD-03 population (caller-initiated credential changes)? Select all that apply.", short: "APD-03 population", multi: true, correct: p03.correct, opts: p03.opts },
       { q: "Which tickets belong in the APD-02 leaver population? Select all that apply.", short: "APD-02 population", multi: true, correct: p02.correct, opts: p02.opts },
@@ -252,8 +252,8 @@ export function buildWeekAudit(who: Who): WeekAudit {
     qs: [
       { q: "What do you report?", short: "Clean result", correct: 0, pts: 3,
         opts: ["The controls operated effectively for the tickets tested, with the scope, period and sample stated", "Nothing: without exceptions there's no report", "That the controls will keep working"] },
-      { q: "Does a clean week mean the controls are designed well?", short: "Design versus operation", correct: 1, pts: 3,
-        opts: ["Yes", "Not by itself. Operating well this week doesn't fix design gaps, such as the directory allowing resets before verification."] },
+      { q: "Does a clean shift mean the controls are designed well?", short: "Design versus operation", correct: 1, pts: 3,
+        opts: ["Yes", "Not by itself. Operating well on one shift doesn't fix design gaps, such as the directory allowing resets before verification."] },
     ],
     lesson: "A clean result is a real conclusion. State what you tested, for which period, and what it does and doesn't prove.",
   };
@@ -282,7 +282,7 @@ export function buildWeekAudit(who: Who): WeekAudit {
         opts: ["When management says it's fixed", "After you re-test and the control operates as designed", "Automatically at the next annual audit"] },
       self
         ? { q: "The exceptions are in your own work. How do you report them?", short: "Auditing your own work", correct: 0, pts: 2,
-            opts: ["Exactly like anyone else's, and disclose that you audited your own week", "Fix the log entries first", "Leave your tickets out of the sample"] }
+            opts: ["Exactly like anyone else's, and disclose that you audited your own shift", "Fix the log entries first", "Leave your tickets out of the sample"] }
         : { q: `${ANALYST.first} asks you to leave their name out and fix the log entries quietly. What do you do?`, short: "Pressure from the auditee", correct: 0, pts: 2,
             opts: ["Report the facts about the control, not the person, and never change evidence", "Fix the entries, since the damage is done", "Drop the finding to keep the relationship"] },
     ],
@@ -329,6 +329,6 @@ export function waTotals() {
   wa?.tasks.forEach(t => { const st = wa.st[t.id]; if (st?.checks) { sc += st.score!; mx += st.max!; done++; } });
   return { sc, mx, done, n: wa ? wa.tasks.length : 7, pct: mx ? Math.round(sc / mx * 100) : null };
 }
-// Friday is optional on IAM + GRC.
-export function skipFriday() { S.wa = { ...(S.wa || {}), skipped: true }; save(); }
-export function unskipFriday() { if (S.wa) { delete S.wa.skipped; if (!S.wa.tasks) S.wa = null; save(); } }
+// The self-audit is optional on IAM + GRC.
+export function skipSelfAudit() { S.wa = { ...(S.wa || {}), skipped: true }; save(); }
+export function unskipSelfAudit() { if (S.wa) { delete S.wa.skipped; if (!S.wa.tasks) S.wa = null; save(); } }

@@ -20,7 +20,6 @@ addEventListener("storage", e => { if (e.key === KEY) { init(); commit(); } });
 
 // UI state that isn't part of the saved simulation (same fields as v1's ui.js).
 export const ui = {
-  view: "cur" as "cur" | "mon",
   qfilter: "open" as "open" | "closed" | "all",
   dirQ: "", dirDept: "All", dirStatus: "all",
   dirSort: { key: "name", dir: 1 },
