@@ -208,10 +208,13 @@ test("waitlist form: field-level errors on blur and submit, live re-validation, 
   await trap.evaluate((el: HTMLInputElement) => { el.value = "spam"; });
   await page.getByRole("button", { name: "Join the waitlist" }).click();
   await expect(page.locator("#formmsg")).toHaveText("Added to the waitlist. One notification per release.");
-  // Without the honeypot, preview mode (no endpoint configured) says so plainly
+  // Without the honeypot, the entry is sent to the form endpoint (stubbed here)
+  let sent: any = null;
+  await page.route("https://formspree.io/**", r => { sent = r.request().postDataJSON(); return r.fulfill({ json: { ok: true } }); });
   await page.locator("#email").fill("jordan@example.com");
   await page.getByRole("button", { name: "Join the waitlist" }).click();
-  await expect(page.locator("#formmsg")).toContainText("Preview only");
+  await expect(page.locator("#formmsg")).toHaveText("Added to the waitlist. One notification per release.");
+  expect(sent).toMatchObject({ email: "jordan@example.com" });
 });
 
 test("one primary call to action per section on every marketing page", async ({ page }) => {
