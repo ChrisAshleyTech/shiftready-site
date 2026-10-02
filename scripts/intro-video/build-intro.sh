@@ -2,7 +2,7 @@
 # Builds public/video/intro.{mp4,webm}, its poster and captions: home, the commute, the office, then the
 # 3D door R reveal and the end card, with soft music and a voiceover. Needs ffmpeg, the Pexels clips in
 # scripts/intro-video/clips/ (see README.md), and out/ filled by render-door.mjs, endcard.mjs, music.py
-# and narration.sh. Run from the repo root: bash scripts/intro-video/build-intro.sh
+# and narration.py. Run from the repo root: bash scripts/intro-video/build-intro.sh
 set -euo pipefail
 D=scripts/intro-video; C=$D/clips; O=$D/out
 N="fps=25,format=yuv420p,setsar=1"
@@ -25,7 +25,7 @@ ffmpeg -loglevel error -y $(for i in 1 2 3 4 5 6 7 8 9; do printf -- "-i $O/s$i.
   -map "[v]" -c:v libx264 -crf 15 -preset slow $O/picture.mp4
 # Voice lines placed on their shots (start times in ms, one per line of narration.txt; keep intro.vtt in step);
 # the music ducks under the voice.
-VOICE_AT=(400 4600 7800 11000 20700 22800 25300)
+VOICE_AT=(400 4400 8000 11600 19200 22100 25300)
 n=${#VOICE_AT[@]}; ins=""; fil=""; mix=""
 for i in $(seq 1 $n); do ins+=" -i $O/voice-$i.wav"; fil+="[$i]adelay=${VOICE_AT[$((i-1))]}:all=1[v$i];"; mix+="[v$i]"; done
 ffmpeg -loglevel error -y -i $O/music.wav $ins -filter_complex \

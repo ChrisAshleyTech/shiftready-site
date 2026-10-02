@@ -31,17 +31,16 @@ from Pexels into `clips/` under these names:
 ## Sound
 
 - `music.py` synthesizes the music bed (an original piece made in code, so there's no licence to track).
-- `narration.sh` speaks `narration.txt` with Piper TTS, using the LibriTTS "high" voice, speaker 140.
-  The LibriTTS dataset is CC BY 4.0 (Zen et al., openslr.org/60). This is a draft voice, and a recorded
-  read of `narration.txt` can replace `out/voice-*.wav`. To set it up, run `pip install piper-tts` and
-  put `en-us-libritts-high.onnx` and its `.json` from the Piper v0.0.2 GitHub release
-  (`voice-en-us-libritts-high.tar.gz`) in `voice/`.
+- `narration.py` speaks `narration.txt` with Kokoro TTS v1.0 (Apache 2.0), voice `am_onyx`, slightly
+  slowed. A recorded read of `narration.txt` can replace `out/voice-*.wav`. To set it up, run
+  `pip install kokoro-onnx soundfile` and put `kokoro-v1.0.onnx` and `voices-v1.0.bin` from the
+  kokoro-onnx GitHub release `model-files-v1.0` in `voice/`.
 - If the narration changes, update the line start times in `build-intro.sh` (VOICE_AT) and `public/video/intro.vtt`.
 
 ```
 node scripts/intro-video/render-door.mjs      # 3D frames into out/frames
 node scripts/intro-video/endcard.mjs          # out/endcard.png
 python3 scripts/intro-video/music.py          # out/music.wav
-bash scripts/intro-video/narration.sh         # out/voice-1.wav ...
+python3 scripts/intro-video/narration.py      # out/voice-1.wav ...
 bash scripts/intro-video/build-intro.sh       # edits everything into public/video/
 ```
