@@ -7,11 +7,11 @@ import { cn } from "@/lib/utils";
 type Area = { id: string; icon: typeof UsersRound; tint: string; name: string; full: string; text: string; paths: [string, string][]; early?: boolean; track: string };
 const AREAS: Area[] = [
   { id: "iam", icon: UsersRound, tint: "bg-hue-blue/12 text-primary-strong", name: "IAM", full: "Identity and access management", track: "/tracks/#iam-ops",
-    text: "Work the Pacific Crest service desk: joiners, movers and leavers, caller verification, access requests and compromised accounts. Thursday's queue is built from Monday's decisions.",
-    paths: [["IAM only", "Monday, Thursday and a week summary."], ["IAM + GRC", "The same week, then an optional Friday audit of it."]] },
+    text: "Work the Pacific Crest service desk: joiners, movers and leavers, caller verification, access requests and compromised accounts. Tickets stay in the queue until they're actually fixed.",
+    paths: [["IAM only", "Work the queue until it's clear, then a shift summary."], ["IAM + GRC", "The same shift, then an optional audit of your own work."]] },
   { id: "grc", icon: ClipboardCheck, tint: "bg-hue-violet/12 text-[color:var(--hue-violet)] dark:text-violet-300", name: "GRC", full: "Governance, risk and compliance", track: "/tracks/#grc",
     text: "Take the auditor's side: walkthrough, sampling, control testing, evidence, findings, risk ratings and management's response, with the NIST, HIPAA, ISO 27001, SOC 2 and PCI DSS requirements behind each decision.",
-    paths: [["GRC only", "Audit Jordan Reyes, a simulated IAM analyst whose week includes realistic mistakes."], ["IAM + GRC", "Audit the week just worked on the desk."]] },
+    paths: [["GRC only", "Audit Jordan Reyes, a simulated IAM analyst whose shift includes realistic mistakes."], ["IAM + GRC", "Audit the shift you just worked on the desk."]] },
   { id: "pam", icon: KeyRound, tint: "bg-hue-amber/15 text-warn", name: "PAM", full: "Privileged access management", track: "/tracks/#pam", early: true,
     text: "Just-in-time elevation, break-glass accounts, credential rotation and privileged session review.",
     paths: [["In development", "PAM joins the paths as it's released."]] },
@@ -24,7 +24,7 @@ export function ChoosePath({ links, className }: { links: "tracks" | "app"; clas
       <div className="max-w-3xl">
         <p className="t-eyebrow">Paths</p>
         <h2 id="paths-h" className="t-h1 mt-3">Choose your path</h2>
-        <p className="t-lead mt-4">Learners pick a path when they open the app and can switch at any time. Each path keeps its own progress, and all three are in the free tier.</p>
+        <p className="t-lead mt-4">Pick a path when you open the app and switch any time. Each path keeps its own progress, and all three are free.</p>
       </div>
       <ul className="mt-10 grid gap-5 lg:grid-cols-3">
         {AREAS.map(a => (

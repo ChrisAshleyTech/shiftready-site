@@ -12,24 +12,24 @@ const SAMPLE_URL = "/report/#r=" + encodeReport(sample);
 
 const HINTS = [["Nudge", "−10%", "Solo"], ["Policy clause", "−25%", "Solo"], ["Exact steps", "−50%", "Assisted"]];
 const FAQ = [
-  ["Who is Verdelit for?", "Identity and access professionals at every level: service desk analysts, IAM analysts and engineers, GRC and audit staff, and the team leads who develop them."],
+  ["Who is Rolevara for?", "Identity and access professionals at every level: service desk analysts, IAM analysts and engineers, GRC and audit staff, and the team leads who develop them."],
   ["Where is progress stored?", "In the browser that is being used. No account is required, and scenario data is not sent to a server."],
-  ["What is included in early access?", "Five industry companies, the PAM track and the Entra ID lab, as each is released. Pro features are included free during early access."],
-  ["Are the companies and people real?", "No. All companies and people in Verdelit scenarios are fictional."],
+  ["What is included in early access?", "Five industry companies, the PAM track and the Entra ID, Okta and AWS labs, as each is released. Pro features are included free during early access."],
+  ["Are the companies and people real?", "No. All companies and people in Rolevara scenarios are fictional."],
   ["Is the policy content compliance advice?", "No. Runbook policies are training material based on published frameworks, not legal or compliance advice."],
 ];
 
 export default function Page() {
   return (
     <MarketingFrame current="resources">
-      <PageHero eyebrow="Resources" title="How Verdelit works, and what it produces." lead="Grading rules, the runbook every ticket is graded against, a sample readiness report and accessibility information." />
+      <PageHero eyebrow="Resources" title="How Rolevara works, and what it produces." lead="Grading rules, the runbook every ticket is graded against, a sample readiness report and accessibility information." />
       <div className="mx-auto max-w-7xl space-y-8 px-4 py-16 md:px-6">
         <section id="grading" aria-labelledby="grading-h" className="scroll-mt-24 grid gap-8 rounded-3xl border bg-card p-8 lg:grid-cols-2">
           <div className="space-y-4">
             <h2 id="grading-h" className="t-h1">How grading works</h2>
             <p>Every ticket is graded on its <b>outcome</b> (the account state after the work) and its <b>process</b> (whether identity was verified, approval was recorded, or the right team was escalated to, and in the right order). Each check shows the points it carries and why it matters.</p>
             <p>Three hint tiers are available on every ticket. The score is reduced by the highest tier opened before closing; costs do not add up. Opening the exact steps marks the ticket <b>Assisted</b>. Hints are free to read after a ticket is closed.</p>
-            <p>Thursday's queue is generated from Monday's decisions, so missed work returns as incidents.</p>
+            <p>Tickets stay open until resolved, so a fix that didn't work comes back from the requester and missed work returns as incidents.</p>
           </div>
           <div className="overflow-x-auto rounded-2xl border">
             <table className="w-full text-left">
@@ -48,7 +48,7 @@ export default function Page() {
           </section>
           <section id="sample-report" aria-labelledby="sample-h" className="scroll-mt-24 space-y-4 rounded-3xl border bg-card p-8">
             <h2 id="sample-h" className="t-h2">Sample readiness report</h2>
-            <p className="text-muted-foreground">A report from a full week: Monday {sample.mon.pct}%, Thursday {sample.thu?.pct}%, {sample.caused} Monday decisions that returned as Thursday incidents, and a score for each of five skills. Reports are shared as a single link.</p>
+            <p className="text-muted-foreground">A report from a full shift: a shift score of {sample.week}%, {sample.caused} decisions that came back as follow-up incidents, and a score for each of five skills. Reports are shared as a single link.</p>
             <Button asChild variant="outline" className="border-2 font-bold"><a href={SAMPLE_URL} target="_blank" rel="noopener">View the sample report <ExternalLink /></a></Button>
           </section>
         </div>
@@ -58,9 +58,9 @@ export default function Page() {
           <p className="max-w-[70ch] text-muted-foreground">Each company can be worked at three levels. The badge lights up one light for Beginner, two for Intermediate and three for Pro, and appears on the readiness report and profile, with an image sized for LinkedIn. Levels arrive with practice mode.</p>
           <ul className="grid gap-4 sm:grid-cols-3">
             {LEVELS.map(l => (
-              <li key={l} className="flex items-center justify-between gap-3 rounded-2xl bg-[#15201B] p-5 text-white ring-1 ring-[#2E4038]">
+              <li key={l} className="flex items-center justify-between gap-3 rounded-2xl bg-[#0B2B5F] p-5 text-white ring-1 ring-[#2A4A80]">
                 <LevelBadge level={l} />
-                <a href={linkedInImage(l)} download className="text-sm font-semibold text-[#3DDC97] underline underline-offset-2">LinkedIn image<span className="sr-only"> for the {LEVEL_LABEL[l]} badge</span></a>
+                <a href={linkedInImage(l)} download className="text-sm font-semibold text-[#2DD4CF] underline underline-offset-2">LinkedIn image<span className="sr-only"> for the {LEVEL_LABEL[l]} badge</span></a>
               </li>
             ))}
           </ul>
@@ -75,7 +75,7 @@ export default function Page() {
 
         <section id="accessibility" aria-labelledby="a11y-h" className="scroll-mt-24 space-y-4 rounded-3xl border bg-card p-8">
           <h2 id="a11y-h" className="t-h1">Accessibility</h2>
-          <p>Verdelit targets WCAG 2.2 level AA. Every page is checked automatically for serious and critical issues in light and dark themes as part of each build.</p>
+          <p>Rolevara targets WCAG 2.2 level AA. Every page is checked automatically for serious and critical issues in light and dark themes as part of each build.</p>
           <ul className="ml-5 list-disc space-y-2">
             <li>All functions are available from the keyboard, with visible focus and skip links.</li>
             <li>Motion stops when the operating system requests reduced motion, and every looping animation can be paused.</li>

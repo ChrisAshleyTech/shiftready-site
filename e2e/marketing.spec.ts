@@ -9,18 +9,23 @@ test("pricing: toggle, badges, coming-soon labels and waitlist tier selection", 
   await page.getByRole("radio", { name: /Yearly/ }).click();
   await expect(page.getByRole("radio", { name: /Yearly/ })).toHaveAttribute("aria-checked", "true");
   await expect(page.getByText("$129", { exact: true })).toBeVisible();
-  await expect(page.getByText("save 28%")).toBeVisible();
-  await expect(page.getByText("$169", { exact: true })).toBeVisible();
-  await expect(page.getByText("save 30%")).toBeVisible();
+  await expect(page.getByText("$249", { exact: true })).toBeVisible();
+  await expect(page.getByText("save 28%")).toHaveCount(2);
+  await page.getByRole("radio", { name: /Monthly/ }).click();
+  await expect(page.getByText("$29", { exact: true })).toBeVisible();
+  await expect(page.getByText("14-day free trial · Cancel anytime")).toBeVisible();
+  await expect(page.locator("main").getByText("Cancel anytime", { exact: true }).first()).toBeVisible();
+  await expect(page.getByText(/\$39|lab pack|one-time/i)).toHaveCount(0);
+  await expect(page.getByRole("heading", { name: "Show the work in the real console." })).toBeVisible();
+  await expect(page.getByRole("table", { name: "Pro compared with Pro + Labs" })).toContainText("Simulator + real tenants");
   await expect(page.getByText("Pro features are included free during early access.")).toBeVisible();
   expect(await page.getByText("Early access", { exact: true }).count()).toBeGreaterThanOrEqual(3);
-  await expect(page.locator("main").getByText(/Okta|AWS|Active Directory/)).toHaveCount(0);
+  await expect(page.locator("main").getByText(/Active Directory/)).toHaveCount(0);
   await expect(page.getByRole("link", { name: "Start free" }).last()).toHaveAttribute("href", "/app/");
   await page.getByRole("button", { name: "Join Pro + Labs waitlist" }).click();
-  await expect(page.locator("#tier")).toHaveValue("labs-yearly");
+  await expect(page.locator("#tier")).toHaveValue("labs-monthly");
   await expect(page.locator("#email")).toBeFocused();
-  await page.getByRole("button", { name: "Join the lab pack waitlist" }).click();
-  await expect(page.locator("#tier")).toHaveValue("pack");
+  await expect(page.locator("#tier option")).toHaveText(["Release updates only", "Pro, monthly ($15/mo)", "Pro, yearly ($129/yr)", "Pro + Labs, monthly ($29/mo)", "Pro + Labs, yearly ($249/yr)"]);
   await page.locator("#email").fill("not-an-email");
   await page.getByRole("button", { name: "Join the waitlist" }).click();
   await expect(page.locator("#email-error")).toHaveText("Enter an email address in the format name@example.com.");
@@ -48,7 +53,7 @@ test("reduced motion: a still image replaces the video, with an opt-in play butt
   await expect(page.getByRole("button", { name: /Pause animations/ })).toHaveCount(0);
   await expect(page.locator("dd").filter({ hasText: "131" }).first()).toBeVisible();
   await page.getByText("Video description").click();
-  await expect(page.locator("#demo-desc")).toContainText("Caused by your Monday shift");
+  await expect(page.locator("#demo-desc")).toContainText("traced back to that decision");
   await page.getByRole("button", { name: "Play the walkthrough" }).click();
   await expect(page.locator("[data-hero-video]")).toHaveJSProperty("controls", true);
 });
@@ -63,25 +68,25 @@ test("demo video files stay under 5 MB", async ({ request }) => {
 test("landing: sections in order and photo credits", async ({ page }) => {
   await page.goto("/");
   const ids = await page.locator("main section[id], main section[aria-labelledby]").evaluateAll(els => els.map(e => e.id || e.getAttribute("aria-labelledby")));
-  expect(ids).toEqual(["hero-h", "capabilities", "paths", "aud-h", "industries", "how", "pricing", "faq", "waitlist"]);
-  await expect(page.locator("figcaption").filter({ hasText: "Unsplash" })).toHaveCount(4);
+  expect(ids).toEqual(["hero-h", "how", "paths", "capabilities", "industries", "aud-h", "pricing", "faq", "waitlist"]);
+  await expect(page.locator("figcaption").filter({ hasText: "Unsplash" })).toHaveCount(3);
   const overflow = await page.setViewportSize({ width: 390, height: 844 }).then(() => page.evaluate(() => document.documentElement.scrollWidth > innerWidth));
   expect(overflow).toBe(false);
 });
 
-// Enterprise copy rules for every marketing page: third person, no personal content or
-// testimonials, no "Coming soon" (early access only), no unlisted platforms.
-const PAGES: [string, RegExp][] = [["/", /Identity and access skills/], ["/pricing/", /Start free. Upgrade/], ["/tracks/", /Role-based tracks/], ["/industries/", /Six industries/], ["/labs/", /real identity platform/], ["/resources/", /How Verdelit works/], ["/privacy/", /Privacy policy/], ["/terms/", /Terms of use/]];
+// Copy rules for every marketing page: second person ("you") or third, never "we"; no personal content or
+// testimonials, and "Coming soon" only for the Active Directory lab on /labs.
+const PAGES: [string, RegExp][] = [["/", /Know you can do the job/], ["/pricing/", /Start free. Upgrade/], ["/tracks/", /Pick the role you want/], ["/industries/", /Six companies/], ["/labs/", /real identity platform/], ["/resources/", /How Rolevara works/], ["/privacy/", /Privacy policy/], ["/terms/", /Terms of use/]];
 for (const [path, h1] of PAGES) {
   test(`copy rules: ${path}`, async ({ page }) => {
     const res = await page.goto(path);
     expect(res?.status()).toBe(200);
     await expect(page.getByRole("heading", { level: 1 })).toHaveText(h1);
-    const text = (await page.locator("body").innerText()).replace(/Verdelit is not affiliated with[^\n]*/g, "");
+    const text = (await page.locator("body").innerText()).replace(/Rolevara is not affiliated with[^\n]*/g, "");
     expect(text).not.toMatch(/\b(We|we|We're|we're|We'll|we'll|Our|our|I|I'm|I've|me|my)\b/);
     expect(text).not.toMatch(/founder|Christopher|Ashley|testimonial|learner stories|built by/i);
-    expect(text).not.toMatch(/coming soon/i);
-    expect(text).not.toMatch(/\bOkta\b|\bAWS\b|Active Directory/);
+    if (path === "/labs/") expect(text.match(/coming soon/gi)).toHaveLength(1);
+    else expect(text).not.toMatch(/coming soon|Active Directory/i);
   });
 }
 
@@ -98,7 +103,7 @@ test("mega-nav: dropdowns open, arrow keys move, Escape closes and returns focus
   await expect(tracks).toHaveAttribute("aria-expanded", "false");
   await expect(tracks).toBeFocused();
   await page.getByRole("button", { name: "Platform labs" }).click();
-  await expect(page.locator("[data-menu-item]")).toHaveCount(1);
+  await expect(page.locator("[data-menu-item]")).toHaveCount(3);
   await page.getByRole("button", { name: "Industries" }).click();
   await expect(page.locator("[data-menu-item]")).toHaveCount(6);
   await page.mouse.click(5, 600);
@@ -135,7 +140,7 @@ test("footer: legal links and the non-affiliation disclaimer on every marketing 
     const footer = page.locator("footer");
     await expect(footer.getByRole("link", { name: "Privacy" })).toHaveAttribute("href", "/privacy/");
     await expect(footer.getByRole("link", { name: "Terms" })).toHaveAttribute("href", "/terms/");
-    await expect(footer).toContainText("Verdelit is not affiliated with or endorsed by NIST, ISO, AICPA, the PCI Security Standards Council, Microsoft, Okta or Amazon. Framework names are used for identification only.");
+    await expect(footer).toContainText("Rolevara is not affiliated with or endorsed by NIST, ISO, AICPA, the PCI Security Standards Council, Microsoft, Okta or Amazon. Framework names are used for identification only.");
   }
 });
 
@@ -153,7 +158,7 @@ test("meta: unique title and description, Open Graph, Twitter card, icons and ma
   }
   expect(titles.size).toBe(ALL_PAGES.length);
   expect(descs.size).toBe(ALL_PAGES.length);
-  for (const f of ["/og/verdelit-og.png", "/favicon.ico", "/favicon.svg", "/apple-touch-icon.png", "/icon-192.png", "/icon-512.png", "/icon-maskable-512.png", "/site.webmanifest"])
+  for (const f of ["/og/rolevara-og.png", "/favicon.ico", "/favicon.svg", "/apple-touch-icon.png", "/icon-192.png", "/icon-512.png", "/icon-maskable-512.png", "/site.webmanifest"])
     expect((await request.get(f)).ok(), f).toBe(true);
 });
 
@@ -242,7 +247,7 @@ for (const rm of ["reduce", "no-preference"] as const) {
 test("pre-rendered HTML contains the page content before JavaScript", async ({ request }) => {
   const html = await (await request.get("/")).text();
   expect(html).toContain('data-prerendered');
-  expect(html).toContain("Identity and access skills, built on real operations work.");
+  expect(html).toContain("Know you can do the job");
 });
 
 test("landing and Tracks explain the paths: IAM, GRC and PAM (early access)", async ({ page }) => {

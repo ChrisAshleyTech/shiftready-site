@@ -10,7 +10,7 @@ const spec = labSpec();
 // An export of the tenant exactly as seeded, with optional per-user changes.
 function exportOf(changes: Record<string, Partial<ExportUser>> = {}): LabExport {
   return {
-    schema: "verdelit-entra-export/1", exportedAt: T1, seededAt: T0,
+    schema: "rolevara-entra-export/1", exportedAt: T1, seededAt: T0,
     baseline: Object.fromEntries(spec.users.map(u => [u.key, { sessionsValidFrom: T0, passwordChanged: T0 }])),
     users: spec.users.map(u => ({
       key: u.key, name: u.name, employeeId: u.empId, accountEnabled: u.enabled, department: u.dept, jobTitle: u.title,
@@ -30,7 +30,7 @@ const PERFECT = {
 
 describe("Entra ID lab", () => {
   test("seed script data matches the simulator", () => {
-    const ps1 = readFileSync("public/lab/entra/Seed-VerdelitLab.ps1", "utf8");
+    const ps1 = readFileSync("lab-files/entra/Seed-RolevaraLab.ps1", "utf8");
     const json = ps1.match(/# BEGIN LAB DATA\r?\n\$Lab = @'\r?\n(.*)\r?\n'@/)?.[1];
     expect(JSON.parse(json!)).toEqual(spec);
   });
@@ -85,7 +85,8 @@ describe("Entra ID lab", () => {
     expect(() => parseExport("not json")).toThrow(ExportError);
     // Exports made before the product was renamed still grade.
     expect(parseExport(JSON.stringify({ ...exportOf(), schema: "shiftready-entra-export/1" })).users).toHaveLength(7);
-    expect(() => parseExport('{"schema":"other"}')).toThrow(/isn't a Verdelit lab export/);
+    expect(parseExport(JSON.stringify({ ...exportOf(), schema: "verdelit-entra-export/1" })).users).toHaveLength(7);
+    expect(() => parseExport('{"schema":"other"}')).toThrow(/isn't a Rolevara lab export/);
     const partial = exportOf(); partial.users = partial.users.slice(1);
     expect(() => parseExport(JSON.stringify(partial))).toThrow(/missing maria.lopez/);
   });

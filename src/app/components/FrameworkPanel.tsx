@@ -47,7 +47,7 @@ export function FrameworkPanel({ topics, graded }: { topics: string[]; graded: b
                 </ul>
               </section>
             ))}
-            <p className="text-xs text-muted-foreground">NIST and HIPAA text is quoted from the official publications. ISO/IEC 27001, SOC 2 and PCI DSS entries are Verdelit's own summaries, not the standards' text. Verdelit isn't affiliated with or endorsed by NIST, ISO, AICPA or the PCI Security Standards Council.</p>
+            <p className="text-xs text-muted-foreground">NIST and HIPAA text is quoted from the official publications. ISO/IEC 27001, SOC 2 and PCI DSS entries are Rolevara's own summaries, not the standards' text. Rolevara isn't affiliated with or endorsed by NIST, ISO, AICPA or the PCI Security Standards Council.</p>
           </>
         )}
       </div>
