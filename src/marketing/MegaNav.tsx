@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { EarlyAccess } from "@/components/brand/EarlyAccess";
-import { LogoHorizontal } from "@/components/brand/Verdelit";
+import { LogoHorizontal } from "@/components/brand/Rolevara";
 import { useTheme } from "@/lib/theme";
 import { cn } from "@/lib/utils";
 import { INDUSTRIES, LABS, RESOURCES, TRACKS, type Item } from "./catalog";
@@ -22,7 +22,7 @@ const MENUS: Menu[] = [
 ];
 
 // Horizontal logo with the tagline under the wordmark.
-export const Brand = ({ small = false }: { small?: boolean }) => <a href="/" className="flex min-w-0 items-center rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-ring"><LogoHorizontal tagline taglineClass={small ? "hidden min-[380px]:block" : undefined} markClass="size-9" wordClass="text-[22px]" /></a>;
+export const Brand = ({ small = false }: { small?: boolean }) => <a href="/" className="flex min-w-0 items-center rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-ring"><LogoHorizontal tagline taglineClass={small ? "hidden min-[380px]:block" : undefined} logoClass="h-8" /></a>;
 
 function Panel({ m, id, onClose }: { m: Menu; id: string; onClose: () => void }) {
   return (

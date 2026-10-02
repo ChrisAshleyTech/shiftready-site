@@ -3,13 +3,13 @@
 // same capsule for the shareable LinkedIn images (public/badges/).
 import { useId } from "react";
 import { cn } from "@/lib/utils";
-import { CHARCOAL, MINT, RIM } from "./Verdelit";
+import { NAVY, RIM, TEAL } from "./Rolevara";
 
 export const LEVELS = ["beginner", "intermediate", "pro"] as const;
 export type Level = (typeof LEVELS)[number];
 export const LEVEL_LABEL: Record<Level, string> = { beginner: "Beginner", intermediate: "Intermediate", pro: "Pro" };
 export const isLevel = (x: unknown): x is Level => LEVELS.includes(x as Level);
-export const linkedInImage = (l: Level) => `/badges/verdelit-level-${l}.png`;
+export const linkedInImage = (l: Level) => `/badges/rolevara-level-${l}.png`;
 
 export function LevelCapsule({ level, className }: { level: Level; className?: string }) {
   const id = useId().replace(/:/g, "");
@@ -17,11 +17,11 @@ export function LevelCapsule({ level, className }: { level: Level; className?: s
   return (
     <svg viewBox="0 0 24 56" className={className} role="img" aria-label={`${LEVEL_LABEL[level]} level: ${lit} of 3 lights`}>
       <defs>
-        <radialGradient id={`${id}g`}><stop offset="0" stopColor={MINT} stopOpacity=".7" /><stop offset="1" stopColor={MINT} stopOpacity="0" /></radialGradient>
+        <radialGradient id={`${id}g`}><stop offset="0" stopColor={TEAL} stopOpacity=".7" /><stop offset="1" stopColor={TEAL} stopOpacity="0" /></radialGradient>
       </defs>
-      <rect x=".75" y=".75" width="22.5" height="54.5" rx="11.25" fill={CHARCOAL} stroke={RIM} strokeWidth="1.5" />
+      <rect x=".75" y=".75" width="22.5" height="54.5" rx="11.25" fill={NAVY} stroke={RIM} strokeWidth="1.5" />
       {[44, 28, 12].map((cy, i) => i < lit ? (
-        <g key={cy}><circle cx="12" cy={cy} r="8.5" fill={`url(#${id}g)`} /><circle cx="12" cy={cy} r="4.6" fill={MINT} /><circle cx="10.8" cy={cy - 1.2} r="1.4" fill="#E9FFF5" opacity=".85" /></g>
+        <g key={cy}><circle cx="12" cy={cy} r="8.5" fill={`url(#${id}g)`} /><circle cx="12" cy={cy} r="4.6" fill={TEAL} /><circle cx="10.8" cy={cy - 1.2} r="1.4" fill="#E6FFFD" opacity=".85" /></g>
       ) : <circle key={cy} cx="12" cy={cy} r="4.6" fill={RIM} />)}
     </svg>
   );

@@ -15,7 +15,7 @@ const STEPS = [
 export default function Page() {
   return (
     <MarketingFrame current="labs">
-      <PageHero eyebrow="Platform labs" title="The same scenarios, in a real identity platform." lead="Platform labs move Verdelit tickets into a live tenant, then grade the result against the simulator's rules.">
+      <PageHero eyebrow="Platform labs" title="The same scenarios, in a real identity platform." lead="Platform labs move Rolevara tickets into a live tenant, then grade the result against the simulator's rules.">
         {/* The lab guide is in development, so the primary action is joining its waitlist. */}
         <Button asChild size="lg" className="font-bold"><a href="#waitlist" onClick={() => chooseTier("pack")}>Join the lab waitlist <ArrowRight /></a></Button>
       </PageHero>
@@ -31,7 +31,7 @@ export default function Page() {
                 <p className="mt-2 text-muted-foreground">{s.d}</p>
               </li>))}
           </ol>
-          <p className="t-meta mt-8">Microsoft, Microsoft Entra and Azure are trademarks of the Microsoft group of companies. Verdelit is not affiliated with Microsoft.</p>
+          <p className="t-meta mt-8">Microsoft, Microsoft Entra and Azure are trademarks of the Microsoft group of companies. Rolevara is not affiliated with Microsoft.</p>
         </div>
       </section>
     </MarketingFrame>

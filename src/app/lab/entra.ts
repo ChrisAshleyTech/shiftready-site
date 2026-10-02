@@ -21,7 +21,7 @@ export function labSpec(): LabSpec {
     return { key: k, alias: k, name: u.name, empId: u.empId, dept: u.dept, title: u.title, enabled: u.enabled, groups: [...u.groups] };
   });
   const groups = [...new Set([...TARGET_ROLES.flatMap(r => ROLES[r] as string[]), ...users.flatMap(u => u.groups)])].sort();
-  return { company: "Pacific Crest Logistics (Verdelit lab)", users, groups };
+  return { company: "Pacific Crest Logistics (Rolevara lab)", users, groups };
 }
 
 // ---------- Export parsing ----------
@@ -30,7 +30,7 @@ export type ExportUser = {
   department?: string | null; jobTitle?: string | null; sessionsValidFrom?: string | null; passwordChanged?: string | null; groups?: string[];
 };
 export type LabExport = {
-  schema: "verdelit-entra-export/1" | "shiftready-entra-export/1"; exportedAt: string; seededAt: string;
+  schema: "rolevara-entra-export/1" | "verdelit-entra-export/1" | "shiftready-entra-export/1"; exportedAt: string; seededAt: string;
   baseline: Record<string, { sessionsValidFrom: string | null; passwordChanged: string | null }>;
   users: ExportUser[];
 };
@@ -40,14 +40,14 @@ export class ExportError extends Error {}
 export function parseExport(text: string): LabExport {
   let data: any;
   try { data = JSON.parse(text.charCodeAt(0) === 0xfeff ? text.slice(1) : text); }
-  catch { throw new ExportError("This file isn't valid JSON. Upload the verdelit-lab-export.json file that Export-VerdelitLab.ps1 created."); }
-  // Exports made before the product was renamed (shiftready-) still grade.
-  if (data?.schema !== "verdelit-entra-export/1" && data?.schema !== "shiftready-entra-export/1")
-    throw new ExportError("This isn't a Verdelit lab export. Upload the verdelit-lab-export.json file that Export-VerdelitLab.ps1 created.");
+  catch { throw new ExportError("This file isn't valid JSON. Upload the rolevara-lab-export.json file that Export-RolevaraLab.ps1 created."); }
+  // Exports made under the earlier product names (verdelit-, shiftready-) still grade.
+  if (!["rolevara-entra-export/1", "verdelit-entra-export/1", "shiftready-entra-export/1"].includes(data?.schema))
+    throw new ExportError("This isn't a Rolevara lab export. Upload the rolevara-lab-export.json file that Export-RolevaraLab.ps1 created.");
   if (!Array.isArray(data.users) || typeof data.baseline !== "object" || !data.baseline)
-    throw new ExportError("The export is incomplete. Run Export-VerdelitLab.ps1 again and upload the new file.");
+    throw new ExportError("The export is incomplete. Run Export-RolevaraLab.ps1 again and upload the new file.");
   const missing = LAB_USERS.filter(k => !data.users.some((u: ExportUser) => u?.key === k));
-  if (missing.length) throw new ExportError(`The export is missing ${missing.join(", ")}. Run Export-VerdelitLab.ps1 again from the folder that holds verdelit-lab-state.json.`);
+  if (missing.length) throw new ExportError(`The export is missing ${missing.join(", ")}. Run Export-RolevaraLab.ps1 again from the folder that holds rolevara-lab-state.json.`);
   return data as LabExport;
 }
 

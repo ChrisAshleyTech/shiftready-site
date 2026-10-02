@@ -17,7 +17,7 @@ export function SiteFooter() {
     <footer className="border-t bg-card">
       <div className="mx-auto max-w-7xl space-y-6 px-4 py-10 text-sm text-muted-foreground md:px-6">
         <div className="flex flex-wrap items-start justify-between gap-6">
-          <div className="space-y-2"><Brand /><p>© 2026 Verdelit. All companies and people in Verdelit scenarios are fictional.</p></div>
+          <div className="space-y-2"><Brand /><p>© 2026 Rolevara. All companies and people in Rolevara scenarios are fictional.</p></div>
           <nav aria-label="Footer" className="flex flex-wrap gap-x-5 gap-y-2 font-semibold">
             {[["/tracks/", "Tracks"], ["/industries/", "Industries"], ["/labs/", "Platform labs"], ["/pricing/", "Pricing"], ["/resources/", "Resources"], ["/app/", "Open the app"], ["/privacy/", "Privacy"], ["/terms/", "Terms"]].map(([h, l]) =>
               <a key={h} className="hover:text-primary-strong hover:underline" href={h}>{l}</a>)}

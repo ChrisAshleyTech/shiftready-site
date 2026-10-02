@@ -28,7 +28,7 @@ test("on a phone, the company switcher is in the navigation drawer", async ({ pa
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/app/#/home");
   await page.getByRole("button", { name: "Toggle navigation" }).click();
-  const drawer = page.getByRole("dialog", { name: "Verdelit navigation" });
+  const drawer = page.getByRole("dialog", { name: "Rolevara navigation" });
   await expect(drawer.getByRole("combobox", { name: "Company" })).toContainText("Pacific Crest Logistics");
 });
 
@@ -44,7 +44,7 @@ for (const c of NEW) {
   test(`${c.name}: switch, explore, and switch back without losing progress`, async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 900 });
     await page.goto("/app/");
-    await page.evaluate(() => { localStorage.clear(); localStorage.setItem("verdelit-path", "iam-grc"); });
+    await page.evaluate(() => { localStorage.clear(); localStorage.setItem("rolevara-path", "iam-grc"); });
     await page.goto("/app/#/queue/INC0041220");
     await page.reload(); // a hash-only goto doesn't reload, and the path is read on load
     await page.getByRole("button", { name: "Start work" }).click();

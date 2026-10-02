@@ -4,7 +4,7 @@ import { createRoot } from "react-dom/client";
 import { Printer } from "lucide-react";
 import { decodeReport } from "@/engine/report.js";
 import { Button } from "@/components/ui/button";
-import { LogoHorizontal } from "@/components/brand/Verdelit";
+import { LogoHorizontal } from "@/components/brand/Rolevara";
 import { ReportView } from "./ReportView";
 import "@/index.css";
 import "@/lib/analytics";
@@ -14,11 +14,11 @@ const read = () => decodeReport(new URLSearchParams(location.hash.slice(1)).get(
 function Page() {
   const [d, setD] = useState(read);
   useEffect(() => { const on = () => setD(read()); addEventListener("hashchange", on); return () => removeEventListener("hashchange", on); }, []);
-  useEffect(() => { document.title = (d && d.name ? d.name + " · " : "") + "Readiness report · Verdelit"; }, [d]);
+  useEffect(() => { document.title = (d && d.name ? d.name + " · " : "") + "Readiness report · Rolevara"; }, [d]);
   return (
     <div className="mx-auto max-w-5xl px-4 pb-16 md:px-6">
       <header className="flex flex-wrap items-center justify-between gap-3 py-5 print:hidden">
-        <a href="/" className="flex items-center rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-ring"><LogoHorizontal tagline markClass="size-8" wordClass="text-xl" /></a>
+        <a href="/" className="flex items-center rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-ring"><LogoHorizontal tagline logoClass="h-7" /></a>
         <div className="flex gap-2"><Button variant="outline" onClick={() => print()}><Printer />Print or save as PDF</Button><Button asChild><a href="/app/">Try the simulator</a></Button></div>
       </header>
       <main>

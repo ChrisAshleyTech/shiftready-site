@@ -39,10 +39,10 @@ const STEPS = [
 ];
 
 const FAQ = [
-  ["Who is Verdelit for?", "Identity and access professionals at every level: service desk analysts, IAM analysts and engineers, GRC and audit staff, and the team leads who develop them."],
+  ["Who is Rolevara for?", "Identity and access professionals at every level: service desk analysts, IAM analysts and engineers, GRC and audit staff, and the team leads who develop them."],
   ["Is a lab tenant required?", "No. The simulator runs in the browser. The Entra ID lab, in early access, adds an optional path that uses a Microsoft Entra tenant."],
   ["What does the free tier include?", "Pacific Crest Logistics on all three paths (IAM only, IAM + GRC, GRC only), with both shifts, downstream consequences and the audits. Pro features are included free during early access."],
-  ["Are the companies real?", "No. All companies and people in Verdelit scenarios are fictional."],
+  ["Are the companies real?", "No. All companies and people in Rolevara scenarios are fictional."],
   ["Is the policy content compliance advice?", "No. Runbook policies are training material based on published frameworks, not legal or compliance advice."],
 ];
 
@@ -58,7 +58,7 @@ export default function Landing() {
             <div className="space-y-7">
               <Reveal><p className="t-eyebrow">Identity and access skills platform</p></Reveal>
               <Reveal delay={0.05}><h1 id="hero-h" className="t-display">Identity and access skills, built on real operations work.</h1></Reveal>
-              <Reveal delay={0.1}><p className="t-lead max-w-xl">Verdelit places identity and access professionals in a working service desk and audit function. Provision and deprovision access, run access reviews, contain compromised accounts and prepare audit evidence, then see how each decision holds up.</p></Reveal>
+              <Reveal delay={0.1}><p className="t-lead max-w-xl">Rolevara places identity and access professionals in a working service desk and audit function. Provision and deprovision access, run access reviews, contain compromised accounts and prepare audit evidence, then see how each decision holds up.</p></Reveal>
               <Reveal delay={0.15} className="flex flex-wrap gap-3">
                 <Button asChild size="lg" className="h-13 rounded-xl px-7 text-[17px] font-bold"><a href="/app/">Start free <ArrowRight /></a></Button>
                 <Button asChild size="lg" variant="outline" className="h-13 rounded-xl border-2 px-7 text-[17px] font-bold"><a href="/tracks/">View tracks</a></Button>
