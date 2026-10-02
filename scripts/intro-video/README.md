@@ -7,7 +7,7 @@ then a man in a suit and a woman at their desks.
 ## Footage
 
 Free stock clips from Pexels (Pexels License: free to use, no attribution required), chosen and
-downloaded by Christopher. They are not committed (4K and HD originals, about 90 MB). To rebuild, download them
+downloaded by Christopher. They are not committed (4K originals, about 100 MB). To rebuild, download them
 from Pexels into `clips/` under these names:
 
 | File | Pexels video | Used for |
@@ -16,7 +16,7 @@ from Pexels into `clips/` under these names:
 | `clips/street-walk.mp4` | 7255362 | Walking between office buildings |
 | `clips/office-arrival.mp4` | 7224870 | Arriving at the office |
 | `clips/suit-at-desk.mp4` | 8061445 | A man in a suit at his desk |
-| `clips/woman-at-desk.mp4` | 8298076 (HD, 1920x1080) | A woman at her desk |
+| `clips/woman-at-desk.mp4` | 8632589 | A woman in a blazer at her desk |
 
 ## 3D door R
 
