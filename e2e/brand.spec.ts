@@ -47,14 +47,14 @@ test("header logo, tagline, and SEO tags use the Rolevara brand", async ({ page,
     expect(html, path).toContain(`<meta name="description" content="`);
     expect(html.match(/<meta name="description" content="([^"]*)"/)![1], path).toContain(TAGLINE);
     expect(html.match(/<meta property="og:description" content="([^"]*)"/)![1], path).toContain(TAGLINE);
-    expect(html, path).toContain('content="https://rolevara.com/og/rolevara-og.png"');
-    expect(html, path).toContain('<link rel="canonical" href="https://rolevara.com');
+    expect(html, path).toContain('content="https://www.rolevara.com/og/rolevara-og.png"');
+    expect(html, path).toContain('<link rel="canonical" href="https://www.rolevara.com');
     // The only mentions left are in the inline script that migrates old storage keys.
     const rest = html.replace(/<script>try\{var s=localStorage[\s\S]*?<\/script>/, "").toLowerCase();
     expect(rest, path).not.toContain("shiftready");
     expect(rest, path).not.toContain("verdelit");
   }
-  expect(await (await request.get("/sitemap.xml")).text()).toContain("<loc>https://rolevara.com/</loc>");
+  expect(await (await request.get("/sitemap.xml")).text()).toContain("<loc>https://www.rolevara.com/</loc>");
   const manifest = await (await request.get("/site.webmanifest")).json();
   expect([manifest.name, manifest.description]).toEqual(["Rolevara", TAGLINE]);
 });

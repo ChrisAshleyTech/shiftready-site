@@ -1,6 +1,6 @@
 // /resources: how grading works, runbook, sample readiness report, FAQ, accessibility.
 import { ArrowRight, ExternalLink } from "lucide-react";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Faq, type QA } from "@/marketing/Faq";
 import { Button } from "@/components/ui/button";
 import { MarketingFrame, PageHero } from "@/marketing/sections";
 import { encodeReport } from "@/engine/report.js";
@@ -11,9 +11,9 @@ import { LEVELS, LEVEL_LABEL, LevelBadge, linkedInImage } from "@/components/bra
 const SAMPLE_URL = "/report/#r=" + encodeReport(sample);
 
 const HINTS = [["Nudge", "−10%", "Solo"], ["Policy clause", "−25%", "Solo"], ["Exact steps", "−50%", "Assisted"]];
-const FAQ = [
+export const FAQ: QA = [
   ["Who is Rolevara for?", "Identity and access professionals at every level: service desk analysts, IAM analysts and engineers, GRC and audit staff, and the team leads who develop them."],
-  ["Where is progress stored?", "In the browser that is being used. No account is required, and scenario data is not sent to a server."],
+  ["Where is progress stored?", "In the browser that is being used. A free sign-up (name, email and current role) opens the simulator, but progress and scenario data stay in the browser and are not sent to a server."],
   ["What is included in early access?", "Five industry companies, the PAM track and the Entra ID, Okta and AWS labs, as each is released. Pro features are included free during early access."],
   ["Are the companies and people real?", "No. All companies and people in Rolevara scenarios are fictional."],
   ["Is the policy content compliance advice?", "No. Runbook policies are training material based on published frameworks, not legal or compliance advice."],
@@ -68,9 +68,7 @@ export default function Page() {
 
         <section id="faq" aria-labelledby="faq-h" className="scroll-mt-24 rounded-3xl border bg-card p-8">
           <h2 id="faq-h" className="t-h1">FAQ</h2>
-          <Accordion type="single" collapsible className="mt-4">
-            {FAQ.map(([q, a]) => <AccordionItem key={q} value={q}><AccordionTrigger className="font-display text-lg font-bold">{q}</AccordionTrigger><AccordionContent className="text-base text-muted-foreground">{a}</AccordionContent></AccordionItem>)}
-          </Accordion>
+          <Faq items={FAQ} className="mt-4" questionClassName="font-display text-lg font-bold" />
         </section>
 
         <section id="accessibility" aria-labelledby="a11y-h" className="scroll-mt-24 space-y-4 rounded-3xl border bg-card p-8">

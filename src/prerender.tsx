@@ -10,6 +10,7 @@ import Resources from "./resources/Page";
 import Privacy from "./privacy/Page";
 import Terms from "./terms/Page";
 import NotFound from "./notfound/Page";
+export { SCHEMA, LLMS_TXT } from "./marketing/schema";
 
 // Built HTML file -> page component.
 export const PAGES: Record<string, ComponentType> = {
