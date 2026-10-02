@@ -55,7 +55,7 @@ export function seo(): Plugin {
       const css = html.match(/<link rel="stylesheet"[^>]*>\n?/g) ?? [];
       for (const l of css) html = html.replace(l, "");
       // Preload the two text fonts, which are otherwise found only after the stylesheet is parsed.
-      const fonts = Object.keys(ctx.bundle ?? {}).filter(f => /(figtree|source-sans-3)-latin-wght-normal-.*\.woff2$/.test(f));
+      const fonts = Object.keys(ctx.bundle ?? {}).filter(f => /(figtree|inter)-latin-wght-normal-.*\.woff2$/.test(f));
       const preload = fonts.map(f => `<link rel="preload" href="/${f}" as="font" type="font/woff2" crossorigin>\n`).join("");
       html = html.replace(/<script type="module"/, css.join("") + preload + '<script type="module"');
       return html.replace("</head>", tags.join("\n") + "\n</head>");

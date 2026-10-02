@@ -66,13 +66,13 @@ export function ReportView({ d, own = false }: { d: any; own?: boolean }) {
   return (
     <article aria-labelledby="rp-h" className="space-y-6">
       {/* Fixed deep blue-to-violet so white text stays >= 6:1 in both themes. */}
-      <header className="relative grid items-center gap-6 overflow-hidden rounded-3xl bg-gradient-to-br from-[#1d4ed8] via-[#2563eb] to-[#6d28d9] p-6 text-white shadow-xl shadow-primary/20 md:grid-cols-[1fr_auto] md:p-9">
+      <header className="relative grid items-center gap-6 overflow-hidden rounded-3xl bg-brand-band p-6 text-white shadow-xl shadow-primary/20 md:grid-cols-[1fr_auto] md:p-9">
         <div className="relative space-y-3">
           <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.14em] text-white/85"><ShieldCheck className="size-4" aria-hidden />Rolevara readiness report</p>
           <h1 id="rp-h" tabIndex={-1} data-page-title className="text-3xl font-extrabold md:text-5xl">{d.name || "IAM analyst readiness"}</h1>
           <p className="flex flex-wrap items-center gap-2 text-white/90"><brand.Mark className="size-6 shrink-0 rounded-md ring-1 ring-white/50" />{PATH_NAME[d.p] ?? "IAM Ops track"} · {brand.name} simulation · {date}</p>
           <div className="flex flex-wrap items-center gap-3 pt-1">
-            <span className="rounded-lg bg-white px-3 py-1.5 text-sm font-bold text-[#1d4ed8]">{b.label}</span>
+            <span className="rounded-lg bg-white px-3 py-1.5 text-sm font-bold text-brand-navy">{b.label}</span>
             <span className="text-sm text-white/90">{b.note}</span>
           </div>
         </div>
@@ -138,13 +138,13 @@ function AuditReportView({ d, own }: { d: any; own: boolean }) {
   const brand = brandFor(d.c);
   return (
     <article aria-labelledby="rp-h" className="space-y-6">
-      <header className="relative grid items-center gap-6 overflow-hidden rounded-3xl bg-gradient-to-br from-[#1d4ed8] via-[#2563eb] to-[#6d28d9] p-6 text-white shadow-xl shadow-primary/20 md:grid-cols-[1fr_auto] md:p-9">
+      <header className="relative grid items-center gap-6 overflow-hidden rounded-3xl bg-brand-band p-6 text-white shadow-xl shadow-primary/20 md:grid-cols-[1fr_auto] md:p-9">
         <div className="relative space-y-3">
           <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.14em] text-white/85"><ShieldCheck className="size-4" aria-hidden />Rolevara readiness report</p>
           <h1 id="rp-h" tabIndex={-1} data-page-title className="text-3xl font-extrabold md:text-5xl">{d.name || "IT audit readiness"}</h1>
           <p className="flex flex-wrap items-center gap-2 text-white/90"><brand.Mark className="size-6 shrink-0 rounded-md ring-1 ring-white/50" />{PATH_NAME.grc} · {brand.name} simulation · {date}</p>
           <div className="flex flex-wrap items-center gap-3 pt-1">
-            <span className="rounded-lg bg-white px-3 py-1.5 text-sm font-bold text-[#1d4ed8]">{b.label}</span>
+            <span className="rounded-lg bg-white px-3 py-1.5 text-sm font-bold text-brand-navy">{b.label}</span>
             <span className="text-sm text-white/90">{b.note}</span>
           </div>
         </div>

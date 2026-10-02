@@ -18,11 +18,11 @@ export function Photo({ name, alt, credit, profile, className, sizes = "(min-wid
 export function WaitlistBand({ children }: { children?: ReactNode }) {
   return (
     <section id="waitlist" aria-labelledby="wl-h" className="scroll-mt-24 px-4 pb-24 md:px-6">
-      <div className="relative mx-auto grid max-w-6xl gap-10 overflow-hidden rounded-[2rem] bg-gradient-to-br from-[#1d4ed8] via-[#2563eb] to-[#6d28d9] p-8 text-white md:grid-cols-2 md:p-14">
+      <div data-theme="dark" className="relative mx-auto grid max-w-6xl gap-10 overflow-hidden rounded-3xl bg-brand-band p-8 text-white md:grid-cols-2 md:p-14">
         <div className="space-y-4">
-          <p className="font-display text-[13px] font-bold uppercase tracking-[0.08em] text-white">Early access</p>
-          <h2 id="wl-h" className="t-h1">Join the early access list.</h2>
-          <p className="text-lg text-white">Early access covers the industry companies, the PAM track and the Entra ID, Okta and AWS labs as each is released. One notification per release. No payment details required.</p>
+          <p className="t-eyebrow">Early access</p>
+          <h2 id="wl-h" className="t-h1">Be first to try new companies and labs.</h2>
+          <p className="text-lg text-white/85">Get one email each time a new company, the PAM track or a platform lab is released. No payment details needed.</p>
           {children}
         </div>
         <div className="rounded-2xl bg-card p-6 text-card-foreground shadow-2xl"><Waitlist /></div>

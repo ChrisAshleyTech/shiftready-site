@@ -29,7 +29,7 @@ function Panel({ m, id, onClose }: { m: Menu; id: string; onClose: () => void })
     <div id={id} className="absolute inset-x-0 top-full border-b bg-card shadow-xl">
       <div className="mx-auto grid max-w-7xl gap-8 px-6 py-8 lg:grid-cols-[18rem_1fr]">
         <div className="space-y-3">
-          <p className="font-display text-2xl font-extrabold">{m.label}</p>
+          <p className="font-display text-2xl font-bold">{m.label}</p>
           <p className="text-muted-foreground">{m.lead}</p>
           <a href={m.href} onClick={onClose} className="inline-flex items-center gap-1 font-semibold text-primary-strong hover:underline">Overview <ArrowRight className="size-4" aria-hidden /></a>
         </div>
@@ -100,8 +100,7 @@ export function MegaNav({ current }: { current?: string }) {
             <Button variant="ghost" size="icon" className="hidden min-[380px]:inline-flex" aria-label={theme === "dark" ? "Switch to light theme" : "Switch to dark theme"} onClick={() => setTheme(theme === "dark" ? "light" : "dark")}>
               {theme === "dark" ? <Sun /> : <Moon />}
             </Button>
-            <a href="/app/" className="hidden font-display text-[15px] font-semibold text-foreground/85 hover:text-foreground sm:inline">Open the app</a>
-            <Button asChild className="h-10 px-4 font-display font-bold sm:px-5"><a href="/app/">Start free</a></Button>
+            <Button asChild className="h-10 px-4 font-semibold sm:px-5"><a href="/app/">Start free</a></Button>
             <Sheet>
               <SheetTrigger asChild><Button variant="outline" size="icon" className="lg:hidden" aria-label="Open menu"><Menu /></Button></SheetTrigger>
               <SheetContent side="right" className="w-[22rem] max-w-full overflow-y-auto">

@@ -11,7 +11,7 @@ const [, pro, labs] = TIERS;
 
 const QA = [
   ["Can plans be purchased today?", "Not yet. Paid plans open from a waitlist, and no payment details are collected on this site."],
-  ["What does the free tier include?", "Pacific Crest Logistics on all three paths (IAM only, IAM + GRC, GRC only), with both shifts, Monday-to-Thursday consequences and the audits. Pro features are included free during early access."],
+  ["What does the free tier include?", "Pacific Crest Logistics on all three paths (IAM only, IAM + GRC, GRC only), with the full ticket queue, reopened tickets, follow-up incidents and the audits. Pro features are included free during early access."],
   ["What is in early access?", "Five industry companies (Harbor Health Network, Meridian Aerospace, Coastline Credit Union, Brightpath SaaS and Sunset Retail Group), the PAM track, and the Microsoft Entra ID, Okta and AWS labs."],
   ["How do the labs work?", "Each lab seeds a free tenant you own (Microsoft Entra ID, Okta or AWS) with the Pacific Crest directory. The tickets are worked in the real console, then a read-only check grades the result in the browser."],
   ["Is there a free trial, and can plans be cancelled?", `Pro includes a ${PRICES.pro.trialDays}-day free trial. Every paid plan can be cancelled anytime.`],

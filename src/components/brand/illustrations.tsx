@@ -78,6 +78,27 @@ export function IllusChart(p: P) {
   );
 }
 
+/** A resolved ticket, a reply saying it didn't work, and the arrow back into the queue. */
+export function IllusReopen(p: P) {
+  return (
+    <svg {...base(p)}>
+      <ellipse cx="120" cy="160" rx="92" ry="10" fill="var(--hue-blue)" opacity=".12" />
+      <rect x="26" y="44" width="122" height="96" rx="16" fill="var(--card)" stroke="var(--hue-blue)" strokeWidth="2.5" />
+      <rect x="42" y="62" width="58" height="9" rx="4.5" fill="var(--hue-blue)" />
+      <rect x="42" y="80" width="88" height="7" rx="3.5" fill="var(--hue-blue)" opacity=".2" />
+      <rect x="42" y="94" width="72" height="7" rx="3.5" fill="var(--hue-blue)" opacity=".2" />
+      <g transform="translate(58 120)"><rect x="-16" y="-9" width="58" height="18" rx="9" fill="var(--hue-green)" /><path d="M-6 0l4 4 8-8" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" /></g>
+      <rect x="150" y="26" width="72" height="46" rx="14" fill="var(--hue-pink)" />
+      <path d="M164 72l-6 12 16-12z" fill="var(--hue-pink)" />
+      <rect x="164" y="40" width="44" height="7" rx="3.5" fill="#fff" opacity=".9" />
+      <rect x="164" y="53" width="30" height="7" rx="3.5" fill="#fff" opacity=".7" />
+      <path d="M196 84c4 44-34 66-74 62" stroke="var(--hue-amber)" strokeWidth="4" strokeLinecap="round" strokeDasharray="2 8" fill="none" />
+      <path d="M130 138l-10 8 11 6" stroke="var(--hue-amber)" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+    </svg>
+  );
+}
+
+// Still used by the app's week screens until the live ticket queue lands there.
 /** A week calendar with Monday and Thursday highlighted. Consequences carry over. */
 export function IllusWeek(p: P) {
   const days = ["M", "T", "W", "T", "F"];
@@ -90,7 +111,7 @@ export function IllusWeek(p: P) {
         const hot = i === 0 || i === 3;
         return (
           <g key={i} transform={`translate(${46 + i * 32} 84)`}>
-            <rect width="26" height="48" rx="8" fill={hot ? (i === 0 ? "var(--hue-sky)" : "var(--hue-pink)") : "var(--hue-blue)"} opacity={hot ? 1 : 0.12} />
+            <rect width="26" height="48" rx="8" fill={hot ? (i === 0 ? "var(--hue-sky)" : "var(--hue-coral)") : "var(--hue-blue)"} opacity={hot ? 1 : 0.12} />
             <text x="13" y="30" textAnchor="middle" fontSize="13" fontWeight="700" fontFamily="inherit" fill={hot ? "#fff" : "var(--hue-blue)"}>{d}</text>
           </g>
         );

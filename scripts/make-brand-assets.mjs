@@ -20,7 +20,7 @@ const TAGLINE = "Experience the role. Master the work.";
 const src = f => "data:image/png;base64," + readFileSync(new URL(`../brand-source/${f}`, import.meta.url)).toString("base64");
 const font = p => readFileSync(new URL(`../node_modules/${p}`, import.meta.url)).toString("base64");
 const figtree = font("@fontsource-variable/figtree/files/figtree-latin-wght-normal.woff2");
-const sans = font("@fontsource-variable/source-sans-3/files/source-sans-3-latin-wght-normal.woff2");
+const sans = font("@fontsource-variable/inter/files/inter-latin-wght-normal.woff2");
 const poster = readFileSync(new URL("../public/video/demo-poster.jpg", import.meta.url)).toString("base64");
 const FONTS = `@font-face{font-family:F;src:url(data:font/woff2;base64,${figtree}) format("woff2");font-weight:100 900}
 @font-face{font-family:S;src:url(data:font/woff2;base64,${sans}) format("woff2");font-weight:200 900}`;
