@@ -15,10 +15,13 @@ test.describe("new visitor", () => {
     await page.getByLabel("Email").fill("sam@example");
     await page.getByRole("button", { name: "Sign up and start" }).click();
     await expect(page.getByText("Enter an email address in the format name@example.com.")).toBeVisible();
+    let sent: any = null;
+    await page.route("https://formspree.io/**", r => { sent = r.request().postDataJSON(); return r.fulfill({ json: { ok: true } }); });
     await page.getByLabel("Email").fill("sam@example.com");
     await page.getByRole("button", { name: "Sign up and start" }).click();
 
     await expect(page.getByRole("link", { name: "Home page" })).toBeVisible();
+    expect(sent).toMatchObject({ name: "Sam Lee", email: "sam@example.com", source: "simulator sign-up" });
     // Reset progress clears local storage; the sign-up is still remembered.
     await page.evaluate(() => localStorage.clear());
     await page.reload();
