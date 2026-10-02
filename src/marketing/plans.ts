@@ -19,6 +19,9 @@ export type Tier = {
 export const PRICES = {
   pro: { monthly: 15, yearly: 129, trialDays: 14 },
   labs: { monthly: 29, yearly: 249 },
+  // Retention offer to Pro members: Pro + Labs at a lower price for the first year. Shown in the
+  // simulator this many days after the trial ends (first renewal), with one reminder later.
+  labsUpgrade: { monthly: 25, months: 12, offerDay: 30, reminderDay: 45 },
 };
 export const CANCEL_ANYTIME = "Cancel anytime";
 
