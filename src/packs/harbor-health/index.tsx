@@ -1,4 +1,4 @@
-// Harbor Health Network: healthcare, HIPAA Security Rule. Tickets are in development.
+// Harbor Health Network: healthcare, HIPAA Security Rule.
 import { iconByPrefix, noteByPrefix } from "../appIcons";
 import type { CompanyPack } from "../types";
 import { Mark } from "./mark";
@@ -9,7 +9,8 @@ export const pack: CompanyPack = {
   industry: "Healthcare",
   frameworks: "HIPAA Security Rule",
   storageKey: "rolevara-sim-harbor-health-v1",
-  hasTickets: false,
+  domain: "harborhealth.org",
+  hasTickets: true,
   Mark,
   appIcon: iconByPrefix({
     "APP-Office-Suite": "suite", "APP-Finance-Reports": "chart", "APP-ERP": "ledger", "APP-EHR-Clinical": "record", "APP-EHR-Orders-Sign": "record",
@@ -29,6 +30,6 @@ export const pack: CompanyPack = {
     "APP-Service-Desk": "ServiceNow is the most common IT service desk in health systems.",
     "ROLE-EHR-BreakGlass": "Break-glass is a standard EHR feature: a reason is required, and every use appears in the privacy team's audit reports.",
   }),
-  load: async () => ({ company: await import("./company"), policy: await import("./policy") }),
+  load: async () => ({ company: await import("./company"), policy: await import("./policy"), tickets: (await import("./tickets.js")).set }),
   loadRecords: () => import("./finance"),
 };

@@ -78,6 +78,7 @@ export const IAM_KEY = [
   { kind: "excess", user: "tobias.renner", note: "Inspection sign-off isn't part of the Machinist role." },
   { kind: "sod", user: "aleksander.nowak", note: "Domain admin who can also administer the security logs." },
   { kind: "excess", user: "aleksander.nowak", note: "Security log admin isn't part of the Systems Administrator role." },
+  { kind: "excess", user: "marguerite.ellison", note: "MES engineering and timekeeping approval aren't part of the Design Engineer role." },
   { kind: "dormant", user: "walter.kessler", note: "Enabled with CUI access; no sign-in for 143 days." },
   { kind: "dormant", user: "irene.papadakis", note: "Enabled; no sign-in for 92 days." },
   { kind: "leaver-active", user: "curtis.langley", note: "Resigned six days ago; still enabled and signed in two days ago." },

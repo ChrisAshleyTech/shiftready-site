@@ -87,6 +87,21 @@ const CORE: Core[] = [
   ["jada.okonkwo", "Jada Okonkwo", "HHN-10401", "Clinical|Registered Nurse", "Keisha Holloway", { enabled: false, groups: [], last: null, mfa: false, preHire: true }],
   ["ben.castellanos", "Ben Castellanos", "HHN-10402", "Patient Access|Patient Access Representative", "Carmen Velasquez", { enabled: false, groups: [], last: null, mfa: false, preHire: true }],
   ["svc-hl7", "svc-hl7", "SVC-011", null, "Rashid Karimi (owner)", { dept: "IT", title: "Service account: HL7 interface engine", type: "Service", groups: ["SVC-HL7-Interface"], last: 0, mfa: false }],
+  // Monday's callers, requesters and planted cases (see tickets.js).
+  ["monique.dubois", "Monique Dubois", "HHN-10102", "Revenue Cycle|Billing Specialist", "Luis Arroyo", { last: 3 }],
+  ["lorraine.pittman", "Lorraine Pittman", "HHN-10106", "Patient Access|Patient Access Representative", "Carmen Velasquez", { locked: true }],
+  ["elias.morrow", "Elias Morrow", "HHN-10109", "Clinical|Physician", "Samuel Achterberg"],
+  ["quentin.ashworth", "Quentin Ashworth", "HHN-10111", "Pharmacy|Pharmacist", "Farid Rahimi"],
+  ["corinne.faulkner", "Corinne Faulkner", "HHN-10118", "Clinical|Registered Nurse", "Keisha Holloway"],
+  // Planted: 89 days since sign-in, one day under the inactive threshold.
+  ["gloria.fitzgerald", "Gloria Fitzgerald", "HHN-10121", "Clinical|Medical Assistant", "Keisha Holloway", { last: 89 }],
+  // Planted: the Q3 access review marked her lab-results access for removal.
+  ["delphine.okafor", "Delphine Okafor", "HHN-10124", "Clinical|Medical Assistant", "Keisha Holloway", { groups: [...R["Clinical|Medical Assistant"], "APP-Lab-Results"] }],
+  // Planted: billing access left over from covering the billing office last winter.
+  ["tamara.lindsey", "Tamara Lindsey", "HHN-10127", "Patient Access|Patient Access Representative", "Carmen Velasquez", { groups: [...R["Patient Access|Patient Access Representative"], "APP-EHR-Billing", "APP-Finance-Reports"] }],
+  ["felicity.ward", "Felicity Ward", "HHN-10135", "Revenue Cycle|Billing Specialist", "Luis Arroyo", { last: 0 }],
+  // Planted: no interactive sign-in for months, but the nightly EHR backups run as this account.
+  ["svc-ehr-backup", "svc-ehr-backup", "SVC-014", null, "Rashid Karimi (owner)", { dept: "IT", title: "Service account: nightly EHR backups", type: "Service", groups: ["SVC-Backup-Operators"], last: 160, mfa: false }],
 ];
 const FILLER: Filler[] = [
   ["Clinical|Registered Nurse", 30, "Keisha Holloway"],

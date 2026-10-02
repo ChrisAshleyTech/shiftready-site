@@ -1,4 +1,4 @@
-// Brightpath SaaS: software, SOC 2. Tickets are in development.
+// Brightpath SaaS: software, SOC 2.
 import { iconByPrefix, noteByPrefix } from "../appIcons";
 import type { CompanyPack } from "../types";
 import { Mark } from "./mark";
@@ -9,7 +9,8 @@ export const pack: CompanyPack = {
   industry: "Software",
   frameworks: "SOC 2",
   storageKey: "rolevara-sim-brightpath-v1",
-  hasTickets: false,
+  domain: "brightpath.io",
+  hasTickets: true,
   Mark,
   appIcon: iconByPrefix({
     "APP-Office-Suite": "suite", "APP-Chat": "suite", "APP-Finance-Reports": "chart", "APP-ERP": "ledger", "APP-Billing-Platform": "claim",
@@ -32,6 +33,6 @@ export const pack: CompanyPack = {
     "APP-HRIS": "Growing software companies often use Rippling, BambooHR or Workday.",
     "APP-ERP": "Finance often runs on NetSuite or QuickBooks, with Bill or Ramp for payables.",
   }),
-  load: async () => ({ company: await import("./company"), policy: await import("./policy") }),
+  load: async () => ({ company: await import("./company"), policy: await import("./policy"), tickets: (await import("./tickets.js")).set }),
   loadRecords: () => import("./finance"),
 };

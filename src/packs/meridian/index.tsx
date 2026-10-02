@@ -1,4 +1,4 @@
-// Meridian Aerospace: defense subcontractor, CMMC Level 2 and NIST SP 800-171. Tickets are in development.
+// Meridian Aerospace: defense subcontractor, CMMC Level 2 and NIST SP 800-171.
 import { iconByPrefix, noteByPrefix } from "../appIcons";
 import type { CompanyPack } from "../types";
 import { Mark } from "./mark";
@@ -9,7 +9,8 @@ export const pack: CompanyPack = {
   industry: "Aerospace and defense",
   frameworks: "CMMC Level 2, NIST SP 800-171",
   storageKey: "rolevara-sim-meridian-v1",
-  hasTickets: false,
+  domain: "meridianaero.com",
+  hasTickets: true,
   Mark,
   appIcon: iconByPrefix({
     "APP-Office-Suite": "suite", "APP-Finance-Reports": "chart", "APP-ERP": "ledger", "APP-ERP-Purchasing": "receipt", "APP-ERP-Receiving": "boxes",
@@ -28,6 +29,6 @@ export const pack: CompanyPack = {
     "APP-Security-Clearances": "Facility Security Officers manage clearances in the government's DISS system; companies track them internally too.",
     "ROLE-Security-Log-Admin": "Audit logs usually go to a SIEM such as Microsoft Sentinel or Splunk.",
   }),
-  load: async () => ({ company: await import("./company"), policy: await import("./policy") }),
+  load: async () => ({ company: await import("./company"), policy: await import("./policy"), tickets: (await import("./tickets.js")).set }),
   loadRecords: () => import("./finance"),
 };

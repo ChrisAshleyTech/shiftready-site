@@ -8,8 +8,11 @@ import { Card } from "@/components/ui/card";
 import { ChartContainer, type ChartConfig } from "@/components/ui/chart";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { IllusChart } from "@/components/brand/illustrations";
-import { brandFor } from "@/packs/brands";
+import { brandFor, deskShort } from "@/packs/brands";
 import { LevelBadge, isLevel, linkedInImage } from "@/components/brand/LevelBadge";
+
+// The company's audit desk, for the tile label: "Q3 SOX desk".
+const desk = (c?: string) => deskShort(c).replace(/^./, x => x.toUpperCase());
 
 const nf = new Intl.NumberFormat("en-US", { maximumFractionDigits: 1 });
 const pct = (n: number | null | undefined) => (n == null ? "–" : n + "%");
@@ -90,7 +93,7 @@ export function ReportView({ d, own = false }: { d: any; own?: boolean }) {
         <Tile k="Thursday" v={d.thu ? pct(d.thu.pct) : "–"} d={shift(d.thu)} />
         <Tile k="Consequences" v={d.caused == null ? "–" : String(d.caused)} d={d.caused == null ? "Revealed on Thursday" : `caused · ${d.prevented} prevented`} />
         {d.p === "iam-grc" && <Tile k="Friday audit" v={d.fri ? pct(d.fri.pct) : "–"} d={d.fri ? `${d.fri.done}/${d.fri.n} tasks · own week` : "Not attempted"} />}
-        {d.p !== "iam" && <Tile k={d.p ? "Q3 SOX desk" : "GRC audit"} v={d.grc ? pct(d.grc.pct) : "–"} d={d.grc ? `${d.grc.done}/${d.grc.n} tasks` : "Not attempted"} />}
+        {d.p !== "iam" && <Tile k={d.p ? desk(d.c) : "GRC audit"} v={d.grc ? pct(d.grc.pct) : "–"} d={d.grc ? `${d.grc.done}/${d.grc.n} tasks` : "Not attempted"} />}
       </section>
       <Card className="grid gap-6 p-5 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] md:p-6">
         <div>
@@ -153,7 +156,7 @@ function AuditReportView({ d, own }: { d: any; own: boolean }) {
       <section aria-label="Headline numbers" className="grid grid-cols-2 gap-3 lg:grid-cols-3">
         <Tile k="Audit score" v={pct(a.pct)} d={`${a.sc} of ${a.mx} points`} />
         <Tile k="Tasks" v={`${a.done}/${a.n}`} d="Walkthrough to management response" />
-        <Tile k="Q3 SOX desk" v={d.grc ? pct(d.grc.pct) : "–"} d={d.grc ? `${d.grc.done}/${d.grc.n} extra tasks` : "Not attempted"} />
+        <Tile k={desk(d.c)} v={d.grc ? pct(d.grc.pct) : "–"} d={d.grc ? `${d.grc.done}/${d.grc.n} extra tasks` : "Not attempted"} />
       </section>
       <section aria-labelledby="ra-h" className="space-y-3">
         <h2 id="ra-h" className="font-sans text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">Every audit task</h2>

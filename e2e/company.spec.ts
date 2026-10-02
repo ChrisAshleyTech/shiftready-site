@@ -32,16 +32,16 @@ test("on a phone, the company switcher is in the navigation drawer", async ({ pa
   await expect(drawer.getByRole("combobox", { name: "Company" })).toContainText("Pacific Crest Logistics");
 });
 
-// Companies whose tickets are still being written. Extended as each pack lands.
-const NEW = [
-  { name: "Harbor Health Network", group: "APP-EHR-Clinical", note: /Epic or Oracle Health/, source: /45 CFR 164/ },
-  { name: "Meridian Aerospace", group: "APP-PLM-CUI", note: /Teamcenter/, source: /NIST SP 800-171 Rev. 2/ },
-  { name: "Coastline Credit Union", group: "APP-Core-Teller", note: /Symitar/, source: /12 CFR/ },
-  { name: "Brightpath SaaS", group: "APP-CI-CD-Deploy-Prod", note: /GitHub Actions/, source: /SOC 2 CC/ },
-  { name: "Sunset Retail Group", group: "APP-POS-Cashier", note: /Xstore/, source: /PCI DSS v4.0.1/ },
+// The industry companies: each has its own week of tickets and its own audit desk.
+const INDUSTRY = [
+  { name: "Harbor Health Network", joiner: "REQ0027104", desk: "HIPAA audit desk", group: "APP-EHR-Clinical", note: /Epic or Oracle Health/, source: /45 CFR 164/ },
+  { name: "Meridian Aerospace", joiner: "REQ0034104", desk: "CMMC audit desk", group: "APP-PLM-CUI", note: /Teamcenter/, source: /NIST SP 800-171 Rev. 2/ },
+  { name: "Coastline Credit Union", joiner: "REQ0042104", desk: "GLBA audit desk", group: "APP-Core-Teller", note: /Symitar/, source: /12 CFR/ },
+  { name: "Brightpath SaaS", joiner: "REQ0051104", desk: "SOC 2 audit desk", group: "APP-CI-CD-Deploy-Prod", note: /GitHub Actions/, source: /SOC 2 CC/ },
+  { name: "Sunset Retail Group", joiner: "REQ0063104", desk: "PCI DSS audit desk", group: "APP-POS-Cashier", note: /Xstore/, source: /PCI DSS v4.0.1/ },
 ];
-for (const c of NEW) {
-  test(`${c.name}: switch, explore, and switch back without losing progress`, async ({ page }) => {
+for (const c of INDUSTRY) {
+  test(`${c.name}: switch, work its tickets, and switch back without losing progress`, async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 900 });
     await page.goto("/app/");
     await page.evaluate(() => { localStorage.clear(); localStorage.setItem("rolevara-path", "iam-grc"); });
@@ -51,14 +51,18 @@ for (const c of NEW) {
 
     await page.getByRole("combobox", { name: "Company" }).click();
     await page.getByRole("option", { name: new RegExp(c.name) }).click();
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText(c.name);
     await expect(page.getByRole("combobox", { name: "Company" })).toContainText(c.name);
-    await expect(page.getByText(/Tickets for .* are in development/).first()).toBeVisible();
+
+    // Its own Monday queue, with no Pacific Crest tickets, and its own audit desk.
+    await page.goto("/app/#/queue");
+    await expect(page.getByText(c.joiner).first()).toBeVisible();
+    await expect(page.getByText("INC0041220")).toHaveCount(0);
     const axe = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"]).analyze();
     expect(axe.violations.filter(v => v.impact === "serious" || v.impact === "critical").map(v => v.id)).toEqual([]);
+    await page.goto(`/app/#/queue/${c.joiner}`);
+    await page.getByRole("button", { name: "Start work" }).click();
+    await expect(page.getByRole("link", { name: c.desk })).toBeVisible();
 
-    await page.goto("/app/#/queue");
-    await expect(page.getByText(`Tickets for ${c.name} are in development`)).toBeVisible();
     await page.goto(`/app/#/groups/${c.group}`);
     await expect(page.getByText(c.note)).toBeVisible();
     await page.goto("/app/#/policy");

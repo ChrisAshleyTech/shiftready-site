@@ -87,6 +87,19 @@ const CORE: Core[] = [
   ["raj.malhotra", "Raj Malhotra", "C-7701", "IT|IT Contractor", "Dennis Mulroney (sponsor)", { type: "Contractor", expiry: 2 }],
   ["kiara.thompson", "Kiara Thompson", "60401", "Branch|Teller", "Caroline Ashby", { enabled: false, groups: [], last: null, mfa: false, preHire: true }],
   ["omar.farouk", "Omar Farouk", "60402", "Lending|Loan Officer", "Nathan Greer", { enabled: false, groups: [], last: null, mfa: false, preHire: true }],
+  // Week-one ticket cast (see tickets.js).
+  ["rosalyn.whitcombe", "Rosalyn Whitcombe", "60141", "Lending|Loan Servicing Specialist", "Nathan Greer", { last: 3 }],
+  ["ambrose.kittredge", "Ambrose Kittredge", "60143", "Branch|Teller", "Patrice Duval", { locked: true }],
+  ["clementine.rourke", "Clementine Rourke", "60145", "Lending|Loan Officer", "Nathan Greer"],
+  ["leopold.fairweather", "Leopold Fairweather", "60147", "Branch|Member Service Representative", "Caroline Ashby"],
+  ["imelda.prescott", "Imelda Prescott", "60149", "Lending|Collections Specialist", "Nathan Greer"],
+  ["margery.dunleavy", "Margery Dunleavy", "60151", "Branch|Member Service Representative", "Caroline Ashby", { last: 89 }],
+  ["wesley.tranter", "Wesley Tranter", "60153", "IT|Service Desk Analyst", "Dennis Mulroney"],
+  ["barnaby.whitlock", "Barnaby Whitlock", "60155", "Operations|Card Services Specialist", "Simone Achterberg", { groups: [...R["Operations|Card Services Specialist"], "APP-Finance-Reports"] }],
+  // Planted: leftover servicing and collections access from a year in collections.
+  ["vivienne.strand", "Vivienne Strand", "60157", "Lending|Loan Officer", "Nathan Greer", { groups: [...R["Lending|Loan Officer"], "APP-Loan-Servicing", "APP-Collections"] }],
+  ["rupert.sinclair", "Rupert Sinclair", "60159", "Operations|Payments Specialist", "Simone Achterberg", { last: 0 }],
+  ["svc-card-files", "svc-card-files", "SVC-034", null, "Priscilla Ng (owner)", { dept: "IT", title: "Service account: card processor file transfer", type: "Service", groups: ["SVC-Card-Processor"], last: 140, mfa: false }],
   ["svc-core-batch", "svc-core-batch", "SVC-031", null, "Priscilla Ng (owner)", { dept: "IT", title: "Service account: core nightly batch", type: "Service", groups: ["SVC-Core-Batch"], last: 0, mfa: false }],
 ];
 const BRANCHES = ["Patrice Duval", "Caroline Ashby", "Howard Teague"];

@@ -84,6 +84,17 @@ const CORE: Core[] = [
   ["ivan.petrenko", "Ivan Petrenko", "MA-C-2203", "Engineering|Engineering Contractor", "Gabriel Fontaine (sponsor)", { type: "Contractor", expiry: 2 }],
   ["amara.nwosu", "Amara Nwosu", "MA-40401", "Engineering|Design Engineer", "Gabriel Fontaine", { enabled: false, groups: [], last: null, mfa: false, preHire: true }],
   ["felix.moreau", "Felix Moreau", "MA-40402", "Manufacturing|Machinist", "Raymond Cho", { enabled: false, groups: [], last: null, mfa: false, preHire: true }],
+  // Week-one ticket cast (see tickets.js).
+  ["bernadette.quigley", "Bernadette Quigley", "MA-40161", "Quality|Quality Inspector", "Delia Marquez", { last: 3 }],
+  ["wendell.haskins", "Wendell Haskins", "MA-40163", "Manufacturing|Machinist", "Raymond Cho", { locked: true }],
+  ["fiona.galbraith", "Fiona Galbraith", "MA-40165", "Program Management|Program Manager", "Catherine Aldous"],
+  ["cyrus.pennington", "Cyrus Pennington", "MA-40167", "Supply Chain|Receiving Clerk", "Adaeze Okoro"],
+  ["lorna.breckenridge", "Lorna Breckenridge", "MA-40169", "Engineering|Design Engineer", "Gabriel Fontaine", { last: 89 }],
+  ["thaddeus.okonjo", "Thaddeus Okonjo", "MA-40171", "Engineering|Design Engineer", "Gabriel Fontaine", { groups: [...R["Engineering|Design Engineer"], "GRP-ITAR-Technical-Data"] }],
+  // Planted: leftover MES and timekeeping approval from covering for the manufacturing engineers.
+  ["marguerite.ellison", "Marguerite Ellison", "MA-40173", "Engineering|Design Engineer", "Gabriel Fontaine", { groups: [...R["Engineering|Design Engineer"], "APP-MES-Engineering", "APP-Timekeeping-Approve"] }],
+  ["harriet.vance", "Harriet Vance", "MA-40175", "Supply Chain|Buyer", "Adaeze Okoro", { last: 0 }],
+  ["svc-nas-backup", "svc-nas-backup", "SVC-024", null, "Kenji Watanabe (owner)", { dept: "IT", title: "Service account: file server backup", type: "Service", groups: ["SVC-Backup-Operators"], last: 170, mfa: false }],
   ["svc-mes", "svc-mes", "SVC-021", null, "Kenji Watanabe (owner)", { dept: "IT", title: "Service account: MES integration", type: "Service", groups: ["SVC-MES-Integration"], last: 0, mfa: false }],
 ];
 const FILLER: Filler[] = [

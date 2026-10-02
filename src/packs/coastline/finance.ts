@@ -83,6 +83,7 @@ export const IAM_KEY = [
   { kind: "excess", user: "trevor.boateng", note: "Loan approval isn't part of the Loan Officer role." },
   { kind: "sod", user: "lucia.bianchi", note: "Can change member contact details and issue cards." },
   { kind: "excess", user: "lucia.bianchi", note: "Card management isn't part of the Member Service Representative role." },
+  { kind: "excess", user: "vivienne.strand", note: "Loan servicing and collections aren't part of the Loan Officer role." },
   { kind: "dormant", user: "gordon.pell", note: "Enabled; no sign-in for 188 days." },
   { kind: "dormant", user: "yvette.lambert", note: "Enabled teller account; no sign-in for 104 days." },
   { kind: "leaver-active", user: "diego.salcedo", note: "Payments specialist who resigned eight days ago; still enabled and signing in." },

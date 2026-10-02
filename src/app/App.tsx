@@ -18,6 +18,7 @@ import { clockStr, totals } from "@/engine/state.js";
 import { curTickets } from "@/engine/thursday.js";
 import { TK } from "@/engine/tickets.js";
 import { G, GK, gTotals } from "@/engine/grc.js";
+import { SET } from "@/engine/ticketSet.js";
 import { useSim, useRoute, ui, num, pct, type Route } from "./sim";
 import { navFor, pageInfo } from "./nav";
 import { inPath, path, pathChosen, pathInfo } from "./paths";
@@ -125,7 +126,7 @@ function TopBar({ r }: { r: Route }) {
   const list = c.hasTickets ? curTickets(ui.view) : [];
   const tt = isG ? gTotals() : isA ? waTotals() : totals(list);
   const isThu = S.shift === "thu" && ui.view !== "mon";
-  const ctx = isG ? "Q3 SOX ITGC fieldwork" : path() === "grc" ? "Internal audit · Jordan Reyes' week"
+  const ctx = isG ? SET.grc.ctx : path() === "grc" ? "Internal audit · Jordan Reyes' week"
     : isA ? `Friday, ${fmtDay(4)} · audit of your week` : `${isThu ? "Thursday, " + fmtDay(3) : "Monday, " + fmtDay(0)} · ${clockStr()}`;
   const n = isG ? G.length : isA ? waTotals().n : list.length;
   const { theme, setTheme } = useTheme();

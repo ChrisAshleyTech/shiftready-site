@@ -2,6 +2,7 @@
 // bindings, then loads that company's own saved progress for the current path.
 import { setCompanyData } from "@/engine/company.js";
 import { setPolicyData } from "@/engine/policy.js";
+import { setTicketData } from "@/engine/ticketSet.js";
 import { S } from "@/engine/store.js";
 import { init, setCompanyState } from "@/engine/state.js";
 import { COMPANIES, DEFAULT_COMPANY, companyById, type CompanyPack } from "@/packs";
@@ -37,6 +38,7 @@ export async function selectCompany(id: string) {
   const m = await p.load();
   setCompanyData(m.company);
   setPolicyData(m.policy);
+  if (m.tickets) setTicketData(m.tickets);
   active = p;
   loadState();
   try { localStorage.setItem(STORE, id); } catch { /* storage blocked: the choice lasts for this visit */ }

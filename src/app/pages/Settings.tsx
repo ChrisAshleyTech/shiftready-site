@@ -17,7 +17,7 @@ export default function Settings() {
         </section>
         <Card className="gap-3 p-5">
           <h2 className="text-lg font-semibold">Company</h2>
-          <p className="max-w-[70ch] text-sm text-muted-foreground">The fictional company you work at. Tickets for the five industry companies are still in development, so every path runs at Pacific Crest Logistics for now.</p>
+          <p className="max-w-[70ch] text-sm text-muted-foreground">The fictional company you work at. Each company has its own tickets, people, policies and audit desk, and keeps its own progress on each path.</p>
           <div><CompanySwitcher className="border border-input px-3 py-2" /></div>
         </Card>
       </div>

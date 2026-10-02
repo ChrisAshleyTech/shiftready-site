@@ -5,8 +5,7 @@ import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 import { toast } from "sonner";
 import { Copy, Download, ExternalLink, FolderGit2, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { TK } from "@/engine/tickets.js";
-import { ExportError, LAB_TICKETS, type LabResult } from "../../lab/core";
+import { ExportError, LAB_TICKETS, labTitle, type LabResult } from "../../lab/core";
 import { downloadPortfolio } from "../../lab/portfolio";
 import { Checks, SectionLabel, Tag } from "../../components/bits";
 
@@ -112,7 +111,7 @@ export function TicketList({ todo }: { todo: Record<string, string> }) {
     <ul className="divide-y rounded-lg border">
       {LAB_TICKETS.map(id => (
         <li key={id} className="space-y-1 px-4 py-3">
-          <div className="flex flex-wrap items-center gap-2"><Tag className="font-mono">{id}</Tag><span className="font-medium">{TK[id].title}</span></div>
+          <div className="flex flex-wrap items-center gap-2"><Tag className="font-mono">{id}</Tag><span className="font-medium">{labTitle(id)}</span></div>
           <p className="text-sm text-muted-foreground">{todo[id]}</p>
         </li>
       ))}

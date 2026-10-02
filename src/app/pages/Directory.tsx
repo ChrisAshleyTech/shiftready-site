@@ -44,7 +44,7 @@ function UserPanel({ id }: { id: string }) {
   const exp = useRef<HTMLInputElement>(null);
   const log = S.log.filter((e: any) => e.target === id).slice().reverse();
   const kv: [string, React.ReactNode][] = [
-    ["Username", <span className="font-mono text-sm">{u.id}@pacificcrest.co</span>],
+    ["Username", <span className="font-mono text-sm">{u.id}@{company().domain}</span>],
     ["Employee ID", <span className="font-mono">{u.empId}</span>],
     ["Department", u.dept], ["Job title", u.title], ["Manager", u.mgr], ["Account type", u.type],
     ["Status", `${u.enabled ? "Enabled" : "Disabled"}${u.locked ? " · Locked (too many failed sign-ins)" : ""}`],

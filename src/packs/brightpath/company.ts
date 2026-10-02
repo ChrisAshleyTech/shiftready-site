@@ -76,13 +76,25 @@ const CORE: Core[] = [
   ["lorenzo.gatti", "Lorenzo Gatti", "BP-0109", "Engineering|Software Engineer", "Raul Dominguez", { last: 95 }],
   // Planted: resigned five days ago, still enabled and signing in.
   ["sienna.park", "Sienna Park", "BP-0114", "Customer Success|Customer Success Manager", "Priya Shankar", { last: 1 }],
-  ["theo.vandenberg", "Theo Vandenberg", "BP-0120", "Engineering|Software Engineer", "Tamsin Okoro"],
+  ["theo.vandenberg", "Theo Vandenberg", "BP-0120", "Customer Success|Support Engineer", "Priya Shankar"],
   ["hana.kobayashi", "Hana Kobayashi", "BP-0124", "Engineering|Site Reliability Engineer", "Raul Dominguez", { last: 0 }],
   ["amelia.stroud", "Amelia Stroud", "BP-0129", "Sales|Account Executive", "Dante Russo"],
   ["gideon.mensah", "Gideon Mensah", "BP-0088", "Customer Success|Support Engineer", "Priya Shankar", { enabled: false, groups: ["GRP-All-Staff", "APP-Chat", "APP-Support-Desk"], last: 320 }],
   ["lukas.brenner", "Lukas Brenner", "BPC-0501", "Engineering|Engineering Contractor", "Tamsin Okoro (sponsor)", { type: "Contractor", expiry: 2 }],
   ["ayanna.brooks", "Ayanna Brooks", "BP-0401", "Engineering|Software Engineer", "Tamsin Okoro", { enabled: false, groups: [], last: null, mfa: false, preHire: true }],
   ["mateo.silva", "Mateo Silva", "BP-0402", "Sales|Sales Development Rep", "Dante Russo", { enabled: false, groups: [], last: null, mfa: false, preHire: true }],
+  // Week-one ticket cast (see tickets.js).
+  ["cosima.hartley", "Cosima Hartley", "BP-0141", "Sales|Account Executive", "Dante Russo", { last: 3 }],
+  ["percy.underhill", "Percy Underhill", "BP-0143", "Customer Success|Support Engineer", "Priya Shankar", { locked: true }],
+  ["juniper.ashworth", "Juniper Ashworth", "BP-0145", "Product|Product Manager", "Marisol Ibanez"],
+  ["leander.voss", "Leander Voss", "BP-0147", "Engineering|Senior Software Engineer", "Tamsin Okoro"],
+  ["philippa.grange", "Philippa Grange", "BP-0149", "Product|Product Designer", "Marisol Ibanez", { last: 89 }],
+  ["callum.ridley", "Callum Ridley", "BP-0151", "IT|IT Support Specialist", "Kai Mahoe"],
+  ["ottilie.marsh", "Ottilie Marsh", "BP-0153", "Engineering|Software Engineer", "Raul Dominguez", { groups: [...R["Engineering|Software Engineer"], "APP-Prod-DB-Read"] }],
+  // Planted: leftover production deploy and support desk access from an on-call rotation.
+  ["seraphina.holt", "Seraphina Holt", "BP-0155", "Engineering|Software Engineer", "Tamsin Okoro", { groups: [...R["Engineering|Software Engineer"], "APP-CI-CD-Deploy-Prod", "APP-Support-Desk"] }],
+  ["evander.pike", "Evander Pike", "BP-0157", "Customer Success|Support Engineer", "Priya Shankar", { last: 0 }],
+  ["svc-db-backup", "svc-db-backup", "SVC-044", null, "Raul Dominguez (owner)", { dept: "Engineering", title: "Service account: database backup", type: "Service", groups: ["SVC-Backup-Operators"], last: 150, mfa: false }],
   ["svc-ci-deployer", "svc-ci-deployer", "SVC-041", null, "Raul Dominguez (owner)", { dept: "Engineering", title: "Service account: CI/CD production deployer", type: "Service", groups: ["SVC-CI-Deployer"], last: 0, mfa: false }],
 ];
 const FILLER: Filler[] = [
@@ -112,7 +124,7 @@ export const HR_FEED = [
   { type: "Hire", who: "Ayanna Brooks", detail: "Software Engineer, Engineering. Manager: Tamsin Okoro. Start date: today.", when: 0 },
   { type: "Hire", who: "Mateo Silva", detail: "Sales Development Rep, Sales. Manager: Dante Russo. Start date: today.", when: 0 },
   { type: "Rehire", who: "Gideon Mensah", detail: "Rehired as Support Engineer, Customer Success. Manager: Priya Shankar. Previously Support Engineer (left Nov 2025).", when: 0 },
-  { type: "Transfer", who: "Theo Vandenberg", detail: "From Software Engineer to Site Reliability Engineer, Engineering. New manager: Raul Dominguez. Effective today.", when: 0 },
+  { type: "Transfer", who: "Theo Vandenberg", detail: "From Support Engineer, Customer Success, to Software Engineer, Engineering. New manager: Tamsin Okoro. Effective today.", when: 0 },
   { type: "Termination", who: "Hana Kobayashi", detail: "Involuntary. Effective today, 11:00 AM. Holds production admin access.", when: 0 },
   { type: "Leave of absence", who: "Amelia Stroud", detail: "Leave begins today. Expected return: Jan 18, 2027.", when: 0 },
   { type: "Contract end", who: "Lukas Brenner", detail: "Contract end date on file: " + fmtDay(2) + ". Sponsor: Tamsin Okoro.", when: -1 },
