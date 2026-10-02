@@ -4,13 +4,18 @@ import { MotionPauseProvider, AnimatedBackdrop } from "@/components/brand/motion
 import { SiteHeader, SiteFooter } from "@/marketing/chrome";
 import { WaitlistBand } from "@/marketing/sections";
 import { Pricing } from "@/marketing/Pricing";
+import { WhyProLabs } from "@/marketing/WhyProLabs";
+import { PRICES, TIERS, yearlySaving } from "@/marketing/plans";
+
+const [, pro, labs] = TIERS;
 
 const QA = [
   ["Can plans be purchased today?", "Not yet. Paid plans open from a waitlist, and no payment details are collected on this site."],
   ["What does the free tier include?", "Pacific Crest Logistics on all three paths (IAM only, IAM + GRC, GRC only), with the full ticket queue, reopened tickets, follow-up incidents and the audits. Pro features are included free during early access."],
-  ["What is in early access?", "Five industry companies (Harbor Health Network, Meridian Aerospace, Coastline Credit Union, Brightpath SaaS and Sunset Retail Group), the PAM track and the Entra ID lab."],
-  ["What is the Entra ID lab?", "Scripts that seed a Microsoft Entra tenant with the Pacific Crest directory, a read-only export of the results, and in-browser grading of that export."],
-  ["How much does yearly billing save?", "Pro is $129 a year instead of $180 (28% less). Pro + Labs is $169 instead of $240 (30% less)."],
+  ["What is in early access?", "Five industry companies (Harbor Health Network, Meridian Aerospace, Coastline Credit Union, Brightpath SaaS and Sunset Retail Group), the PAM track, and the Microsoft Entra ID, Okta and AWS labs."],
+  ["How do the labs work?", "Each lab seeds a free tenant you own (Microsoft Entra ID, Okta or AWS) with the Pacific Crest directory. The tickets are worked in the real console, then a read-only check grades the result in the browser."],
+  ["Is there a free trial, and can plans be cancelled?", `Pro includes a ${PRICES.pro.trialDays}-day free trial. Every paid plan can be cancelled anytime.`],
+  ["How much does yearly billing save?", `Pro is $${pro.yearly} a year instead of $${pro.monthly * 12} (${yearlySaving(pro)}% less). Pro + Labs is $${labs.yearly} instead of $${labs.monthly * 12} (${yearlySaving(labs)}% less).`],
 ];
 
 export default function Page() {
@@ -23,6 +28,7 @@ export default function Page() {
           <AnimatedBackdrop className="opacity-60" />
           <div className="relative mx-auto max-w-7xl"><Pricing headingLevel="h1" /></div>
         </section>
+        <WhyProLabs />
         <section aria-labelledby="pq-h" className="mx-auto max-w-3xl px-4 py-16 md:px-6">
           <h2 id="pq-h" className="t-h2">Pricing questions</h2>
           <Accordion type="single" collapsible className="mt-6">

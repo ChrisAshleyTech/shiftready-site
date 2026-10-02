@@ -96,10 +96,10 @@ export function AnimatedBackdrop({ className }: { className?: string }) {
   const blob = "absolute rounded-full anim-drift";
   return (
     <div aria-hidden className={cn("pointer-events-none absolute inset-0 overflow-hidden", className)}>
-      <div className={cn(blob, "-left-40 -top-40 size-[44rem] bg-[radial-gradient(circle,rgb(56_189_248/0.45),transparent_65%)] dark:opacity-40")} />
-      <div className={cn(blob, "right-[-16rem] top-0 size-[40rem] bg-[radial-gradient(circle,rgb(37_99_235/0.32),transparent_65%)] [animation-delay:-6s] dark:opacity-40")} />
-      <div className={cn(blob, "bottom-[-18rem] left-1/3 size-[38rem] bg-[radial-gradient(circle,rgb(124_58_237/0.25),transparent_65%)] [animation-delay:-11s] dark:opacity-40")} />
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,rgb(37_99_235/0.07)_1px,transparent_1px),linear-gradient(to_bottom,rgb(37_99_235/0.07)_1px,transparent_1px)] bg-[size:44px_44px] [mask-image:radial-gradient(ellipse_at_center,black_30%,transparent_75%)]" />
+      <div className={cn(blob, "-left-40 -top-40 size-[44rem] bg-[radial-gradient(circle,rgb(91_180_232/0.40),transparent_65%)] dark:opacity-60")} />
+      <div className={cn(blob, "right-[-16rem] top-0 size-[40rem] bg-[radial-gradient(circle,rgb(23_100_184/0.30),transparent_65%)] [animation-delay:-6s] dark:opacity-60")} />
+      <div className={cn(blob, "bottom-[-18rem] left-1/3 size-[38rem] bg-[radial-gradient(circle,rgb(0_173_168/0.24),transparent_65%)] [animation-delay:-11s] dark:opacity-60")} />
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,rgb(91_180_232/0.08)_1px,transparent_1px),linear-gradient(to_bottom,rgb(91_180_232/0.08)_1px,transparent_1px)] bg-[size:44px_44px] [mask-image:radial-gradient(ellipse_at_center,black_30%,transparent_75%)]" />
     </div>
   );
 }

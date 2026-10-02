@@ -25,7 +25,7 @@ import { nextStep } from "../nextStep";
 import { ticketNo, ticketName } from "../ticketLabel";
 
 // Buttons on the blue banner.
-const ON_BLUE = "h-12 rounded-xl bg-white px-6 text-base font-bold text-[#1d4ed8] hover:bg-white/90";
+const ON_BLUE = "h-12 rounded-xl bg-white px-6 text-base font-bold text-brand-navy hover:bg-white/90";
 const ON_BLUE_OUTLINE = "h-12 rounded-xl border-2 border-white/70 bg-transparent px-6 text-base font-bold text-white hover:bg-white/10 hover:text-white dark:border-white/70 dark:bg-transparent dark:hover:bg-white/10";
 
 function Stat({ k, v, d }: { k: string; v: string; d: string }) {
@@ -140,7 +140,7 @@ export default function Home() {
     <div className="space-y-8">
       <WhereYouAre />
       {/* Fixed deep blue-to-violet so white text stays >= 6:1 in both themes. */}
-      <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#1d4ed8] via-[#2563eb] to-[#6d28d9] p-6 text-white shadow-xl shadow-primary/20 md:p-9">
+      <section className="relative overflow-hidden rounded-3xl bg-brand-band p-6 text-white shadow-xl shadow-primary/20 md:p-9">
         <div aria-hidden className="pointer-events-none absolute -right-20 -top-24 size-80 rounded-full bg-white/10 blur-2xl" />
         <div className="relative grid items-center gap-6 lg:grid-cols-[1fr_auto]">
           <div className="max-w-3xl space-y-4">

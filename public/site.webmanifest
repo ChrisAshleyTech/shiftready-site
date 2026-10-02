@@ -1,11 +1,11 @@
 {
-  "name": "Verdelit",
-  "short_name": "Verdelit",
-  "description": "Prove you can do the job before day one.",
+  "name": "Rolevara",
+  "short_name": "Rolevara",
+  "description": "Experience the role. Master the work.",
   "start_url": "/app/",
   "display": "standalone",
-  "background_color": "#f6f8fc",
-  "theme_color": "#2563eb",
+  "background_color": "#f5f9fd",
+  "theme_color": "#0b2b5f",
   "icons": [
     { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" },
     { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png" },

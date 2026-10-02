@@ -4,7 +4,7 @@ export type PathId = "iam" | "iam-grc" | "grc";
 export const PATH_IDS: readonly PathId[] = ["iam", "iam-grc", "grc"];
 export const isPath = (x: unknown): x is PathId => PATH_IDS.includes(x as PathId);
 
-const STORE = "verdelit-path";
+const STORE = "rolevara-path";
 // Pacific Crest's saved progress from before paths existed. Its owner has already been working
 // IAM + GRC (the shifts plus the audit desk), so they skip the first-visit picker.
 const LEGACY = "pcl-iam-sim-v1";

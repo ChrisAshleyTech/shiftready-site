@@ -1,0 +1,159 @@
+{
+ "schema": "rolevara-lab-guide/1",
+ "lab": "entra",
+ "scripts": [
+  [
+   "Seed-RolevaraLab.ps1",
+   "Creates the 7 lab users and 9 groups. Asks you to confirm the tenant first."
+  ],
+  [
+   "Export-RolevaraLab.ps1",
+   "Read-only. Writes rolevara-lab-export.json for grading."
+  ],
+  [
+   "Remove-RolevaraLab.ps1",
+   "Deletes only the tagged lab users and groups."
+  ]
+ ],
+ "setup": [
+  {
+   "title": "Get a lab tenant",
+   "blocks": [
+    {
+     "p": "Use a tenant you own for practice: a Microsoft 365 developer tenant, or a new tenant created from an Azure free account. **Never run the scripts in an employer's tenant.** The seed script stops if a tenant has more than 50 users."
+    },
+    {
+     "note": "See [Create a new tenant](https://learn.microsoft.com/en-us/entra/fundamentals/create-new-tenant) in Microsoft's documentation."
+    }
+   ]
+  },
+  {
+   "title": "Use an admin account in that tenant",
+   "blocks": [
+    {
+     "p": "You need to create users and groups: User Administrator plus Groups Administrator, or Global Administrator. The account that creates a new tenant is a Global Administrator."
+    }
+   ]
+  },
+  {
+   "title": "Install Microsoft Graph PowerShell",
+   "blocks": [
+    {
+     "p": "PowerShell 7 is recommended. Windows PowerShell 5.1 also works. Install just the four modules the scripts use:"
+    },
+    {
+     "code": "Install-Module Microsoft.Graph.Authentication, Microsoft.Graph.Users, Microsoft.Graph.Groups, Microsoft.Graph.Identity.DirectoryManagement -Scope CurrentUser"
+    }
+   ]
+  },
+  {
+   "title": "Download the scripts into one folder",
+   "blocks": [
+    {
+     "scripts": true
+    },
+    {
+     "note": "Read the scripts before you run them. Each one explains what it does at the top."
+    }
+   ]
+  }
+ ],
+ "run": [
+  {
+   "title": "Seed the tenant",
+   "blocks": [
+    {
+     "p": "In PowerShell, go to the folder with the scripts. Unblock them (downloaded files are blocked by default), preview with `-WhatIf`, then run the seed:"
+    },
+    {
+     "code": "Unblock-File .\\*.ps1\n.\\Seed-RolevaraLab.ps1 -WhatIf\n.\\Seed-RolevaraLab.ps1"
+    },
+    {
+     "p": "Sign in with your lab admin account and accept the permissions prompt. The script shows the tenant name and asks you to type its domain. It then creates 7 users in Pacific Crest Logistics (Rolevara lab) and 9 security groups, and saves `rolevara-lab-state.json` in the same folder. Keep that file."
+    }
+   ]
+  },
+  {
+   "title": "Work the six tickets in the Entra admin center",
+   "blocks": [
+    {
+     "p": "Open [entra.microsoft.com](https://entra.microsoft.com/) and go to **Users** and **Groups**. The access matrix and runbook are on the [Policy & matrix](#/policy) page."
+    },
+    {
+     "tickets": true
+    }
+   ]
+  },
+  {
+   "title": "Export the results",
+   "blocks": [
+    {
+     "p": "The export signs in with read-only permissions and reads only the lab users. It writes `rolevara-lab-export.json`:"
+    },
+    {
+     "code": ".\\Export-RolevaraLab.ps1"
+    },
+    {
+     "p": "Then open the **Upload results** tab. You can fix things in Entra and export again as often as you like."
+    }
+   ]
+  },
+  {
+   "title": "Clean up when you're done",
+   "blocks": [
+    {
+     "p": "This deletes only the users and groups the seed created, and only while they still carry the lab tag. Add `-Purge` to also empty them from the recycle bin."
+    },
+    {
+     "code": ".\\Remove-RolevaraLab.ps1 -WhatIf\n.\\Remove-RolevaraLab.ps1"
+    }
+   ]
+  }
+ ],
+ "todo": {
+  "REQ0018841": "Enable Maria Lopez and add exactly the AP Clerk groups.",
+  "REQ0018850": "Offboard Robert Hayes: disable the account, revoke sessions, and remove every group.",
+  "REQ0018852": "Move Tanya Wright to Operations / Dispatcher: update job info, swap Sales groups for Dispatcher groups.",
+  "REQ0018870": "Rehire Sofia Ramirez as HR / HR Generalist: enable, reset the password, remove old access, add the new role's groups.",
+  "REQ0018879": "Put Rachel Adams on leave: disable the account and keep her groups.",
+  "REQ0018881": "Provision Ethan Moore as a Dispatcher from the access matrix, not from Bob Turner's access."
+ },
+ "trouble": [
+  [
+   "\"Running scripts is disabled on this system\"",
+   "Run `Unblock-File .\\*.ps1`, then allow scripts for this PowerShell window only: `Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass`. See [about Execution Policies](https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_execution_policies)."
+  ],
+  [
+   "\"The Microsoft.Graph… module is missing\"",
+   "Run the install command on the Setup tab. In Windows PowerShell 5.1, install only those four modules rather than the full Microsoft.Graph module, which can exceed 5.1's function limit."
+  ],
+  [
+   "The sign-in asks for admin approval",
+   "Sign in with an admin of the lab tenant. The first run asks you to consent to permissions for Microsoft Graph Command Line Tools."
+  ],
+  [
+   "\"This tenant has N users\"",
+   "The seed stops on tenants with more than 50 users so it can't touch a real organization. If the tenant really is a lab, run it with `-LabTenant`."
+  ],
+  [
+   "\"A group named … already exists\" or \"A user … already exists\"",
+   "A previous lab is still there. Run `.\\Remove-RolevaraLab.ps1` from the folder with the state file, or delete those objects in the admin center, then seed again."
+  ],
+  [
+   "\"Insufficient privileges to complete the operation\"",
+   "Your account needs User Administrator and Groups Administrator, or Global Administrator. See [Entra built-in roles](https://learn.microsoft.com/en-us/entra/identity/role-based-access-control/permissions-reference)."
+  ],
+  [
+   "Revoking sessions or resetting a password didn't count",
+   "These are read from timestamps that can take a minute to update. Wait, then run the export again."
+  ],
+  [
+   "The export says a user \"was not found\"",
+   "The user was deleted. The runbook disables accounts instead, so that ticket scores 0. Remove the lab and seed it again to retry."
+  ],
+  [
+   "The upload says the file isn't a lab export",
+   "Upload `rolevara-lab-export.json`, not the state file. If you edited it, export again."
+  ]
+ ]
+}

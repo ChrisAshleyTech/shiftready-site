@@ -11,7 +11,7 @@ import { path, setPath, stateKey, type PathId } from "./pathStore";
 import { playJordanWeek } from "./audit/jordan";
 import { buildWeekAudit } from "./audit/weekAudit";
 
-const STORE = "verdelit-company";
+const STORE = "rolevara-company";
 let active: CompanyPack = DEFAULT_COMPANY;
 export const company = () => active;
 export { COMPANIES };

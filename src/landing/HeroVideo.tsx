@@ -41,7 +41,7 @@ export function HeroVideo() {
       <div className="overflow-hidden rounded-2xl border bg-card shadow-2xl shadow-primary/15">
         <div aria-hidden className="flex items-center gap-1.5 border-b bg-muted/60 px-4 py-2.5">
           <span className="size-2.5 rounded-full bg-hue-pink" /><span className="size-2.5 rounded-full bg-hue-amber" /><span className="size-2.5 rounded-full bg-hue-green" />
-          <span className="ml-3 truncate font-mono text-[11px] text-muted-foreground">verdelit / app / ticket queue</span>
+          <span className="ml-3 truncate font-mono text-[11px] text-muted-foreground">rolevara / app / ticket queue</span>
         </div>
         <div className="relative aspect-[8/5] bg-muted">
           {showVideo ? (

@@ -30,7 +30,7 @@ const TRACKS = [
 export default function Page() {
   return (
     <MarketingFrame current="tracks">
-      <PageHero eyebrow="Tracks" title="Role-based tracks for identity and access work." lead="Each track is graded on outcome and process, with the control behind every decision." />
+      <PageHero eyebrow="Tracks" title="Pick the role you want to practise." lead="Each track is graded on the outcome and the process, with the control behind every decision." />
       <ChoosePath links="app" className="pb-0" />
       <div className="mx-auto max-w-7xl space-y-6 px-4 py-16 md:px-6">
         {TRACKS.map(t => (

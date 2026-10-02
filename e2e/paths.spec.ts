@@ -99,7 +99,7 @@ test("first visit: choose GRC only and audit Jordan Reyes' shift", async ({ page
 test("IAM + GRC: the self-audit is optional, the shift summary follows, and tickets show framework panels", async ({ page }) => {
   const shift = finishedShift();
   await page.goto("/app/");
-  await page.evaluate(w => { localStorage.clear(); localStorage.setItem("verdelit-path", "iam-grc"); localStorage.setItem("pcl-iam-sim-v1", w); }, shift);
+  await page.evaluate(w => { localStorage.clear(); localStorage.setItem("rolevara-path", "iam-grc"); localStorage.setItem("pcl-iam-sim-v1", w); }, shift);
   await page.goto("/app/#/home");
   await page.reload();
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(/Now audit it/);
@@ -128,7 +128,7 @@ test("IAM + GRC: the self-audit is optional, the shift summary follows, and tick
 test("IAM only: no audit screens and no framework panels", async ({ page }) => {
   const shift = finishedShift();
   await page.goto("/app/");
-  await page.evaluate(w => { localStorage.clear(); localStorage.setItem("verdelit-path", "iam"); localStorage.setItem("pcl-iam-sim-v1:iam", w); }, shift);
+  await page.evaluate(w => { localStorage.clear(); localStorage.setItem("rolevara-path", "iam"); localStorage.setItem("pcl-iam-sim-v1:iam", w); }, shift);
   await page.goto("/app/#/queue/INC0041207");
   await page.reload();
   await expect(page.getByRole("heading", { name: /Forgot password/ })).toBeVisible();

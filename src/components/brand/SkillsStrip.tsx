@@ -22,7 +22,7 @@ const ITEMS: (LogoMarqueeItem & { early?: boolean })[] = [
   { id: "glba", label: "GLBA", early: true },
   { id: "pci", label: "PCI DSS", early: true },
 ];
-const HUES = ["var(--hue-blue)", "var(--hue-violet)", "var(--hue-amber)", "var(--hue-pink)", "var(--hue-green)", "var(--hue-sky)"];
+const HUES = ["var(--hue-blue)", "var(--hue-teal)", "var(--hue-amber)", "var(--hue-coral)", "var(--hue-green)", "var(--hue-sky)"];
 
 export function SkillsStrip() {
   const still = useStill();

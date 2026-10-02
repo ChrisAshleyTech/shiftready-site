@@ -17,9 +17,35 @@ export const INDUSTRIES: Industry[] = [
   { id: "sunset-retail", name: "Sunset Retail Group", industry: "Retail", frameworks: "PCI DSS v4.0, SOX ITGC", early: true },
 ];
 
-export const LABS: Item[] = [
-  { id: "entra", name: "Microsoft Entra ID lab", text: "Seed a tenant with the Pacific Crest directory, work the tickets in the Entra admin center, and grade a read-only export in the browser.", early: true, href: "/labs/" },
+// Platform labs. The public pages show this overview only; scripts, step-by-step instructions and
+// grading are in the app's lab guide, behind tester access (api/_lib/labAccess.js).
+export type LabInfo = {
+  id: "entra" | "okta" | "aws" | "ad"; name: string; short: string; overview: string; practice: string[]; time: string; needs: string;
+  status: "early" | "soon"; shot?: { src: string; alt: string };
+};
+export const LAB_INFO: LabInfo[] = [
+  { id: "entra", name: "Microsoft Entra ID lab", short: "Microsoft Entra ID", status: "early",
+    overview: "Seed a Microsoft Entra tenant with the Pacific Crest directory, work six Pacific Crest tickets in the Entra admin center, and grade a read-only export.",
+    practice: ["Joiner, mover, leaver and rehire changes in a real directory", "Disabling accounts and revoking sessions for a leaver", "Provisioning from the access matrix, not by copying a coworker", "PowerShell with Microsoft Graph, run safely against a lab tenant"],
+    time: "About 90 minutes, including tenant setup", needs: "A free Microsoft Entra tenant (Azure free account or Microsoft 365 developer tenant)",
+    shot: { src: "/img/labs/entra-results.jpg", alt: "Lab score for the Entra ID lab: each ticket with its graded checks and a takeaway." } },
+  { id: "okta", name: "Okta lab", short: "Okta", status: "early",
+    overview: "Seed a free Okta Integrator org with the same directory, work the tickets in the Okta Admin Console, and grade a check run with a read-only admin token.",
+    practice: ["Okta user lifecycle: staged, active, suspended and deactivated", "Clearing sessions and removing group access for a leaver", "Group-based access that matches the role, nothing more", "Least-privilege API tokens: a read-only admin for checks"],
+    time: "About 75 minutes, including org setup", needs: "A free Okta Integrator org",
+    shot: { src: "/img/labs/okta-results.jpg", alt: "Lab score for the Okta lab: each ticket with its graded checks and a takeaway." } },
+  { id: "aws", name: "AWS IAM lab", short: "AWS", status: "early",
+    overview: "Seed a free-tier AWS account with a CloudFormation stack, work the tickets in the IAM console, and grade a read-only check run in CloudShell.",
+    practice: ["IAM users, groups and tags as a system of record", "Removing console access and deactivating access keys for a leaver", "Infrastructure as code: seeding and removing a lab with CloudFormation", "Read-only checks from CloudShell, with no access keys created"],
+    time: "About 60 minutes, including account setup", needs: "A free-tier AWS account",
+    shot: { src: "/img/labs/aws-results.jpg", alt: "Lab score for the AWS IAM lab: each ticket with its graded checks and a takeaway." } },
+  { id: "ad", name: "Active Directory lab", short: "Active Directory", status: "soon",
+    overview: "The same scenarios in on-premises Active Directory: users, groups and organizational units on a lab domain controller.",
+    practice: ["Account lifecycle in Active Directory Users and Computers", "Security groups and organizational units", "PowerShell with the ActiveDirectory module"],
+    time: "To be announced", needs: "A lab domain controller" },
 ];
+
+export const LABS: Item[] = LAB_INFO.filter(l => l.status === "early").map(l => ({ id: l.id, name: l.name, text: l.overview, early: true, href: `/labs/#${l.id}` }));
 
 export const RESOURCES: Item[] = [
   { id: "grading", name: "How grading works", text: "Outcome and process checks, hint costs, and Solo and Assisted results.", href: "/resources/#grading" },
