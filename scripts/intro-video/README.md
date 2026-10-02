@@ -2,7 +2,7 @@
 
 `public/video/intro.{mp4,webm}` (about 29 seconds, loops) opens the landing page. It shows people
 working from home, the commute, and an identity team at the office, then the 3D Rolevara door R reveal
-and the logo end card, over soft music and a voiceover. The site autoplays it muted with captions
+and the logo end card, over music and one spoken line. The site autoplays it muted with captions
 (`public/video/intro.vtt`), and a "Sound on" button turns the audio on.
 
 ## Footage
@@ -30,8 +30,10 @@ from Pexels into `clips/` under these names:
 
 ## Sound
 
-- `music.py` synthesizes the music bed (an original piece made in code, so there's no licence to track).
-- `narration.py` speaks `narration.txt` with Kokoro TTS v1.0 (Apache 2.0), voice `am_onyx`, slightly
+- `music.py` synthesizes the score (an original piece made in code, so there's no licence to track): uneasy
+  D minor with a heartbeat and ticking at home and on the commute, resolving to warm D major as she reaches
+  the office at 8.7 s, then a held chord under the closing line. There's no talking over the footage.
+- `narration.py` speaks `narration.txt` (only the closing line, "Rolevara. Experience the role. Master the work.") with Kokoro TTS v1.0 (Apache 2.0), voice `am_onyx`, slightly
   slowed. A recorded read of `narration.txt` can replace `out/voice-*.wav`. To set it up, run
   `pip install kokoro-onnx soundfile` and put `kokoro-v1.0.onnx` and `voices-v1.0.bin` from the
   kokoro-onnx GitHub release `model-files-v1.0` in `voice/`.
