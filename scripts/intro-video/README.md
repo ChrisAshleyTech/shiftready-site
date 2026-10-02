@@ -36,7 +36,7 @@ from Pexels into `clips/` under these names:
   read of `narration.txt` can replace `out/voice-*.wav`. To set it up, run `pip install piper-tts` and
   put `en-us-libritts-high.onnx` and its `.json` from the Piper v0.0.2 GitHub release
   (`voice-en-us-libritts-high.tar.gz`) in `voice/`.
-- If the narration changes, update the line times in `build-intro.sh` (adelay) and `public/video/intro.vtt`.
+- If the narration changes, update the line start times in `build-intro.sh` (VOICE_AT) and `public/video/intro.vtt`.
 
 ```
 node scripts/intro-video/render-door.mjs      # 3D frames into out/frames

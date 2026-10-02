@@ -6,7 +6,7 @@ set -euo pipefail
 D=scripts/intro-video; mkdir -p $D/out; i=0
 # Pronunciation fixes: "Rolevara" as roll-VAR-uh (the default reading mangles it), and the question read
 # as a firm statement so it doesn't swoop up.
-fix() { sed -e 's/Rolevara/[[ ɹˌoʊlvˈɑːɹə ]]/g' -e 's/Can you do the job?/[[ kˈæn juː dˈuː ðə dʒˈɑːb ]]./'; }
+fix() { sed -e 's/Rolevara/[[ ɹˌoʊlvˈɑːɹə ]]/g' -e 's/^Can you do the job?/[[ kˈæn juː dˈuː ðə dʒˈɑːb ]]./'; }
 while IFS= read -r line; do
   i=$((i+1))
   echo "$line" | fix | python3 -m piper -m $D/voice/en-us-libritts-high.onnx -s 140 --length-scale 1.15 --noise-scale 0.5 \
