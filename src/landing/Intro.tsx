@@ -1,15 +1,12 @@
-// Opening section above the hero: the logo and tagline, the walk-to-work animation, then one clear
+// Opening section above the hero: the logo and tagline, the home-to-office film, then one clear
 // "Start here" and the current offers. Offers read from plans.ts, so they follow any price change.
-import { useState } from "react";
-import { ArrowRight, ChevronDown, RotateCcw } from "lucide-react";
+import { ArrowRight, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { PauseButton, usePrefersReducedMotion } from "@/components/brand/motion";
+import { PauseButton } from "@/components/brand/motion";
 import { CANCEL_ANYTIME, PRICES, PRO_FOOTNOTE } from "@/marketing/plans";
-import { IntroScene } from "./IntroScene";
+import { IntroVideo } from "./IntroVideo";
 
 export function Intro() {
-  const reduce = usePrefersReducedMotion();
-  const [run, setRun] = useState(0);
   return (
     <section aria-label="Welcome to Rolevara" data-theme="dark" data-intro className="bg-brand-band relative overflow-hidden text-foreground">
       <div aria-hidden className="pointer-events-none absolute left-1/2 top-1/3 size-[640px] -translate-x-1/2 rounded-full bg-hue-teal/15 blur-3xl" />
@@ -18,16 +15,8 @@ export function Intro() {
         <p className="mt-3 font-display text-lg font-semibold text-hue-teal md:text-xl">Experience the role. Master the work.</p>
 
         <div className="relative mt-6 w-full max-w-[880px]">
-          <div className="overflow-hidden rounded-3xl shadow-2xl shadow-black/40 ring-1 ring-white/15">
-            <IntroScene key={run} className="block h-auto w-full" />
-          </div>
-          <div className="mt-2 flex justify-end gap-2">
-            {!reduce && <button type="button" onClick={() => setRun(r => r + 1)}
-              className="inline-flex h-9 items-center gap-1.5 rounded-full border border-input/60 bg-card/90 px-3 text-xs font-semibold text-foreground hover:bg-card">
-              <RotateCcw className="size-3.5" aria-hidden />Replay
-            </button>}
-            <PauseButton />
-          </div>
+          <IntroVideo />
+          <PauseButton className="absolute right-3 top-3" />
         </div>
 
         <Button asChild size="lg" className="mt-4 h-14 rounded-2xl px-10 text-lg font-bold shadow-lg shadow-primary/30">

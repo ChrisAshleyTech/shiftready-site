@@ -1,4 +1,4 @@
-// Landing page. Second person, plain language. Opens with the walk-to-work intro (Intro.tsx), then
+// Landing page. Second person, plain language. Opens with the home-to-office film (Intro.tsx), then
 // follows the usual training-platform pattern:
 // hero, what's covered, how it works, choose a path, what you practise, companies, who it's for,
 // pricing, FAQ, sign-up. Photos: Unsplash License (credited).
