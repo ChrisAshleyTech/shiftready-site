@@ -1,0 +1,129 @@
+<!doctype html><meta charset="utf-8">
+<!-- Compositor for the 9:16 promo. render.mjs opens this page and calls render(t) once per frame. -->
+<style>
+@font-face{font-family:F;src:url(../../node_modules/@fontsource-variable/figtree/files/figtree-latin-wght-normal.woff2) format("woff2");font-weight:100 900}
+@font-face{font-family:I;src:url(../../node_modules/@fontsource-variable/inter/files/inter-latin-wght-normal.woff2) format("woff2");font-weight:100 900}
+*{margin:0;box-sizing:border-box}
+html,body{width:1080px;height:1920px;overflow:hidden;background:#0B2B5F;font-family:I,sans-serif}
+.abs{position:absolute;inset:0}
+#bg{background:radial-gradient(ellipse at 50% 40%,#123a7a 0%,#0B2B5F 50%,#061a3a 100%)}
+#rec{overflow:hidden}
+#fr{position:absolute;left:0;top:0;transform-origin:0 0;box-shadow:0 0 0 2px rgba(255,255,255,.08)}
+#email{background:#F4F6FA;transform-origin:50% 40%}
+.sb{position:absolute;top:34px;left:60px;right:60px;display:flex;justify-content:space-between;font:600 34px F;color:#0f172a}
+h1{position:absolute;top:120px;left:60px;font:800 84px F;color:#0f172a;letter-spacing:-.02em}
+.chip{position:absolute;top:150px;right:60px;background:#EF7D5E;color:#fff;font:700 32px F;padding:10px 24px;border-radius:40px}
+.row{position:absolute;left:40px;right:40px;height:190px;background:#fff;border-radius:28px;padding:30px 34px 0 140px;box-shadow:0 2px 10px rgba(15,23,42,.06)}
+.av{position:absolute;left:30px;top:34px;width:84px;height:84px;border-radius:50%;display:grid;place-items:center;font:700 38px F;color:#fff}
+.who{font:700 36px F;color:#0f172a;display:flex;justify-content:space-between}.who span{font:500 28px I;color:#64748b}
+.sub{font:600 31px I;color:#0f172a;margin-top:6px}.pre{font:400 29px I;color:#64748b;margin-top:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#detail{background:#fff;padding:120px 70px}
+#detail .back{font:600 34px F;color:#1764B8}
+#detail h2{font:800 66px/1.1 F;color:#0f172a;margin:50px 0 34px;letter-spacing:-.02em}
+#detail .from{display:flex;gap:24px;align-items:center;font:600 34px I;color:#0f172a}#detail .from small{display:block;font:400 28px I;color:#64748b}
+#detail .body{margin-top:60px;font:400 44px/1.5 I;color:#1e293b}#detail .body p{margin-bottom:36px}
+mark{background:linear-gradient(#EF7D5E66,#EF7D5E66) no-repeat 0 85%/0% 40%;color:inherit;padding:0 2px}
+#hook{position:absolute;left:60px;right:60px;top:1330px;background:#0B2B5F;border-radius:36px;padding:44px 50px;font:800 104px/1.02 F;color:#fff;letter-spacing:-.02em;box-shadow:0 20px 60px rgba(11,43,95,.35)}
+#hook b{color:#EF7D5E}
+.mid{position:absolute;left:0;right:0;text-align:center;font:800 88px/1.1 F;color:#fff;letter-spacing:-.02em}
+#m2{font-size:150px;color:#00ADA8}
+#cap{position:absolute;left:50%;top:120px;max-width:960px;background:rgba(11,43,95,.94);color:#fff;border-radius:30px;padding:26px 44px;font:800 62px/1.1 F;letter-spacing:-.015em;text-align:center;box-shadow:0 14px 50px rgba(0,0,0,.3);border-bottom:8px solid #00ADA8;white-space:nowrap}
+#cap b{color:#5ee6e1}
+#end{background:radial-gradient(ellipse at 50% 42%,#0d2a5c 0%,#061a3a 55%,#04112a 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:54px}
+#logo{width:820px}
+#tag{font:700 54px F;color:#2DD4CF;letter-spacing:-.01em}
+#url{margin-top:40px;background:#EF7D5E;color:#fff;font:800 54px F;padding:26px 56px;border-radius:60px}
+</style>
+<div id="bg" class="abs"></div>
+<div id="rec" class="abs"><img id="fr"><div class="abs" style="background:linear-gradient(#0B2B5FE6 0,#0B2B5F99 170px,#0B2B5F00 330px)"></div></div>
+<div id="mids" class="abs"><div id="m1" class="mid" style="top:760px">They want experience.</div><div id="m2" class="mid" style="top:900px">So get it.</div></div>
+<div id="email" class="abs">
+  <div class="sb"><span>9:41</span><span>●●● ▮</span></div>
+  <h1>Inbox</h1><div class="chip" id="chip">4 new</div>
+  <div id="rows"></div>
+  <div id="detail" class="abs">
+    <div class="back">‹ Inbox</div>
+    <h2>Update on your application</h2>
+    <div class="from"><div class="av" style="position:static;background:#64748b">H</div><div>Hiring Team<small>to me · 9:38 AM</small></div></div>
+    <div class="body"><p>Hi Alex,</p><p>Thank you for your interest in the IAM Analyst role. After careful consideration, we have decided to move forward with candidates who have <mark id="mk">more hands-on experience</mark>.</p><p>We wish you the best in your search.</p></div>
+  </div>
+  <div id="hook">Tired of <b>getting this?</b></div>
+</div>
+<div id="cap"></div>
+<div id="end" class="abs"><img id="logo" src="../../public/brand/rolevara-logo-dark.png"><div id="tag">Experience the role. Master the work.</div><div id="url">Start free at rolevara.com</div></div>
+<script>
+const $ = id => document.getElementById(id);
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const ease = x => { x = clamp(x); return x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; };
+const out = x => 1 - Math.pow(1 - clamp(x), 3);
+const lin = (t, a, b) => clamp((t - a) / (b - a));
+const back = x => { x = clamp(x); const c = 1.7; return 1 + (c + 1) * Math.pow(x - 1, 3) + c * Math.pow(x - 1, 2); };
+
+const MAILS = [
+  ["Hiring Team", "#64748b", "Update on your application", "Unfortunately, we have decided to move forward with other candidates who…", "9:38"],
+  ["Talent Acquisition", "#94a3b8", "Your application: IAM Analyst", "After careful consideration, we will not be moving forward with your…", "Tue"],
+  ["Recruiting", "#7c8aa5", "Thank you for applying", "We regret to inform you that the position has been filled by a candidate…", "Mon"],
+  ["Careers", "#8492a6", "Regarding your candidacy", "We've decided to pursue candidates with more hands-on experience in…", "Sun"],
+].reverse(); // the newest (shown first) lands last
+const AT = [0.3, 0.7, 1.1, 1.5];
+$("rows").innerHTML = MAILS.map(([w, c, s, p, d]) => `<div class="row"><div class="av" style="background:${c}">${w[0]}</div><div class="who">${w}<span>${d}</span></div><div class="sub">${s}</div><div class="pre">${p}</div></div>`).join("");
+const rows = [...document.querySelectorAll(".row")];
+
+// Screen recording: segments of output time mapped to recording time (a mark from record.mjs plus seconds), with a camera (centre and width, in CSS px of the 1080x1350 page).
+let REC = null; // {frames:[[name,t]...]}
+const SEGS = [
+  { o: [6.6, 8.6], r: ["queue", .5, "ticket", .65], c: [[670, 675, 760], [700, 640, 720]], cap: "Work a real <b>IAM ticket queue</b>" },
+  { o: [8.6, 11.4], r: ["details", .05, "details", 2.85], c: [[830, 640, 540], [830, 700, 480]], cap: "Spot what <b>doesn't add up</b>" },
+  { o: [11.4, 13.6], r: ["note", -.05, "reject", .55], c: [[830, 980, 540], [830, 1040, 520]], cap: "Make the <b>call</b>" },
+  { o: [13.6, 16.2], r: ["grade", .3, "grade", 2.9], c: [[830, 1060, 580], [830, 1060, 540]], cap: "Get <b>graded</b> like it's the job" },
+  { o: [16.2, 19.4], r: ["report", .3, "report", 3.5], c: [[640, 675, 760], [640, 675, 740]], cap: "Build your <b>readiness report</b>" },
+  { o: [19.4, 23.2], r: ["share", .1, "share", 2.7], c: [[505, 600, 940], [505, 675, 900]], cap: "Show them <b>you can do the job</b>" },
+];
+function recFrame(rt) { const f = REC.frames; let lo = 0, hi = f.length - 1; while (lo < hi) { const m = (lo + hi + 1) >> 1; if (f[m][1] <= rt) lo = m; else hi = m - 1; } return f[lo][0]; }
+const SCALE = 1.5; // recording pixels per CSS px
+let curSrc = "", curCap = "";
+
+async function render(t) {
+  // Email scene.
+  const ex = ease(lin(t, 4.6, 5.25));
+  $("email").style.display = t < 5.3 ? "" : "none";
+  $("email").style.transform = `translateY(${ex * 1500}px) rotate(${-9 * ex}deg) scale(${1 - .45 * ex})`;
+  $("email").style.borderRadius = ex > 0 ? "40px" : "0";
+  const shown = AT.filter(a => t >= a).length;
+  $("chip").textContent = `${shown} new`; $("chip").style.opacity = shown ? 1 : 0;
+  rows.forEach((r, i) => {
+    const a = out(lin(t, AT[i], AT[i] + .3)); const above = AT.filter((x, j) => j > i && t >= x).map((x) => out(lin(t, x, x + .3))).reduce((s, v) => s + v, 0);
+    r.style.top = 300 + above * 214 - (1 - a) * 60 + "px"; r.style.opacity = a;
+  });
+  const d = ease(lin(t, 2.1, 2.55)); $("detail").style.transform = `translateX(${(1 - d) * 1080}px)`;
+  $("mk").style.backgroundSize = `${ease(lin(t, 2.9, 3.5)) * 100}% 40%`;
+  const h = lin(t, 0.85, 1.2); $("hook").style.opacity = clamp(h * 3); $("hook").style.transform = `scale(${.85 + .15 * back(h)})`;
+  // Middle lines.
+  const m1 = lin(t, 4.8, 5.1), m2 = lin(t, 5.55, 5.85), mo = ease(lin(t, 6.35, 6.65));
+  $("m1").style.opacity = clamp(m1 * 2) * (1 - mo); $("m1").style.transform = `translateY(${(1 - out(m1)) * 40 - mo * 300}px)`;
+  $("m2").style.opacity = clamp(m2 * 2) * (1 - mo); $("m2").style.transform = `scale(${.7 + .3 * back(m2)}) translateY(${-mo * 300}px)`;
+  // Recording.
+  const seg = SEGS.find(s => t >= s.o[0] && t < s.o[1]) || (t >= 6.35 && t < 6.6 ? SEGS[0] : null);
+  $("rec").style.display = seg && t < 23.6 ? "" : "none";
+  if (seg) {
+    const r0 = REC.marks[seg.r[0]] + seg.r[1], r1 = REC.marks[seg.r[2]] + seg.r[3];
+    const p = lin(t, seg.o[0], seg.o[1]), rt = r0 + (r1 - r0) * clamp(p);
+    const src = "out/rec/" + recFrame(rt);
+    if (src !== curSrc) { $("fr").src = src; curSrc = src; await $("fr").decode(); }
+    const e = ease(p), [a, b] = seg.c, w = a[2] + (b[2] - a[2]) * e, s = 1080 / w, hgt = 1920 / s;
+    let cx = a[0] + (b[0] - a[0]) * e, cy = a[1] + (b[1] - a[1]) * e;
+    cy = hgt <= 1350 ? clamp(cy, hgt / 2, 1350 - hgt / 2) : 675;
+    const enter = t < 6.6 ? (1 - ease(lin(t, 6.35, 6.6))) * 1920 : 0;
+    $("fr").style.transform = `translate(${540 - cx * s}px, ${960 - cy * s + enter}px) scale(${s / SCALE})`;
+    // Captions pop in at each segment start.
+    if (seg.cap !== curCap) { $("cap").innerHTML = seg.cap; curCap = seg.cap; }
+    const c = lin(t, seg.o[0] + .1, seg.o[0] + .4);
+    $("cap").style.opacity = t < 6.6 ? 0 : clamp(c * 2); $("cap").style.transform = `translateX(-50%) scale(${.8 + .2 * back(c)})`;
+  } else $("cap").style.opacity = 0;
+  // End card.
+  const ec = lin(t, 23.0, 23.4); $("end").style.opacity = ec; $("end").style.display = ec > 0 ? "" : "none";
+  const lg = lin(t, 23.2, 23.9); $("logo").style.opacity = lg; $("logo").style.transform = `scale(${.9 + .1 * out(lg)}) scale(${1 + .03 * lin(t, 23.2, 28.6)})`;
+  const tg = lin(t, 24.3, 24.8); $("tag").style.opacity = tg; $("tag").style.transform = `translateY(${(1 - out(tg)) * 30}px)`;
+  const u = lin(t, 25.4, 25.8); $("url").style.opacity = clamp(u * 2); $("url").style.transform = `scale(${.8 + .2 * back(u)})`;
+}
+</script>
