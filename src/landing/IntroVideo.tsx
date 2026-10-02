@@ -1,7 +1,7 @@
 // Opening film for the landing page: real stock footage (someone working from home, people walking to
-// the office), the 3D Rolevara door R, then a person in a suit at their desk. Built by
+// the office), the 3D Rolevara door R, then a man in a suit and a woman at their desks. Built by
 // scripts/intro-video/ (see its README for the footage and how to rebuild). Muted and looping; the shared
-// Pause button stops it. The 1.4 MB file loads only after the page has, so it never competes with first
+// Pause button stops it. The 1.5 MB file loads only after the page has, so it never competes with first
 // paint. With reduced motion, the poster (the door R) is shown with an opt-in play button. The film is
 // also described in text (WCAG 1.2.1: video-only content needs a text alternative).
 import { useEffect, useRef, useState } from "react";
@@ -12,7 +12,7 @@ const STEPS = [
   "A man works on his laptop on the sofa at home.",
   "A man walks between glass office buildings, then a woman with a coffee arrives at an office entrance and looks up.",
   "The camera circles the 3D Rolevara door R, with warm office light shining through the doorway, and pushes through it.",
-  "Inside, a man in a suit works at his desk.",
+  "Inside, a man in a suit works at his desk, then a woman works at hers.",
 ];
 
 export function IntroVideo() {

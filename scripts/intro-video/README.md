@@ -1,13 +1,13 @@
 # Landing intro video
 
-`public/video/intro.{mp4,webm}` (about 19 seconds, muted, loops) is the opening of the landing page:
+`public/video/intro.{mp4,webm}` (about 22 seconds, muted, loops) is the opening of the landing page:
 someone working from home, people walking through the city to the office, the 3D Rolevara door R,
-then a person in a suit at their desk.
+then a man in a suit and a woman at their desks.
 
 ## Footage
 
 Free stock clips from Pexels (Pexels License: free to use, no attribution required), chosen and
-downloaded by Christopher. They are not committed (4K originals, about 70 MB). To rebuild, download them
+downloaded by Christopher. They are not committed (4K and HD originals, about 90 MB). To rebuild, download them
 from Pexels into `clips/` under these names:
 
 | File | Pexels video | Used for |
@@ -15,7 +15,8 @@ from Pexels into `clips/` under these names:
 | `clips/home-laptop.mp4` | 8434046 (portrait, 2160x4096) | Working on a laptop at home |
 | `clips/street-walk.mp4` | 7255362 | Walking between office buildings |
 | `clips/office-arrival.mp4` | 7224870 | Arriving at the office |
-| `clips/suit-at-desk.mp4` | 8061445 | In a suit at the desk |
+| `clips/suit-at-desk.mp4` | 8061445 | A man in a suit at his desk |
+| `clips/woman-at-desk.mp4` | 8298076 (HD, 1920x1080) | A woman at her desk |
 
 ## 3D door R
 
