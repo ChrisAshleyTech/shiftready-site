@@ -1,14 +1,22 @@
 // Sign-up screen shown before the simulator opens for the first time in a browser.
 import { useState, type FormEvent } from "react";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Logo } from "@/components/brand/Rolevara";
 import { cn } from "@/lib/utils";
+import { CANCEL_ANYTIME, PRICES, PRO_FOOTNOTE } from "@/marketing/plans";
 import { signUp } from "../account";
 
 const ROLES = ["Service desk or IT support", "IAM analyst or engineer", "Security operations", "GRC, audit or compliance", "Team lead or manager", "Training provider", "Moving into identity and access"];
+
+// What signing up gets you. Read from plans.ts, so it follows any price change.
+const OFFERS = [
+  `Try Pro free for ${PRICES.pro.trialDays} days, then $${PRICES.pro.monthly} a month. ${CANCEL_ANYTIME}.`,
+  PRO_FOOTNOTE,
+  "The Free plan keeps Pacific Crest Logistics on all three paths, at no cost.",
+];
 
 const checkName = (v: string) => v.trim() ? null : "Enter your name.";
 const checkEmail = (v: string) => !v.trim() ? "Enter an email address." : /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v.trim()) ? null : "Enter an email address in the format name@example.com.";
@@ -48,6 +56,9 @@ export function SignUp({ onDone }: { onDone: () => void }) {
           <Logo sim className="h-8" />
           <h1 tabIndex={-1} data-page-title className="mt-6 font-display text-2xl font-bold">Create your free account</h1>
           <p className="mt-1.5 text-[15px] text-muted-foreground">Sign up to start your first shift. It's free, and no payment details are needed.</p>
+          <ul className="mt-4 space-y-2 text-sm">
+            {OFFERS.map(o => <li key={o} className="flex gap-2"><Check className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden />{o}</li>)}
+          </ul>
           <form onSubmit={submit} noValidate aria-busy={sending} className="relative mt-6 space-y-4">
             <div className="space-y-1.5">
               <Label htmlFor="su-name" className="text-[15px]">Name</Label>
