@@ -80,7 +80,7 @@ const SEGS = [
   { o: [19.4, 23.2], r: ["share", .1, "share", 2.7], c: [[505, 600, 940], [505, 675, 900]], cap: "Show them <b>you can do the job</b>" },
 ];
 function recFrame(rt) { const f = REC.frames; let lo = 0, hi = f.length - 1; while (lo < hi) { const m = (lo + hi + 1) >> 1; if (f[m][1] <= rt) lo = m; else hi = m - 1; } return f[lo][0]; }
-const SCALE = 1.5; // recording pixels per CSS px
+const SCALE = 3; // recording pixels per CSS px
 let curSrc = "", curCap = "";
 
 async function render(t) {

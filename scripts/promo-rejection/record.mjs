@@ -1,4 +1,4 @@
-// Records the simulator for the rejection-email promo (9:16) with a CDP screencast at 1.5x, so the edit
+// Records the simulator for the rejection-email promo (9:16) with a CDP screencast at 3x, so the edit
 // can zoom in and stay sharp. Run with `npx vite preview --port 4173` up:
 //   CHROME_PATH=/opt/pw-browsers/chromium node scripts/promo-rejection/record.mjs   -> out/rec/*.jpg + frames.txt
 // Monday is seeded with the real engine (19 tickets done, the fake-CFO ticket left open to work on camera).
@@ -47,9 +47,9 @@ const STATE = JSON.stringify(store.S);
 const D = new URL("./out/rec/", import.meta.url).pathname;
 rmSync(D, { recursive: true, force: true }); mkdirSync(D, { recursive: true });
 const W = 1080, H = 1350;
-const args = ["--force-device-scale-factor=1.5"]; // without it the screencast comes back at 1x
+const args = ["--force-device-scale-factor=3"]; // without it the screencast comes back at 1x
 const browser = await chromium.launch(process.env.CHROME_PATH ? { executablePath: process.env.CHROME_PATH, args } : { channel: "chrome", args });
-const ctx = await browser.newContext({ viewport: { width: W, height: H }, deviceScaleFactor: 1.5 });
+const ctx = await browser.newContext({ viewport: { width: W, height: H }, deviceScaleFactor: 3 });
 await ctx.addCookies([{ name: "rolevara-member", value: String(Date.now() - 2 * 864e5), url: "http://localhost:4173" }]);
 await ctx.addInitScript(s => {
   if (!sessionStorage.getItem("seeded")) {
@@ -69,7 +69,9 @@ await ctx.addInitScript(s => {
   });
 }, STATE);
 const page = await ctx.newPage();
-const pause = ms => page.waitForTimeout(ms);
+// The 3x screencast only manages a few frames a second, so the run is slowed down and the edit speeds it back up.
+const SLOW = Number(process.env.SLOW ?? 3);
+const pause = ms => page.waitForTimeout(ms * SLOW);
 await page.goto("http://localhost:4173/app/#/queue"); await pause(1500);
 
 // Screencast: every frame with its timestamp; marks name the beats so the edit can cut on them.
@@ -81,11 +83,12 @@ cdp.on("Page.screencastFrame", async f => {
   writeFileSync(D + name, Buffer.from(f.data, "base64")); frames.push([name, t - t0]);
   await cdp.send("Page.screencastFrameAck", { sessionId: f.sessionId }).catch(() => {});
 });
-await cdp.send("Page.startScreencast", { format: "jpeg", quality: 85, everyNthFrame: 1, maxWidth: W * 1.5, maxHeight: H * 1.5 });
+await cdp.send("Animation.enable"); await cdp.send("Animation.setPlaybackRate", { playbackRate: 1 / SLOW }); // CSS and web animations slow down too
+await cdp.send("Page.startScreencast", { format: "jpeg", quality: 88, everyNthFrame: 1, maxWidth: W * 3, maxHeight: H * 3 });
 const mark = k => { marks[k] = t0 == null ? 0 : Date.now() / 1000 - t0; };
 async function click(loc, wait = 700) {
   const el = loc.first(); await el.scrollIntoViewIfNeeded(); const b = await el.boundingBox();
-  await page.mouse.move(b.x + b.width / 2, b.y + b.height / 2, { steps: 22 }); await pause(200);
+  await page.mouse.move(b.x + b.width / 2, b.y + b.height / 2, { steps: 22 * SLOW }); await pause(200);
   await el.click(); await pause(wait);
 }
 await page.mouse.move(700, 600); await pause(900);
@@ -95,31 +98,32 @@ mark("ticket");
 await click(page.getByRole("button", { name: "Start work" }), 700);
 await page.getByText("Caller-provided identity details").scrollIntoViewIfNeeded(); await pause(400);
 mark("details");
-await page.mouse.move(600, 700, { steps: 15 }); await pause(1600);
+await page.mouse.move(600, 700, { steps: 15 * SLOW }); await pause(1600);
 await click(page.getByRole("button", { name: "Escalate" }), 600);
 mark("note");
 await click(page.locator("#note-INC0041220"), 200);
-await page.keyboard.type("Employee ID doesn't match the directory. Possible social engineering. Escalated.", { delay: 12 });
+await page.keyboard.type("Employee ID doesn't match the directory. Possible social engineering. Escalated.", { delay: 12 * SLOW });
 await pause(300);
 mark("reject");
 await click(page.getByRole("button", { name: "Reject" }), 700);
 await page.locator("#grade-h").scrollIntoViewIfNeeded(); await pause(300);
 mark("grade");
-await page.mouse.move(1060, 1330, { steps: 10 }); await pause(2400);
+await page.mouse.move(1060, 1330, { steps: 10 * SLOW }); await pause(2400);
 await click(page.getByRole("link", { name: "Readiness report" }), 300);
-await page.mouse.move(1060, 1330, { steps: 8 });
+await page.mouse.move(1060, 1330, { steps: 8 * SLOW });
 mark("report");
 await pause(1800);
-for (let i = 0; i < 6; i++) { await page.mouse.wheel(0, 110); await pause(180); }
+for (let i = 0; i < 40; i++) { await page.mouse.wheel(0, 16); await pause(27); }
 await pause(1600);
 const href = await page.locator("#rp-open").getAttribute("href");
 await page.goto(href); await page.waitForLoadState("networkidle"); await pause(300);
 mark("share");
 await pause(2000);
-for (let i = 0; i < 8; i++) { await page.mouse.wheel(0, 120); await pause(160); }
+for (let i = 0; i < 48; i++) { await page.mouse.wheel(0, 20); await pause(27); }
 await pause(2000);
 mark("end");
 await cdp.send("Page.stopScreencast");
 await ctx.close(); await browser.close();
+for (const k in marks) marks[k] /= SLOW; frames.forEach(f => { f[1] /= SLOW; });
 writeFileSync(D + "frames.json", JSON.stringify({ frames, marks }));
 console.log(frames.length, "frames", JSON.stringify(marks));
