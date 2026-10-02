@@ -149,6 +149,9 @@ saved progress from the old `shiftready-*` storage keys to `rolevara-*` (its has
 to GitHub and import the repo into Vercel (or run `vercel deploy --prod`). Canonical URLs, the
 sitemap and social previews use `SITE_URL` (default `https://rolevara.com`).
 
+Production deploys from `main`. The paid lab guides stay locked until `LAB_ACCESS_SECRET` is set in
+the Vercel project's environment variables.
+
 ## Hints and scoring
 
 Each ticket has three hints. The learner loses the percentage of the **highest** tier opened before
