@@ -108,8 +108,10 @@ test("IAM + GRC: the self-audit is optional, the shift summary follows, and tick
   // A closed ticket's framework panel shows the requirement text.
   await go(page, "#/queue/INC0041207");
   const fw = page.locator("[data-framework-panel]");
+  // Pacific Crest answers to NIST 800-53 and SOX, so PCI DSS isn't on its panel.
   await expect(fw).toContainText("IA-5a");
-  await expect(fw).toContainText("8.3.3");
+  await expect(fw).toContainText("SOX IT general controls");
+  await expect(fw).not.toContainText("PCI DSS");
   await axe(page);
 
   await go(page, "#/audit");
@@ -139,4 +141,56 @@ test("IAM only: no audit screens and no framework panels", async ({ page }) => {
   await go(page, "#/week");
   await expect(page.getByRole("heading", { name: "What came back to you" })).toBeVisible();
   await expect(page.getByText("every follow-up was prevented", { exact: false })).toBeVisible();
+});
+
+test("PAM: activate a vaulted role just in time, graded on approval and window, with company frameworks", async ({ page }) => {
+  await page.goto("/app/");
+  await page.evaluate(() => localStorage.clear());
+  await page.goto("/app/#/home");
+  await page.reload();
+  await page.getByRole("button", { name: "Choose PAM" }).click();
+  await expect(page.getByText(/You're the privileged access analyst at Pacific Crest Logistics/)).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("12 tickets are waiting.");
+  await axe(page);
+
+  // The policy page lists who may activate each vaulted role; the access matrix no longer grants them.
+  await go(page, "#/policy");
+  await expect(page.getByRole("heading", { name: "Eligible privileged roles" })).toBeVisible();
+  await expect(page.getByText("Just-in-time elevation.")).toBeVisible();
+
+  await go(page, "#/queue/REQ0019101");
+  await expect(page.locator("[data-framework-panel]")).toContainText("NIST SP 800-53");
+  await page.getByRole("button", { name: "Start work" }).click();
+  await page.getByRole("button", { name: "Request manager approval" }).click();
+  await go(page, "#/directory/marco.silva");
+  const panel = page.locator("[data-detail-panel]");
+  await expect(panel.getByText("Eligible for")).toBeVisible();
+  await panel.getByLabel("Vaulted role").selectOption("ROLE-SAP-Basis-Admin");
+  await panel.getByLabel("Hours").selectOption("3");
+  await panel.getByRole("button", { name: "Activate just in time" }).click();
+  await panel.getByRole("tab", { name: /Groups/ }).click();
+  await expect(panel.getByText("Just in time · 3h")).toBeVisible();
+  await axe(page);
+
+  await go(page, "#/queue/REQ0019101");
+  await page.getByRole("button", { name: "Resolve" }).click();
+  await expect(page.getByText("ROLE-SAP-Basis-Admin activated just in time, not added permanently")).toBeVisible();
+  await expect(page.getByText("Window no longer than the approved 3 hours")).toBeVisible();
+
+  // Switching path loads the IAM world again, with its own progress.
+  await go(page, "#/settings");
+  await page.getByRole("button", { name: "Switch to IAM only" }).click();
+  await go(page, "#/home");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("20 tickets are waiting.");
+});
+
+test("PAM at Meridian: the framework panel shows only NIST SP 800-171", async ({ page }) => {
+  await page.goto("/app/");
+  await page.evaluate(() => { localStorage.clear(); localStorage.setItem("rolevara-path", "pam"); localStorage.setItem("rolevara-company", "meridian"); });
+  await page.goto("/app/#/queue/REQ0035101");
+  await page.reload();
+  const fw = page.locator("[data-framework-panel]");
+  await expect(fw).toContainText("NIST SP 800-171");
+  await expect(fw).not.toContainText("800-53");
+  await expect(fw).not.toContainText("HIPAA");
 });

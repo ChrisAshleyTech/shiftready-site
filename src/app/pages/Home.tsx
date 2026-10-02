@@ -66,7 +66,8 @@ function iamHero(): Hero {
   const open = q.length - s.shift.done;
   if (st === "new") return {
     k: `Service desk · ${fmtDay(0)} · 8:00 AM`, t: `${T.length} tickets are waiting.`,
-    p: `You're the IAM analyst on the ${company().name} service desk. Open a ticket, start work, make the changes in the Directory, then resolve or reject it. Like a real queue, nothing is finished just because you closed it: if a fix doesn't work, the requester replies and the ticket comes back, and missed steps turn into new incidents.`,
+    p: p === "pam" ? `You're the privileged access analyst at ${company().name}. Admin roles live in the vault: activate them just in time for approved work, run break-glass by the procedure, rotate exposed credentials and review privileged sessions. Like a real queue, nothing is finished just because you closed it: if a fix doesn't work, the requester replies, and access left behind turns into new incidents.`
+      : `You're the IAM analyst on the ${company().name} service desk. Open a ticket, start work, make the changes in the Directory, then resolve or reject it. Like a real queue, nothing is finished just because you closed it: if a fix doesn't work, the requester replies and the ticket comes back, and missed steps turn into new incidents.`,
     a: <><Button asChild size="lg" className={ON_BLUE}><a href={`#/queue/${next.id}`}>Start with {ticketNo(next)} <ArrowRight /></a></Button><Button asChild size="lg" variant="outline" className={ON_BLUE_OUTLINE}><a href="#/policy">Read the runbook first</a></Button></> };
   if (st === "working") return { k: "Shift in progress", t: `${plural(open, "ticket", "tickets")} in the queue`,
     p: [`Score so far ${pct(s.shift.pct)}.`, s.reopened ? `${plural(s.reopened, "ticket was", "tickets were")} reopened by the requester.` : "", s.caused ? `${plural(s.caused, "follow-up", "follow-ups")} came back from earlier work.` : ""].filter(Boolean).join(" "),
@@ -113,7 +114,7 @@ function days(): Day[] {
     state: S.wa?.skipped ? "skipped" : wa && wt.done === wt.n ? "done" : wa ? "current" : done ? "open" : "locked",
     body: S.wa?.skipped ? <span className="text-sm text-muted-foreground">Skipped. <a className="text-primary underline-offset-2 hover:underline" href="#/audit">Do it after all</a></span>
       : auditBody ?? <span className="text-sm text-muted-foreground">{done ? <>Audit your own shift. <a className="text-primary underline-offset-2 hover:underline" href="#/audit">Start</a></> : "Unlocks when the queue is clear. Optional."}</span> });
-  out.push({ name: "Shift summary", date: "Your shift", state: done && (p === "iam" || S.wa?.skipped || (wa && wt.done === wt.n)) ? "done" : done ? "open" : "locked",
+  out.push({ name: "Shift summary", date: "Your shift", state: done && (p === "iam" || p === "pam" || S.wa?.skipped || (wa && wt.done === wt.n)) ? "done" : done ? "open" : "locked",
     body: done ? <span className="text-sm text-muted-foreground"><a className="text-primary underline-offset-2 hover:underline" href="#/week">See your shift</a></span> : <span className="text-sm text-muted-foreground">Ready when the queue is clear.</span> });
   return out;
 }
@@ -124,7 +125,7 @@ export default function Home() {
       <section className="space-y-3">
         <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.14em] text-muted-foreground"><CalendarDays className="size-4" aria-hidden />{company().name} · {fmtDay(0)}</p>
         <h1 tabIndex={-1} data-page-title className="text-3xl font-extrabold md:text-4xl">Choose your path</h1>
-        <p className="max-w-[70ch] text-lg text-muted-foreground">Pick the job you want to practise. You can switch any time in Settings, and each path keeps its own progress. All three are free.</p>
+        <p className="max-w-[70ch] text-lg text-muted-foreground">Pick the job you want to practise. You can switch any time in Settings, and each path keeps its own progress. IAM only, IAM + GRC and GRC only are free. PAM is part of Pro, open to everyone during early access.</p>
       </section>
       <PathPicker />
     </div>

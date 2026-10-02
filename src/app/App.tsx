@@ -131,7 +131,7 @@ function TopBar({ r }: { r: Route }) {
   const list = c.hasTickets ? queueTickets() : [];
   const tt = isG ? gTotals() : isA ? waTotals() : totals(list);
   const ctx = isG ? SET.grc.ctx : path() === "grc" ? "Internal audit · Jordan Reyes' shift"
-    : isA ? "Internal audit · your shift" : `Service desk · ${fmtDay(0)} · ${clockStr()}`;
+    : isA ? "Internal audit · your shift" : `${path() === "pam" ? "Privileged access" : "Service desk"} · ${fmtDay(0)} · ${clockStr()}`;
   const n = isG ? G.length : isA ? waTotals().n : list.length;
   const { theme, setTheme } = useTheme();
   return (

@@ -196,9 +196,9 @@ function Working({ id }: { id: string }) {
       </section>
       <section aria-labelledby="ct-h" className="space-y-3">
         <SectionLabel id="ct-h">Close ticket</SectionLabel>
-        {t.question && <div className="space-y-1.5"><Label htmlFor={`ans-${id}`}>Answer for the auditor</Label>
+        {t.question && <div className="space-y-1.5"><Label htmlFor={`ans-${id}`}>{t.answerLabel || "Answer for the auditor"}</Label>
           <Input ref={ans} id={`ans-${id}`} defaultValue={ts.answer || ""} aria-describedby={`ans-help-${id}`} />
-          <p id={`ans-help-${id}`} className="text-xs text-muted-foreground">Usernames (first.last) separated by commas, or "none".</p></div>}
+          <p id={`ans-help-${id}`} className="text-xs text-muted-foreground">{t.answerHelp || 'Usernames (first.last) separated by commas, or "none".'}</p></div>}
         <div className="space-y-1.5"><Label htmlFor={`note-${id}`}>Resolution notes <span className="font-normal text-muted-foreground">(optional)</span></Label>
           <Textarea ref={note} id={`note-${id}`} defaultValue={ts.note || ""} placeholder="What you did and why" /></div>
         {ui.closeError && <div id="close-error" role="alert" tabIndex={-1} className="rounded-lg border border-bad/40 bg-bad/10 px-4 py-3 text-sm">{ui.closeError}</div>}

@@ -1,16 +1,27 @@
 // Framework panel for a ticket or audit task. While the work is open it names only the control
 // families, so it doesn't give the answer away. After grading it shows each requirement's ID with
-// the quoted text (NIST, HIPAA) or our own summary (ISO 27001, SOC 2, PCI DSS), and why the ticket
-// is an example. It's a <details> element, so learners can hide it.
+// the quoted text (NIST 800-53, HIPAA) or our own summary (the rest), and why the ticket is an
+// example. Each company shows only the frameworks it answers to. It's a <details> element, so
+// learners can hide it.
 import { ExternalLink, Landmark } from "lucide-react";
 import { FRAMEWORKS, TOPICS, refsFor, type Fw } from "../frameworks";
+import { company } from "../company";
 
-const ORDER: Fw[] = ["nist", "hipaa", "iso", "soc2", "pci"];
+// Who publishes each framework, for the not-affiliated line.
+const BODY: Record<Fw, string> = { nist: "NIST", nist171: "NIST", hipaa: "HHS", glba: "the NCUA", sox: "the PCAOB", iso: "ISO", soc2: "AICPA", pci: "the PCI Security Standards Council" };
+const list = (xs: string[]) => (xs.length < 3 ? xs.join(" and ") : `${xs.slice(0, -1).join(", ")} and ${xs[xs.length - 1]}`);
+
+export function footnote(fws: Fw[]) {
+  const q = fws.filter(f => FRAMEWORKS[f].quoted).map(f => FRAMEWORKS[f].name), s = fws.filter(f => !FRAMEWORKS[f].quoted).map(f => FRAMEWORKS[f].name);
+  const bodies = [...new Set(fws.map(f => BODY[f]))];
+  return [q.length && `${list(q)} text is quoted from the official publication${q.length > 1 ? "s" : ""}.`, s.length && `${list(s)} entries are Rolevara's own summaries, not the official text.`, `Rolevara isn't affiliated with or endorsed by ${list(bodies)}.`].filter(Boolean).join(" ");
+}
 
 export function FrameworkPanel({ topics, graded }: { topics: string[]; graded: boolean }) {
   const known = topics.filter(k => TOPICS[k]);
   if (!known.length) return null;
-  const refs = refsFor(known);
+  const ORDER = company().fw, refs = refsFor(known, ORDER);
+  if (!ORDER.some(f => refs[f].length)) return null;
   return (
     <details open className="group rounded-xl border bg-card" data-framework-panel>
       <summary className="flex cursor-pointer list-none items-center justify-between gap-3 rounded-xl px-4 py-3 outline-none focus-visible:ring-2 focus-visible:ring-ring [&::-webkit-details-marker]:hidden">
@@ -47,7 +58,7 @@ export function FrameworkPanel({ topics, graded }: { topics: string[]; graded: b
                 </ul>
               </section>
             ))}
-            <p className="text-xs text-muted-foreground">NIST and HIPAA text is quoted from the official publications. ISO/IEC 27001, SOC 2 and PCI DSS entries are Rolevara's own summaries, not the standards' text. Rolevara isn't affiliated with or endorsed by NIST, ISO, AICPA or the PCI Security Standards Council.</p>
+            <p className="text-xs text-muted-foreground">{footnote(ORDER.filter(f => refs[f].length))}</p>
           </>
         )}
       </div>

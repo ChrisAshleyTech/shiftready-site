@@ -32,13 +32,23 @@ function loadState() {
   Object.assign(ui, { dirQ: "", dirDept: "All", dirStatus: "all", hintConfirm: null, closeError: null, confirmReset: false, freeHints: {}, tutor: {} });
 }
 
-export async function selectCompany(id: string) {
-  const p = companyById(id);
-  if (!p) return;
-  const m = await p.load();
+// The PAM path works the same company with its own privileged-access world: vaulted admin roles,
+// break-glass accounts and its own queue. Every other path uses the company pack as it ships.
+let applied: string | null = DEFAULT_COMPANY.id;
+async function applyData(p: CompanyPack, pathId: PathId) {
+  const key = p.id + (pathId === "pam" ? ":pam" : "");
+  if (applied === key) return;
+  const m = pathId === "pam" ? await p.loadPam() : await p.load();
   setCompanyData(m.company);
   setPolicyData(m.policy);
   if (m.tickets) setTicketData(m.tickets);
+  applied = key;
+}
+
+export async function selectCompany(id: string) {
+  const p = companyById(id);
+  if (!p) return;
+  await applyData(p, path());
   active = p;
   loadState();
   try { localStorage.setItem(STORE, id); } catch { /* storage blocked: the choice lasts for this visit */ }
@@ -46,7 +56,8 @@ export async function selectCompany(id: string) {
 }
 
 // Switching path keeps the other paths' progress: each has its own saved state.
-export function selectPath(p: PathId) {
+export async function selectPath(p: PathId) {
+  await applyData(active, p);
   setPath(p);
   loadState();
   commit();
@@ -57,5 +68,6 @@ export async function restoreCompany() {
   let id: string | null = null;
   try { id = localStorage.getItem(STORE); } catch { /* storage blocked */ }
   if (id && id !== active.id && companyById(id)) await selectCompany(id).catch(() => { /* keep the default company */ });
+  else if (path() === "pam") await selectCompany(active.id);
   else ensureJordan();
 }

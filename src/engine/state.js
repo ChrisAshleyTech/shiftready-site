@@ -35,7 +35,14 @@ export function act(a,uid,arg){
     case "mfareset": u.mfa=false; u.mfaReset=true; d="MFA methods cleared, re-registration required"; break;
     case "revoke": u.revoked=true; d="All sessions and refresh tokens revoked"; break;
     case "addgrp": if(!arg||u.groups.includes(arg)) return null; u.groups.push(arg); d="Added to "+arg; break;
-    case "rmgrp": u.groups=u.groups.filter(g=>g!==arg); d="Removed from "+arg; break;
+    case "rmgrp": u.groups=u.groups.filter(g=>g!==arg); if(u.jit) delete u.jit[arg]; d="Removed from "+arg; break;
+    // PAM: activate a privileged group for a limited time ("GROUP|hours"). A standing member has
+    // to be removed first, so a permanent grant can't be relabelled as just in time.
+    case "jit": { const [g,h]=String(arg||"").split("|"), n=parseInt(h,10); if(!g||isNaN(n)||n<=0) return null;
+      if(u.groups.includes(g)&&!(u.jit&&u.jit[g])) return null;
+      if(!u.groups.includes(g)) u.groups.push(g); u.jit={...(u.jit||{}),[g]:n}; d="Activated "+g+" just in time for "+n+(n===1?" hour":" hours"); break; }
+    // PAM: the vault sets a new credential; whoever knew the old one can't use it.
+    case "rotate": u.rotated=true; d="Credential rotated in the vault, the old password no longer works"; break;
     case "job": { const [dp,ti]=arg.split("|"); u.dept=dp; u.title=ti; d="Job info set to "+dp+" / "+ti; break; }
     case "expiry": { const n=parseInt(arg,10); u.expiry=isNaN(n)||n<=0?null:n; d=u.expiry?"Account expiry set to "+fmtDay(u.expiry):"Account expiry cleared"; break; }
   }

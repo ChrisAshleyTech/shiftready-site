@@ -11,6 +11,6 @@ import { set as PACIFIC_CREST } from "../packs/pacific-crest/set.js";
 export let SET;
 export function setTicketData(s){
   SET = s;
-  setTickets(s.T); setFollowUps(s.CONSEQ, s.STANDING, s.CONSEQ_LINKS, s.REPLIES); setHints(s.HINTS, s.CONSEQ_LINKS); setGrc(s.G);
+  setTickets(s.T); setFollowUps(s.CONSEQ, s.STANDING, s.CONSEQ_LINKS, s.REPLIES); setHints(s.HINTS, s.CONSEQ_LINKS, s.SKILLS); setGrc(s.G);
 }
 setTicketData(PACIFIC_CREST);

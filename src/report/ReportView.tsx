@@ -2,7 +2,7 @@
 // It only reads the report data (decoded from the link), never live simulator state.
 import { PolarAngleAxis, PolarGrid, Radar, RadarChart } from "recharts";
 import { ShieldCheck } from "lucide-react";
-import { SKILLS } from "@/engine/hints.js";
+import { skillsFor } from "@/engine/hints.js";
 import { ticketTitle } from "@/engine/report.js";
 import { Card } from "@/components/ui/card";
 import { ChartContainer, type ChartConfig } from "@/components/ui/chart";
@@ -33,11 +33,12 @@ function Tile({ k, v, d }: { k: string; v: string; d: string }) {
   return <Card className="gap-1 p-4"><span className="text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">{k}</span><span className="font-mono text-2xl tabular-nums">{v}</span><span className="text-xs text-muted-foreground">{d}</span></Card>;
 }
 // Short axis labels so the radar never clips; full names are in the list beside it.
-const SHORT: Record<string, string> = { verify: "Verification", jml: "JML", access: "Least privilege", incident: "Incidents", hygiene: "Hygiene" };
+const SHORT: Record<string, string> = { verify: "Verification", jml: "JML", access: "Least privilege", incident: "Incidents", hygiene: "Hygiene",
+  jit: "Just in time", standing: "Standing access", vault: "Vault", emergency: "Break-glass", monitor: "Monitoring" };
 const chartConfig = { value: { label: "Score", color: "var(--chart-1)" } } satisfies ChartConfig;
 
 // Path names for the header. Links made before paths existed have no path.
-const PATH_NAME: Record<string, string> = { iam: "IAM only path", "iam-grc": "IAM + GRC path", grc: "GRC only path" };
+const PATH_NAME: Record<string, string> = { iam: "IAM only path", "iam-grc": "IAM + GRC path", grc: "GRC only path", pam: "PAM path" };
 
 // GRC only: audit readiness from the audit of Jordan Reyes' shift.
 export function auditBand(d: any) {
@@ -51,7 +52,7 @@ export function auditBand(d: any) {
 export function ReportView({ d, own = false }: { d: any; own?: boolean }) {
   if (d.p === "grc") return <AuditReportView d={d} own={own} />;
   const b = band(d);
-  const skills = SKILLS.map((sk: any) => ({ skill: sk.label, short: SHORT[sk.key] || sk.label, value: (d.skills.find((x: any) => x[0] === sk.key) || [])[1] ?? null }));
+  const skills = skillsFor(d.p).map((sk: any) => ({ skill: sk.label, short: SHORT[sk.key] || sk.label, value: (d.skills.find((x: any) => x[0] === sk.key) || [])[1] ?? null }));
   const shift = (x: any) => x ? `${x.done}/${x.n} closed · ${x.solo} solo · ${x.assisted} assisted` : "Not started";
   const date = new Date(d.date + "T12:00:00").toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
   const brand = brandFor(d.c);
@@ -88,13 +89,13 @@ export function ReportView({ d, own = false }: { d: any; own?: boolean }) {
           </div>
         ) : <div className="relative hidden rounded-3xl bg-white/95 p-4 md:block"><IllusChart className="h-36 w-auto" /></div>}
       </header>
-      <section aria-label="Headline numbers" className={`grid grid-cols-2 gap-3 ${d.p === "iam-grc" ? "lg:grid-cols-3 xl:grid-cols-6" : d.p === "iam" ? "lg:grid-cols-4" : "lg:grid-cols-5"}`}>
+      <section aria-label="Headline numbers" className={`grid grid-cols-2 gap-3 ${d.p === "iam-grc" ? "lg:grid-cols-3 xl:grid-cols-6" : d.p === "iam" || d.p === "pam" ? "lg:grid-cols-4" : "lg:grid-cols-5"}`}>
         <Tile k="Shift score" v={pct(d.week)} d="After hint penalties" />
         <Tile k="Tickets" v={`${d.mon.done + (d.thu ? d.thu.done : 0)}/${d.mon.n + (d.thu ? d.thu.n : 0)}`} d={`closed · ${d.mon.solo + (d.thu ? d.thu.solo : 0)} solo · ${d.mon.assisted + (d.thu ? d.thu.assisted : 0)} assisted`} />
         <Tile k="Reopened" v={d.reopened == null ? "–" : String(d.reopened)} d="Requester said the fix didn't work" />
         <Tile k="Follow-ups caused" v={d.caused == null ? "–" : String(d.caused)} d={d.caused == null ? "None checked yet" : `${d.prevented} prevented`} />
         {d.p === "iam-grc" && <Tile k="Self-audit" v={d.fri ? pct(d.fri.pct) : "–"} d={d.fri ? `${d.fri.done}/${d.fri.n} tasks · own shift` : "Not attempted"} />}
-        {d.p !== "iam" && <Tile k={d.p ? desk(d.c) : "GRC audit"} v={d.grc ? pct(d.grc.pct) : "–"} d={d.grc ? `${d.grc.done}/${d.grc.n} tasks` : "Not attempted"} />}
+        {d.p !== "iam" && d.p !== "pam" && <Tile k={d.p ? desk(d.c) : "GRC audit"} v={d.grc ? pct(d.grc.pct) : "–"} d={d.grc ? `${d.grc.done}/${d.grc.n} tasks` : "Not attempted"} />}
       </section>
       <Card className="grid gap-6 p-5 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] md:p-6">
         <div>

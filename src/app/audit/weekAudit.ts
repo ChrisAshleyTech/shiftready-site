@@ -60,7 +60,7 @@ function stateAt(uid: string, upto: number, base: any) {
 const list = (gs: string[]) => gs.length ? gs.slice().sort().join(", ") : "None";
 
 // ---------- Populations (from the active company's ticket set) ----------
-const AUD = () => SET.audit;
+const AUD = () => SET.audit!;
 export const population = () => ({ "APD-03": AUD().callers.length, "APD-01": AUD().jml.length, "APD-02": AUD().leavers.length, "ACC-01": AUD().requests.length });
 
 const APD03_OPTS = ["Pass", "Exception: credential changed before the caller was verified", "Exception: credential changed for a caller who failed verification"];

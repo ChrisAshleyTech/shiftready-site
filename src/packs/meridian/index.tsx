@@ -29,6 +29,8 @@ export const pack: CompanyPack = {
     "APP-Security-Clearances": "Facility Security Officers manage clearances in the government's DISS system; companies track them internally too.",
     "ROLE-Security-Log-Admin": "Audit logs usually go to a SIEM such as Microsoft Sentinel or Splunk.",
   }),
+  fw: ["nist171"],
+  loadPam: async () => (await import("./pam.js")).pam,
   load: async () => ({ company: await import("./company"), policy: await import("./policy"), tickets: (await import("./tickets.js")).set }),
   loadRecords: () => import("./finance"),
 };

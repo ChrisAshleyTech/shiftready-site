@@ -22,10 +22,10 @@ export type TicketSet = {
   playbook: Record<string, Play>;
   // Jordan Reyes' shift: close notes, the plays that differ from the playbook (the planted
   // mistakes), one change made without a ticket, and the mistakes for the answer key.
-  jordan: { notes: Record<string, string>; plays: Record<string, Play>; unticketed: { after: string; act: [string, string] }; MISTAKES: Record<string, string> };
+  jordan: null | { notes: Record<string, string>; plays: Record<string, Play>; unticketed: { after: string; act: [string, string] }; MISTAKES: Record<string, string> };
   // The shift audit: who walks the auditor through the process, the populations for each control,
   // the sampling questions' options and the incidents a finding can cite as its effect.
-  audit: {
+  audit: null | {
     manager: { name: string; title: string };
     callers: string[]; jml: [string, string, string][]; leavers: [string, string][]; requests: [string, string, string | null][];
     sampling: Record<"APD-03" | "APD-02", [string, boolean][]>;
@@ -33,9 +33,14 @@ export type TicketSet = {
   };
   // Framework topics for each ticket (see app/frameworks.ts).
   topics: Record<string, string[]>;
+  // Skills the readiness report scores (the PAM path has its own).
+  SKILLS?: { key: string; label: string; blurb: string }[];
   // The GRC desk's top-bar context, page intro and deficiency levels.
   grc: { ctx: string; intro: string; levels: { title: string; items: [string, string][]; note: string }; controls?: Record<string, [string, string, string]> };
 };
+
+// Frameworks a framework panel can cite (see app/frameworks.ts).
+export type Fw = "nist" | "nist171" | "hipaa" | "glba" | "sox" | "iso" | "soc2" | "pci";
 
 export type Records = { finance: () => Finance; metricRules: (rows: Finance["metrics"]) => string[]; IAM_KEY: readonly IamFinding[] };
 
@@ -58,5 +63,9 @@ export type CompanyPack = {
   toolNote?: (group: string) => string | undefined;
   // The ticket set comes with the company data when the company has tickets.
   load: () => Promise<{ company: unknown; policy: unknown; tickets?: TicketSet }>;
+  // The PAM path: the same company with its admin roles in a PAM vault, and its PAM shift.
+  loadPam: () => Promise<{ company: unknown; policy: unknown; tickets: TicketSet }>;
+  // The frameworks the company answers to, in the order its framework panels list them.
+  fw: Fw[];
   loadRecords: () => Promise<Records>;
 };

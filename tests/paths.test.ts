@@ -9,7 +9,9 @@ import { encodeReport, decodeReport } from "../src/engine/report.js";
 import { playJordanWeek, mistakes } from "../src/app/audit/jordan";
 import { buildWeekAudit, gradeTask, submitTask, waTotals, type Task, type Answers } from "../src/app/audit/weekAudit";
 import { stateKey } from "../src/app/pathStore";
-import { TOPICS, ticketTopics } from "../src/app/frameworks";
+import { TOPICS, ticketTopics, refsFor, FRAMEWORKS } from "../src/app/frameworks";
+import { COMPANIES } from "../src/packs";
+import { footnote } from "../src/app/components/FrameworkPanel";
 // @ts-ignore: plain JS test helper
 import { PLAYBOOK } from "./playbook.js";
 
@@ -113,10 +115,27 @@ describe("framework panels", () => {
     const ids = [...T.map((t: any) => t.id), ...STANDING.map((t: any) => t.id), ...CONSEQ.map((c: any) => c.make("james.carter").id)];
     ids.forEach(id => { expect(ticketTopics(id).length, id).toBeGreaterThan(0); ticketTopics(id).forEach(k => expect(TOPICS[k], `${id}: ${k}`).toBeTruthy()); });
   });
-  it("quotes only public-domain text; ISO, SOC 2 and PCI get summaries", () => {
+  it("quotes only public-domain text; every other framework gets summaries", () => {
     Object.values(TOPICS).flatMap(t => t.refs).forEach(r => {
+      expect(FRAMEWORKS[r.fw].quoted, r.fw).toBe(r.fw === "nist" || r.fw === "hipaa");
       if (r.fw === "nist" || r.fw === "hipaa") expect(r.quote, r.id).toBeTruthy();
       else { expect(r.quote, r.id).toBeUndefined(); expect(r.summary, r.id).toBeTruthy(); }
     });
+  });
+  it("each company shows only its own frameworks, and every topic has a reference in each", () => {
+    const want: Record<string, string[]> = { "pacific-crest": ["nist", "sox"], "harbor-health": ["hipaa", "nist"], meridian: ["nist171"],
+      coastline: ["glba", "nist"], brightpath: ["soc2", "iso"], "sunset-retail": ["pci", "sox"] };
+    COMPANIES.forEach(c => {
+      expect(c.fw, c.id).toEqual(want[c.id]);
+      Object.keys(TOPICS).forEach(k => {
+        const refs = refsFor([k], c.fw);
+        expect(c.fw.some(f => refs[f].length), `${c.id}: ${k}`).toBe(true);
+        Object.entries(refs).forEach(([f, rs]) => { if (!c.fw.includes(f as any)) expect(rs, `${c.id}: ${k} ${f}`).toEqual([]); });
+      });
+    });
+  });
+  it("the panel footnote names only the frameworks shown", () => {
+    expect(footnote(["nist171"])).toBe("NIST SP 800-171 Rev. 2 (CMMC Level 2) entries are Rolevara's own summaries, not the official text. Rolevara isn't affiliated with or endorsed by NIST.");
+    expect(footnote(["hipaa", "nist"])).toMatch(/^HIPAA Security Rule and NIST SP 800-53 Rev. 5 text is quoted/);
   });
 });

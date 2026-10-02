@@ -3,7 +3,7 @@
 import { useRef, useState } from "react";
 import { Users, ArrowDown, ArrowUp, Eye, Search, ShieldAlert } from "lucide-react";
 import { S, U } from "@/engine/store.js";
-import { ROLES, ALL_GROUPS, fmtDay } from "@/engine/company.js";
+import { ROLES, ALL_GROUPS, PAM, fmtDay } from "@/engine/company.js";
 import { TK } from "@/engine/tickets.js";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,13 +18,15 @@ import { ExportButtons } from "../components/ExportButtons";
 import { accessReview } from "../exportData";
 import { downloadCsv, downloadXlsx, fileName } from "../exports";
 import { doAct } from "../actions";
-import { readOnly } from "../paths";
+import { path, readOnly } from "../paths";
 import { IllusSearch } from "@/components/brand/illustrations";
 import { PageHeader, UserTags, SectionLabel, Empty } from "../components/bits";
 import { DetailPanel } from "../components/DetailPanel";
 
 const STATUS: [string, string][] = [["all", "All statuses"], ["enabled", "Enabled"], ["disabled", "Disabled"], ["locked", "Locked"], ["prehire", "Pre-hire"], ["contractor", "Contractors"], ["service", "Service accounts"]];
-const statusOk = (u: any, s: string) => s === "all" || (s === "enabled" && u.enabled) || (s === "disabled" && !u.enabled && !u.preHire) || (s === "locked" && u.locked) || (s === "prehire" && u.preHire) || (s === "contractor" && u.type === "Contractor") || (s === "service" && u.type === "Service");
+const HOURS = [1, 2, 3, 4, 8, 24, 48];
+const statuses = () => (path() === "pam" ? [...STATUS, ["breakglass", "Break-glass"] as [string, string]] : STATUS);
+const statusOk = (u: any, s: string) => s === "all" || (s === "breakglass" && u.type === "Break-glass") || (s === "enabled" && u.enabled) || (s === "disabled" && !u.enabled && !u.preHire) || (s === "locked" && u.locked) || (s === "prehire" && u.preHire) || (s === "contractor" && u.type === "Contractor") || (s === "service" && u.type === "Service");
 const COLS: [string, string][] = [["name", "Name"], ["title", "Job"], ["last", "Last sign-in"], ["status", "Status"]];
 const sorters: Record<string, (a: any, b: any) => number> = {
   name: (a, b) => a.name.localeCompare(b.name),
@@ -41,6 +43,13 @@ function UserPanel({ id }: { id: string }) {
   const [grpPick, setGrp] = useState(avail[0] || "");
   const grp = avail.includes(grpPick) ? grpPick : avail[0] || ""; // the picked group may have just been added
   const [job, setJob] = useState(u.dept + "|" + u.title);
+  // PAM path: vaulted roles are activated just in time instead of added.
+  const pam = PAM;
+  const jitAvail = pam ? pam.vaulted.filter(g => !u.groups.includes(g)) : [];
+  const [jitPick, setJitPick] = useState(jitAvail[0] || "");
+  const jitGrp = jitAvail.includes(jitPick) ? jitPick : jitAvail[0] || "";
+  const [jitHours, setJitHours] = useState("1");
+  const jit = (u.jit || {}) as Record<string, number>;
   const exp = useRef<HTMLInputElement>(null);
   const log = S.log.filter((e: any) => e.target === id).slice().reverse();
   const kv: [string, React.ReactNode][] = [
@@ -51,7 +60,8 @@ function UserPanel({ id }: { id: string }) {
     ["Last sign-in", lastTxt(u.last)],
     ["Account expires", u.expiry === null ? "Never" : `${fmtDay(u.expiry)} (${u.expiry} days)`],
     ["MFA", u.mfa ? "Microsoft Authenticator (registered)" : u.mfaReset ? "Reset: re-registration required" : "Not registered"],
-    ["Credential", `${u.pwReset ? "Temporary password issued" : "Set by user"}${u.revoked ? " · Sessions revoked" : ""}`],
+    ["Credential", `${u.pwReset ? "Temporary password issued" : "Set by user"}${u.rotated ? " · Rotated in the vault" : ""}${u.revoked ? " · Sessions revoked" : ""}`],
+    ...(pam ? [["Eligible for", (pam.eligible[u.dept + "|" + u.title] || []).join(", ") || "No privileged roles"] as [string, React.ReactNode]] : []),
   ];
   return (
     <DetailPanel labelId="u-h" title={u.name} subtitle={`${u.title} · ${u.dept}`} badges={<UserTags u={u} />} onClose={() => go("#/directory")}>
@@ -82,9 +92,21 @@ function UserPanel({ id }: { id: string }) {
                 <Button variant="outline" onClick={() => doAct("pwreset", id)}>Reset password</Button>
                 <Button variant="outline" onClick={() => doAct("mfareset", id)}>Reset MFA</Button>
                 <Button variant="outline" onClick={() => doAct("revoke", id)}>Revoke sessions</Button>
+                {pam && <Button variant="outline" onClick={() => doAct("rotate", id)}>Rotate credential</Button>}
               </div>
-              <p className="t-meta">These can't be undone. The user sets up a new password or MFA method.</p>
+              <p className="t-meta">These can't be undone. The user sets up a new password or MFA method.{pam && " Rotating changes a vaulted password; the account stays as it is."}</p>
             </section>
+            {pam && <section aria-labelledby="up-h" className="space-y-2">
+              <SectionLabel id="up-h">Privileged access</SectionLabel>
+              {jitAvail.length ? <div className="flex flex-wrap items-end gap-2">
+                <div className="min-w-48 flex-1 space-y-1.5"><Label htmlFor="jit-g">Vaulted role</Label>
+                  <select id="jit-g" value={jitGrp} onChange={e => setJitPick(e.target.value)} className={selectCls}>{jitAvail.map(g => <option key={g}>{g}</option>)}</select></div>
+                <div className="space-y-1.5"><Label htmlFor="jit-h">Hours</Label>
+                  <select id="jit-h" value={jitHours} onChange={e => setJitHours(e.target.value)} className={selectCls + " w-28"}>{HOURS.map(h => <option key={h} value={h}>{h}</option>)}</select></div>
+                <Button variant="outline" onClick={() => doAct("jit", id, `${jitGrp}|${jitHours}`)}>Activate just in time</Button>
+              </div> : <p className="text-muted-foreground">Already holds every vaulted role.</p>}
+              <p className="t-meta">The role ends by itself when the window closes. Policy allows at most {pam.maxHours} hours.</p>
+            </section>}
             <section aria-labelledby="uj-h" className="space-y-2">
               <SectionLabel id="uj-h">Job info</SectionLabel>
               <div className="flex flex-wrap items-end gap-2">
@@ -110,6 +132,7 @@ function UserPanel({ id }: { id: string }) {
               <ul className="divide-y rounded-lg border">{u.groups.slice().sort().map((g: string) => (
                 <li key={g} className="flex items-center justify-between gap-2 py-1 pl-4 pr-1">
                   <a href={`#/groups/${encodeURIComponent(g)}`} className="inline-flex items-center gap-2 font-mono text-sm hover:text-primary-strong hover:underline"><AppIcon icon={company().appIcon(g)} className="size-5" />{g}</a>
+                  {jit[g] ? <span className="ml-auto rounded-md bg-info/12 px-2 py-0.5 text-xs font-semibold text-info">Just in time · {jit[g]}h</span> : pam?.vaulted.includes(g) ? <span className="ml-auto rounded-md bg-warn/12 px-2 py-0.5 text-xs font-semibold text-warn">Standing</span> : null}
                   {!ro && <Button size="sm" variant="ghost" className="text-bad hover:bg-bad/10 hover:text-bad" aria-label={`Remove ${g}`} onClick={() => doAct("rmgrp", id, g)}>Remove</Button>}
                 </li>))}</ul>
             ) : <p className="text-muted-foreground">No memberships.</p>}
@@ -160,7 +183,7 @@ export default function Directory({ r }: { r: Route }) {
           <div className="space-y-1.5"><Label htmlFor="dir-dept">Department</Label>
             <select id="dir-dept" className={selectCls} value={ui.dirDept} onChange={e => { ui.dirDept = e.target.value; commit(); }}>{depts.map(d => <option key={d}>{d}</option>)}</select></div>
           <div className="space-y-1.5"><Label htmlFor="dir-st">Status</Label>
-            <select id="dir-st" className={selectCls} value={ui.dirStatus} onChange={e => { ui.dirStatus = e.target.value; commit(); }}>{STATUS.map(([k, l]) => <option key={k} value={k}>{l}</option>)}</select></div>
+            <select id="dir-st" className={selectCls} value={ui.dirStatus} onChange={e => { ui.dirStatus = e.target.value; commit(); }}>{statuses().map(([k, l]) => <option key={k} value={k}>{l}</option>)}</select></div>
         </div>
         <div className="flex items-center justify-between">
           <p role="status" className="t-meta">{plural(list.length, "account", "accounts")}{filtered ? " match" : ""}</p>

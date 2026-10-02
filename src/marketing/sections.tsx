@@ -22,7 +22,7 @@ export function WaitlistBand({ children }: { children?: ReactNode }) {
         <div className="space-y-4">
           <p className="t-eyebrow">Early access</p>
           <h2 id="wl-h" className="t-h1">Be first to try new companies and labs.</h2>
-          <p className="text-lg text-white/85">Get one email each time a new company, the PAM track or a platform lab is released. No payment details needed.</p>
+          <p className="text-lg text-white/85">Get one email each time a new company, track or platform lab is released. No payment details needed.</p>
           {children}
         </div>
         <div className="rounded-2xl bg-card p-6 text-card-foreground shadow-2xl"><Waitlist /></div>

@@ -25,6 +25,13 @@ const QUESTIONS: Record<string, string[]> = {
   audit:["What conditions define a match in the auditor's request?","What's the most reliable place to get the answer?"],
   compromise:["What could the attacker still be holding right now: a session, a password, an MFA method?","Which Directory action takes away each of those?","Who investigates once the account is contained?"],
   service:["What broke, and what's the fastest safe way to restore it?","Who owns this account and gets to decide its future?"],
+  jit:["Is this person in a job that's eligible for the role?","What has to be on the ticket before you activate it?","How long is the approved window, and what's the policy maximum?"],
+  eligible:["Find the person's job in the eligible roles table. Is the role listed there?","Can a manager's approval make someone eligible?"],
+  standing:["Who holds a vaulted role permanently right now?","Which accounts are the documented exception, and why?","What should the people who still need the role use instead?"],
+  breakglass:["Has the caller been verified before you hand over the emergency account?","Who must know the account was used?","What has to happen to the account once the emergency is over?"],
+  vault:["Was the credential exposed, shared or known by someone who left?","What does rotating change, and what does it leave alone?","Who needs to know about the exposure?"],
+  vendor:["Who sponsors the vendor, and have they approved this session?","How long should the vendor's access last, and what happens when the session ends?"],
+  session:["What change or incident was each session opened for?","Do the recorded commands match that reason, or go beyond it?"],
 };
 const RISK: Record<string, string> = {
   caller:"Resetting credentials for the wrong person hands them the account. Help-desk social engineering is one of the most common ways attackers get in.",
@@ -43,6 +50,13 @@ const RISK: Record<string, string> = {
   audit:"Wrong or incomplete audit evidence becomes a finding of its own.",
   compromise:"A half-contained account is still compromised. Attackers keep sessions and tokens and come back.",
   service:"Service accounts run production. Changes to them fail silently until something important breaks.",
+  jit:"An admin role that's left on, or granted longer than the work needs, is standing access waiting to be stolen.",
+  eligible:"Admin rights given to someone outside the eligible jobs are exactly what an attacker or an insider hopes to find.",
+  standing:"Every standing admin is a phishing target with the keys to everything. Removing standing access shrinks what one stolen password can do.",
+  breakglass:"The break-glass account can do anything. If it isn't verified before use and sealed afterwards, it's the best backdoor in the company.",
+  vault:"A credential someone else knows is a live key until it's rotated, whether it leaked, was shared or walked out the door with a leaver.",
+  vendor:"Third-party access is a favorite way in. Vendor sessions that aren't approved, limited and closed outlive the work they were for.",
+  session:"Session recordings only help if someone reviews them. Admin work outside its approved change is how misuse and attacks hide.",
 };
 const TERMS: Record<string, [string, string]> = {
   verify:["Identity verification","Confirming a caller is who they claim to be by matching details against the system of record (the directory), not against what the caller says. Here: employee ID and manager."],
@@ -62,12 +76,22 @@ const TERMS: Record<string, [string, string]> = {
   shared:["Shared account","One login used by several people. It breaks accountability, and policy prohibits it."],
   escalate:["Escalation","Handing a ticket to the team that owns the next step: Security for suspected attacks, an account's owner for service accounts."],
   social:["Social engineering","Manipulating people rather than systems, for example a caller who invents urgency to skip verification."],
+  pam:["Privileged access management (PAM)","The tools and rules for admin access: roles kept in a vault, activated just in time, recorded and reviewed."],
+  vaulted:["Vaulted role","A privileged role nobody holds permanently. It's activated for a short window instead, and the vault records who had it and when."],
+  eligibility:["Eligibility","Which jobs may activate a privileged role. Eligibility comes from the job, not from a manager's approval."],
+  standing:["Standing access","A privileged role held permanently instead of activated when needed. Policy treats it as an exception to remove."],
+  breakglass:["Break-glass account","An emergency admin account kept disabled until an outage locks everyone else out. Every use is verified, reported and sealed afterwards."],
+  rotation:["Credential rotation","Changing a vaulted password so the old one stops working. The account itself keeps running."],
+  sessionrec:["Session recording","A record of the commands run in a privileged session, reviewed against the change it was opened for."],
 };
 export const KIND_TERMS: Record<string, string[]> = {
   caller:["verify","social","mfa","sessions"], joiner:["birthright","leastpriv","jml"], mover:["birthright","jml","leastpriv"], leaver:["jml","sessions","escalate"],
   loa:["loa","jml"], rehire:["jml","birthright"], request:["requestable","approval","leastpriv"], sod:["sod","approval","requestable"], priv:["pim","leastpriv"],
   sweep:["stale","service","escalate"], contractor:["approval","jml"], shared:["shared","leastpriv"], review:["leastpriv","birthright"], audit:["sod"],
   compromise:["sessions","mfa","fatigue","escalate"], service:["service","escalate"],
+  jit:["pim","vaulted","approval"], eligible:["eligibility","vaulted","leastpriv"], standing:["standing","breakglass","eligibility"],
+  breakglass:["breakglass","verify","rotation"], vault:["rotation","service","escalate"], vendor:["pim","approval","sessions"],
+  session:["sessionrec","pam","escalate"],
 };
 export const termLabel = (k: string) => TERMS[k][0];
 export const kindOf = (tid: string) => (HINTS[tid] || {}).kind || "request";

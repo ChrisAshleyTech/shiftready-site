@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { BookOpenText, ScrollText, Workflow } from "lucide-react";
 import { IllusShield } from "@/components/brand/illustrations";
 import { S, U } from "@/engine/store.js";
-import { ROLES, SOD, HR_FEED, fmtDay } from "@/engine/company.js";
+import { ROLES, SOD, HR_FEED, PAM, fmtDay } from "@/engine/company.js";
 import { POLICIES } from "@/engine/policy.js";
 import { STANDING } from "@/engine/followups.js";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -21,6 +21,25 @@ export function MatrixTable({ keys }: { keys: string[] }) {
         <TableBody>{keys.map(k => (
           <TableRow key={k}><TableHead scope="row" className="whitespace-nowrap font-medium text-foreground">{k.replace("|", " / ")}</TableHead>
             <TableCell className="whitespace-normal font-mono text-xs">{(ROLES as any)[k].join(", ")}</TableCell></TableRow>))}
+        </TableBody>
+      </Table>
+    </div>
+  );
+}
+// PAM path: which jobs may activate each vaulted role, and the break-glass accounts.
+export function EligibleTable() {
+  if (!PAM) return null;
+  const jobs = Object.entries(PAM.eligible);
+  return (
+    <div className="overflow-x-auto rounded-lg border">
+      <Table>
+        <caption className="sr-only">Eligible privileged roles by job</caption>
+        <TableHeader><TableRow><TableHead>Department / title</TableHead><TableHead>Vaulted roles it may activate just in time</TableHead></TableRow></TableHeader>
+        <TableBody>{jobs.map(([k, gs]) => (
+          <TableRow key={k}><TableHead scope="row" className="whitespace-nowrap font-medium text-foreground">{k.replace("|", " / ")}</TableHead>
+            <TableCell className="whitespace-normal font-mono text-xs">{gs.join(", ")}</TableCell></TableRow>))}
+          <TableRow><TableHead scope="row" className="whitespace-nowrap font-medium text-foreground">Break-glass accounts</TableHead>
+            <TableCell className="whitespace-normal text-xs"><span className="font-mono">{PAM.breakGlass.join(", ")}</span> (standing, kept disabled until an emergency)</TableCell></TableRow>
         </TableBody>
       </Table>
     </div>
@@ -59,6 +78,7 @@ function Policy({ r }: { r: Route }) {
             ))}
           </ol>
         </Card>
+        {PAM && <section className="space-y-3"><SectionLabel>Eligible privileged roles</SectionLabel><p className="max-w-[80ch] text-sm text-muted-foreground">Vaulted roles: {PAM.vaulted.join(", ")}. Nobody holds them permanently; they're activated just in time, for at most {PAM.maxHours} hours.</p><EligibleTable /></section>}
         <section className="space-y-3"><SectionLabel>Access matrix (role-based)</SectionLabel><MatrixTable keys={Object.keys(ROLES)} /></section>
         <section className="space-y-3"><SectionLabel>Separation-of-duties rules</SectionLabel><SodTable /></section>
       </div>
@@ -68,7 +88,8 @@ function Policy({ r }: { r: Route }) {
 
 function HR() {
   // The postponed leave lands in the HR feed when its ticket arrives in the queue.
-  const back = STANDING[1], uid = back && back.users[0];
+  // The PAM path has no postponed leave.
+  const back = PAM ? null : STANDING[1], uid = back && back.users[0];
   const rows = (back && S.tickets[back.id] && uid ? [{ type: "Leave postponed", who: U(uid).name, detail: "Leave of absence postponed. Working today.", when: 0 }] : []).concat(HR_FEED);
   return (
     <>

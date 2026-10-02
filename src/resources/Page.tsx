@@ -14,7 +14,7 @@ const HINTS = [["Nudge", "−10%", "Solo"], ["Policy clause", "−25%", "Solo"],
 export const FAQ: QA = [
   ["Who is Rolevara for?", "Identity and access professionals at every level: service desk analysts, IAM analysts and engineers, GRC and audit staff, and the team leads who develop them."],
   ["Where is progress stored?", "In the browser that is being used. A free sign-up (name, email and current role) opens the simulator, but progress and scenario data stay in the browser and are not sent to a server."],
-  ["What is included in early access?", "Five industry companies, the PAM track and the Entra ID, Okta and AWS labs, as each is released. Pro features are included free during early access."],
+  ["What is included in early access?", "Five industry companies, the PAM track at every company and the, Okta and AWS labs, as each is released. Pro features are included free during early access."],
   ["Are the companies and people real?", "No. All companies and people in Rolevara scenarios are fictional."],
   ["Is the policy content compliance advice?", "No. Runbook policies are training material based on published frameworks, not legal or compliance advice."],
 ];

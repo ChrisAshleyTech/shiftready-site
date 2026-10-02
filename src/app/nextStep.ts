@@ -16,5 +16,5 @@ export function nextStep(): { label: string; href: string } {
     if (!wa) return { label: "Audit your own shift (optional)", href: "#/audit" };
     if (auditNext) return { label: `Self-audit task ${wa.tasks.indexOf(auditNext) + 1}: ${auditNext.step}`, href: `#/audit/${auditNext.id}` };
   }
-  return wt.done || p === "iam" || S.wa?.skipped ? { label: "Review your shift summary", href: "#/week" } : { label: "Share your readiness report", href: "#/report" };
+  return wt.done || p === "iam" || p === "pam" || S.wa?.skipped ? { label: "Review your shift summary", href: "#/week" } : { label: "Share your readiness report", href: "#/report" };
 }

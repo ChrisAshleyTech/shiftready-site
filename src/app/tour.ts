@@ -24,10 +24,11 @@ function firstTicket() {
 }
 
 function iamSteps(): TourStep[] {
-  const c = company().name, tk = firstTicket();
+  const c = company().name, tk = firstTicket(), pam = path() === "pam";
   return [
     { hash: "#/home", title: "How a shift works",
-      body: `You're the IAM analyst on the ${c} service desk. Tickets come in, you do the work in the admin tools, and each ticket is graded against ${c}'s policy. This tour walks through one ticket, start to finish.` },
+      body: pam ? `You're the privileged access analyst at ${c}. Admin roles live in the vault, and your tickets are about who may use them, when and for how long. Each ticket is graded against ${c}'s policy. This tour walks through one ticket, start to finish.`
+        : `You're the IAM analyst on the ${c} service desk. Tickets come in, you do the work in the admin tools, and each ticket is graded against ${c}'s policy. This tour walks through one ticket, start to finish.` },
     { hash: "#/home", target: NAV, title: "Your tools",
       body: "Everything is in this menu, like a real admin center. The Ticket queue holds your work. Users and Groups are where you make changes. Policy & matrix has the rules you're graded on." },
     { hash: "#/queue", target: "queue-list", title: "1. Pick a ticket",
@@ -37,9 +38,11 @@ function iamSteps(): TourStep[] {
     { hash: tk, target: "start", title: "3. Start work",
       body: "Click Start work before you change anything. It makes this the active ticket, so the audit log ties your changes to it." },
     { hash: "#/policy", target: "page-title", title: "4. Check the policy",
-      body: "The access matrix says which groups each job gets and what needs manager approval. If you're not sure, check here before you guess." },
+      body: pam ? "The eligible roles table says which jobs may activate each vaulted role, and the runbook sets the time limits. If you're not sure, check here before you guess."
+        : "The access matrix says which groups each job gets and what needs manager approval. If you're not sure, check here before you guess." },
     { hash: "#/directory", target: "users", title: "5. Make the change in Users",
-      body: "Click a person to open their account. From there you can disable, unlock, reset a password or MFA, revoke sessions, update job info, and add or remove groups. A ticket's related accounts link straight here." },
+      body: pam ? "Click a person to open their account. Under Privileged access you activate a vaulted role just in time, for a set number of hours. You can also rotate a credential, revoke sessions, disable an account and remove groups."
+        : "Click a person to open their account. From there you can disable, unlock, reset a password or MFA, revoke sessions, update job info, and add or remove groups. A ticket's related accounts link straight here." },
     { hash: tk, target: "help", title: "Stuck? Get help",
       body: "Ask the tutor any time for free. It asks questions and explains terms, but won't give you the answer. Hints cost part of the ticket's score, and the last one marks it Assisted." },
     { hash: tk, title: "6. Close the ticket",

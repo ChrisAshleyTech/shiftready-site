@@ -29,6 +29,8 @@ export const pack: CompanyPack = {
     "APP-HR-Payroll": "Common HR and payroll systems are Paylocity, UKG and ADP.",
     "APP-Service-Desk": "Smaller institutions often use Freshservice, Jira Service Management or ServiceNow.",
   }),
+  fw: ["glba", "nist"],
+  loadPam: async () => (await import("./pam.js")).pam,
   load: async () => ({ company: await import("./company"), policy: await import("./policy"), tickets: (await import("./tickets.js")).set }),
   loadRecords: () => import("./finance"),
 };

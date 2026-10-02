@@ -1,5 +1,5 @@
-// Path picker: three cards, one button each. Shown on Home on the first visit and in Settings.
-import { Check, ClipboardCheck, Inbox, Layers } from "lucide-react";
+// Path picker: four cards, one button each. Shown on Home on the first visit and in Settings.
+import { Check, ClipboardCheck, Inbox, KeyRound, Layers } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -7,20 +7,20 @@ import { PATHS, path, pathChosen, type PathId } from "../paths";
 import { selectPath } from "../company";
 import { focusSoon, go } from "../sim";
 
-const ICON: Record<PathId, typeof Inbox> = { iam: Inbox, "iam-grc": Layers, grc: ClipboardCheck };
+const ICON: Record<PathId, typeof Inbox> = { iam: Inbox, "iam-grc": Layers, grc: ClipboardCheck, pam: KeyRound };
 
 export function PathPicker({ headingLevel = 2, onPicked }: { headingLevel?: 2 | 3; onPicked?: (p: PathId) => void }) {
   const current = pathChosen() ? path() : null;
   const H = `h${headingLevel}` as "h2" | "h3";
-  const pick = (p: PathId) => {
+  const pick = async (p: PathId) => {
     if (p === current) return;
     const first = !current;
-    selectPath(p);
+    await selectPath(p);
     toast(first ? `${PATHS.find(x => x.id === p)!.name} it is. You can switch any time in Settings.` : `Switched to ${PATHS.find(x => x.id === p)!.name}. Your progress on the other paths is kept.`);
     if (onPicked) onPicked(p); else { go("#/home"); focusSoon("[data-page-title]"); }
   };
   return (
-    <ul className="grid gap-4 lg:grid-cols-3">
+    <ul className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
       {PATHS.map(p => {
         const Icon = ICON[p.id], on = p.id === current;
         return (
