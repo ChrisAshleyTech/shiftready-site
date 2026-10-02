@@ -3,26 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>ShiftReady</title>
-<meta name="description" content="Work the IAM service desk at Pacific Crest Logistics: a ticket queue, a directory console, consequences and a readiness report.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
-<link rel="stylesheet" href="/assets/css/tokens.css">
-<link rel="stylesheet" href="/assets/css/app.css">
-<link rel="modulepreload" href="/assets/js/app/main.js">
+<title>Rolevara</title>
+<meta name="description" content="Work the IAM service desk at Pacific Crest Logistics. Experience the role. Master the work.">
+<meta name="theme-color" content="#0b2b5f">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<script>try{var s=localStorage,a=["verdelit-","shiftready-"],j,i,k,n;for(j=0;j<2;j++)for(i=s.length-1;i>=0;i--){k=s.key(i);if(k&&k.indexOf(a[j])===0){n="rolevara-"+k.slice(a[j].length);if(s.getItem(n)===null)s.setItem(n,s.getItem(k));s.removeItem(k)}}if(s.getItem("rolevara-theme")==="dark")document.documentElement.dataset.theme="dark"}catch(e){}</script>
 </head>
 <body>
-<a class="skip" href="#main" onclick="event.preventDefault();document.getElementById('main').focus()">Skip to content</a>
-<div class="shell">
-  <aside class="side" id="side"></aside>
-  <div class="mainwrap">
-    <header class="topbar" id="topbar"></header>
-    <main id="main" tabindex="-1"><noscript><div class="panel empty"><h1>ShiftReady needs JavaScript</h1><p>The simulator runs entirely in your browser. Turn on JavaScript to start your shift.</p></div></noscript></main>
-  </div>
-</div>
-<div class="activebar" id="activebar" hidden></div>
-<div class="toasts" id="toasts" role="status" aria-live="polite"></div>
-<script type="module" src="/assets/js/app/main.js"></script>
+<div id="root"><noscript>Rolevara runs in your browser and needs JavaScript.</noscript></div>
+<script type="module" src="/src/app/main.tsx"></script>
 </body>
 </html>

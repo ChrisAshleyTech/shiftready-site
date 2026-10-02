@@ -3,35 +3,15 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Readiness report · ShiftReady</title>
-<meta name="description" content="A ShiftReady readiness report: scores, skills and consequences from an IAM job simulation.">
+<title>Readiness report · Rolevara</title>
+<meta name="description" content="A Rolevara readiness report. Experience the role. Master the work.">
 <meta name="robots" content="noindex">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
-<link rel="stylesheet" href="/assets/css/tokens.css">
-<link rel="stylesheet" href="/assets/css/app.css">
-<style>
-.rp-top{display:flex;align-items:center;justify-content:space-between;gap:var(--s3);flex-wrap:wrap;max-width:960px;margin:0 auto;padding:var(--s4) var(--s4) 0}
-.rp-main{max-width:960px;margin:0 auto;padding:var(--s5) var(--s4) var(--s8)}
-</style>
+<meta name="theme-color" content="#0b2b5f">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<script>try{var s=localStorage,a=["verdelit-","shiftready-"],j,i,k,n;for(j=0;j<2;j++)for(i=s.length-1;i>=0;i--){k=s.key(i);if(k&&k.indexOf(a[j])===0){n="rolevara-"+k.slice(a[j].length);if(s.getItem(n)===null)s.setItem(n,s.getItem(k));s.removeItem(k)}}if(s.getItem("rolevara-theme")==="dark")document.documentElement.dataset.theme="dark"}catch(e){}</script>
 </head>
 <body>
-<header class="rp-top no-print"><a class="brand" href="/"><span class="dot" aria-hidden="true"></span>ShiftReady</a><div class="btns"><button class="btn" id="rp-print" type="button">Print or save as PDF</button><a class="btn primary" href="/app/">Try the simulator</a></div></header>
-<main class="rp-main" id="main" tabindex="-1"><noscript><div class="panel empty"><h1>This report needs JavaScript</h1></div></noscript></main>
-<script type="module">
-import { decodeReport } from "/assets/js/engine/report.js";
-import { renderReport } from "/assets/js/app/views/report.js";
-const main = document.getElementById("main");
-function show(){
-  const d = decodeReport(new URLSearchParams(location.hash.slice(1)).get("r") || "");
-  main.innerHTML = d ? renderReport(d)
-    : `<div class="panel empty"><h1>This report link doesn't work</h1><p>It may have been cut off when it was copied. Ask for the link again, or <a href="/app/">run the simulator yourself</a>.</p></div>`;
-  document.title = (d && d.name ? d.name + " · " : "") + "Readiness report · ShiftReady";
-}
-document.getElementById("rp-print").onclick = () => print();
-addEventListener("hashchange", show);
-show();
-</script>
+<div id="root"><noscript>Rolevara runs in your browser and needs JavaScript.</noscript></div>
+<script type="module" src="/src/report/main.tsx"></script>
 </body>
 </html>

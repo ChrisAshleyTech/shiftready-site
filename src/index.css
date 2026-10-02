@@ -1,0 +1,211 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+/* Self-hosted fonts (Fontsource, SIL Open Font License): no requests to third-party font servers. */
+@import "@fontsource-variable/figtree/wght.css";
+@import "@fontsource-variable/inter/wght.css";
+@import "@fontsource/ibm-plex-mono/latin-400.css";
+@import "@fontsource/ibm-plex-mono/latin-500.css";
+
+/* Rolevara theme, built from the logo: navy door R (#0B2B5F) with a teal step (#00ADA8), plus a
+   family of light blues. Light is the default; dark is opt-in (data-theme="dark"), and any section
+   can opt into the dark palette on its own with data-theme="dark" (the landing hero does).
+   Contrast, light: body text 15.6:1, muted text 6.5:1, white on primary 5.9:1, teal eyebrow 5.0:1,
+   field borders 3.6:1. Dark: body 15.2:1, muted 7.9:1, navy on light-blue primary 7.1:1. */
+:root {
+  color-scheme: light;
+  --brand-navy: #0B2B5F;
+  --brand-navy-deep: #061A3A;
+  --brand-teal: #00ADA8;
+  --background: #f5f9fd;
+  --foreground: #0b1f3a;
+  --card: #ffffff;
+  --card-foreground: #0b1f3a;
+  --popover: #ffffff;
+  --popover-foreground: #0b1f3a;
+  --elevated: #ffffff;
+  --primary: #1764b8;
+  --primary-foreground: #ffffff;
+  --primary-strong: #0b2b5f;
+  --secondary: #eaf2fa;
+  --secondary-foreground: #0b1f3a;
+  --muted: #eaf2fa;
+  --muted-foreground: #4a5b73;
+  --accent: #e3f0fb;
+  --accent-foreground: #0b1f3a;
+  --eyebrow: #007a76;
+  --destructive: #b91c1c;
+  --border: #dce6f1;
+  --input: #7488a3;
+  --ring: #1764b8;
+  --ok: #166534;
+  --warn: #92400e;
+  --bad: #b91c1c;
+  --info: #1764b8;
+  /* Decorative brand hues for tiles and illustrations (never used for text). Violet and pink are
+     kept as aliases of teal and coral so older screens pick up the new palette. */
+  --hue-blue: #1764b8;
+  --hue-sky: #5bb4e8;
+  --hue-teal: #00ada8;
+  --hue-coral: #ef7d5e;
+  --hue-amber: #f2a93b;
+  --hue-green: #22a06b;
+  --hue-violet: var(--hue-teal);
+  --hue-pink: var(--hue-coral);
+  --chart-1: #1764b8;
+  --chart-2: #00ada8;
+  --chart-3: #f2a93b;
+  --chart-4: #5bb4e8;
+  --chart-5: #22a06b;
+  --radius: 0.75rem;
+  --shadow-lift: 0 1px 2px rgb(11 43 95 / 0.06), 0 12px 28px -10px rgb(11 43 95 / 0.22);
+}
+:root[data-theme="dark"], [data-theme="dark"] {
+  color-scheme: dark;
+  --background: #071a33;
+  --foreground: #e8f0fa;
+  --card: #0d2546;
+  --card-foreground: #e8f0fa;
+  --popover: #102b50;
+  --popover-foreground: #e8f0fa;
+  --elevated: #13305a;
+  --primary: #5bb4e8;
+  --primary-foreground: #06213f;
+  --primary-strong: #8fcdf2;
+  --secondary: #11294b;
+  --secondary-foreground: #e8f0fa;
+  --muted: #0f2747;
+  --muted-foreground: #a9bcd6;
+  --accent: #143159;
+  --accent-foreground: #e8f0fa;
+  --eyebrow: #3fd0cb;
+  --destructive: #f87171;
+  --border: #1c3a63;
+  --input: #6b83a3;
+  --ring: #5bb4e8;
+  --ok: #4ade80;
+  --warn: #fbbf24;
+  --bad: #f87171;
+  --info: #8fcdf2;
+  --hue-blue: #5bb4e8;
+  --hue-sky: #8fcdf2;
+  --chart-1: #5bb4e8;
+  --chart-2: #3fd0cb;
+  --chart-3: #fbbf24;
+  --chart-4: #8fcdf2;
+  --chart-5: #4ade80;
+  --shadow-lift: 0 1px 2px rgb(0 0 0 / 0.4), 0 14px 30px -12px rgb(0 0 0 / 0.7);
+}
+
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-elevated: var(--elevated);
+  --color-primary-strong: var(--primary-strong);
+  --color-hue-blue: var(--hue-blue);
+  --color-hue-sky: var(--hue-sky);
+  --color-hue-teal: var(--hue-teal);
+  --color-hue-coral: var(--hue-coral);
+  --color-hue-violet: var(--hue-violet);
+  --color-eyebrow: var(--eyebrow);
+  --color-brand-navy: var(--brand-navy);
+  --color-brand-teal: var(--brand-teal);
+  --color-hue-amber: var(--hue-amber);
+  --color-hue-green: var(--hue-green);
+  --color-hue-pink: var(--hue-pink);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-ok: var(--ok);
+  --color-warn: var(--warn);
+  --color-bad: var(--bad);
+  --color-info: var(--info);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --font-sans: "Inter Variable", "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-display: "Figtree Variable", "Figtree", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "Cascadia Mono", Menlo, Consolas, monospace;
+}
+
+@layer base {
+  * { @apply border-border; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { @apply bg-background text-foreground font-sans antialiased; font-size: 16px; line-height: 1.65; font-feature-settings: "cv11", "ss01"; }
+  h1, h2, h3, h4 { @apply font-display font-bold; letter-spacing: -0.02em; line-height: 1.15; text-wrap: balance; }
+  :focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+  [tabindex="-1"]:focus { outline: none; }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+  }
+}
+
+@media print {
+  :root { --background: #fff; --card: #fff; --foreground: #000; --muted-foreground: #444; --border: #bbb; color-scheme: light; }
+  [data-slot="sidebar"], [data-slot="sidebar-trigger"], header.sticky, section[aria-label="Toaster"] { display: none !important; }
+}
+
+@layer utilities {
+  /* Hover lift for interactive cards; no movement under reduced motion. */
+  .lift { transition: transform 200ms cubic-bezier(.22,1,.36,1), box-shadow 200ms, border-color 200ms; }
+  .lift:hover { transform: translateY(-3px); box-shadow: var(--shadow-lift); }
+  @media (prefers-reduced-motion: reduce) { .lift:hover { transform: none; } }
+}
+
+@keyframes drift {
+  0% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(6%, 4%, 0) scale(1.08); }
+  100% { transform: translate3d(-4%, 8%, 0) scale(0.96); }
+}
+
+/* Type scale (Figtree headings to match the logo wordmark, Inter body). Use these for page-level
+   headings so the hierarchy stays consistent: display 56/60, h1 40/46, h2 32/38, h3 20/28, lead 19/30. */
+@layer components {
+  .t-display { font-family: var(--font-display); font-weight: 750; font-size: clamp(2.375rem, 5vw, 3.5rem); line-height: 1.08; letter-spacing: -0.03em; }
+  .t-h1 { font-family: var(--font-display); font-weight: 750; font-size: clamp(1.875rem, 3.4vw, 2.5rem); line-height: 1.15; letter-spacing: -0.025em; }
+  .t-h2 { font-family: var(--font-display); font-weight: 700; font-size: clamp(1.625rem, 2.8vw, 2rem); line-height: 1.19; letter-spacing: -0.02em; }
+  .t-h3 { font-family: var(--font-display); font-weight: 700; font-size: 1.25rem; line-height: 1.35; letter-spacing: -0.01em; }
+  .t-lead { font-size: 1.1875rem; line-height: 1.6; color: var(--muted-foreground); }
+  .t-eyebrow { font-family: var(--font-sans); font-size: 0.8125rem; font-weight: 650; letter-spacing: 0.06em; text-transform: uppercase; color: var(--eyebrow); }
+  .t-meta { font-size: 0.875rem; line-height: 1.45; color: var(--muted-foreground); }
+  /* Brand band: deep navy with a soft light-blue and teal glow (hero, CTA band, report header). */
+  .bg-brand-band { background-color: var(--brand-navy-deep);
+    background-image: radial-gradient(60% 80% at 85% 10%, rgb(91 180 232 / 0.28), transparent 70%),
+      radial-gradient(50% 70% at 10% 100%, rgb(0 173 168 / 0.22), transparent 70%),
+      linear-gradient(135deg, var(--brand-navy) 0%, var(--brand-navy-deep) 100%); }
+}
+
+/* Motion for marketing pages (see components/brand/motion.tsx). */
+.anim-drift { animation: drift 18s ease-in-out infinite alternate; will-change: transform; }
+html[data-motion="paused"] .anim-drift { animation-play-state: paused; }
+@media (prefers-reduced-motion: reduce) { .anim-drift { animation: none; } }
+[data-reveal] { transition: opacity 600ms cubic-bezier(.22,1,.36,1), transform 600ms cubic-bezier(.22,1,.36,1); transition-delay: var(--reveal-delay, 0s); }
+[data-reveal="up"] { opacity: 0; transform: translateY(28px); }
+/* Sections that slide content in sideways clip horizontally (overflow-x: clip), so the offset
+   never widens the page. */
+[data-reveal="left"] { opacity: 0; transform: translateX(-36px); }
+[data-reveal="right"] { opacity: 0; transform: translateX(36px); }
+@keyframes price-in { from { opacity: 0; transform: translateY(12px); } }
+.price-in { animation: price-in 260ms cubic-bezier(.22,1,.36,1); }
+@media (prefers-reduced-motion: reduce) { .price-in { animation: none; } }
+

@@ -1,3 +1,7 @@
-tests/
-tools/
 legacy/
+tests/
+e2e/
+test-results/
+playwright-report/
+dist/
+node_modules/

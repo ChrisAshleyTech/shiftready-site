@@ -1,95 +1,191 @@
-# ShiftReady
+# Rolevara
 
-An IAM job simulator. Learners work a Monday service-desk shift at Pacific Crest Logistics
-(a fictional company). Thursday's queue is then built from what they did on Monday, and they
-can audit their own week on the GRC desk. Everything runs in the browser: there's no backend,
-no build step and no dependencies.
+*Experience the role. Master the work.* ([rolevara.com](https://rolevara.com))
+
+An IAM and GRC job simulator. Learners pick a path: work the Pacific Crest Logistics service desk
+(a fictional company) as a live queue, where tickets stay open until they're actually fixed:
+requesters reply when a fix didn't work and the ticket reopens, and missed work lands later in the
+shift as follow-up incidents; audit their own shift; or audit a simulated analyst's shift as the
+internal auditor. Everything runs in the browser, with no backend.
 
 | URL | What it is |
 |---|---|
-| `/` | Landing page with the waitlist form |
-| `/app/` | The app: home, ticket queue, directory, policy, HR feed, audit log, results, report, GRC desk |
+| `/` | Landing page: hero demo, skills, features, pricing, FAQ, waitlist |
+| `/pricing/` | Pricing (display only) and the waitlist |
+| `/app/` | The app: home, ticket queue, directory, policy, HR feed, audit log, results, shift summary, shift audit, SOX desk, report, settings |
 | `/report/#r=…` | Public readiness report, decoded from the link itself |
 | `/sim.html` | Redirects to `/app/#/queue` (old links and saved progress keep working) |
 
+## Stack
+
+Vite + React 19 + TypeScript, Tailwind CSS v4, shadcn/ui primitives, lucide icons, Recharts (via
+shadcn chart) and Motion. The look is "Bright and Bold": a light base with a strong blue accent
+(`#2563EB`), with dark mode behind the toggle. The theme tokens are in `src/index.css`, and their
+contrast ratios are noted there.
+
+Motion (`src/components/brand/motion.tsx`) includes the animated hero backdrop, scroll reveals,
+count-up stats, hover lift and the looping hero demo. Every looping animation shares one visible
+Pause control (WCAG 2.2.2), and everything is static when the visitor prefers reduced motion.
+
+Components from 21st.dev live in `src/components/ui`:
+- `animated-sidebar.tsx`, the app navigation (starc007). It's kept verbatim; its helpers are in
+  `animated-sidebar-utils/`.
+- `logo-marquee.tsx`, the scrolling skills strip (ddoemonn). It's kept verbatim, with a pause
+  button added by `SkillsStrip` through its `paused` prop.
+
+The simulation engine in `src/engine/*.js` is the original simulator's code, unchanged. The UI only
+calls it and displays what it returns. `src/app/sim.ts` bridges it to React: engine calls mutate the
+state, and `commit()` re-renders. Progress is saved in `localStorage` per company and per path
+(see Paths). Pacific Crest on IAM + GRC keeps `pcl-iam-sim-v1`, the same key since v1.
+
+## Paths
+
+The learner picks a path on the first visit (Home) and can switch in Settings. The choice is in
+`rolevara-path`; each path saves its own progress at each company (`stateKey()` in
+`src/app/pathStore.ts`: IAM + GRC uses the company's original key, the others add `:iam` or
+`:grc`). Anyone with pre-paths progress is put on IAM + GRC and skips the picker. All three
+paths are in Free.
+
+| Path | What the learner does | Screens only in this path |
+|---|---|---|
+| IAM only | The ticket queue, shift summary | Queue, results, shift summary, lab |
+| IAM + GRC | The ticket queue, an optional audit of their own shift, framework panels | Everything |
+| GRC only | Audit Jordan Reyes' shift as the internal auditor | Shift audit, SOX desk |
+
+- **Jordan Reyes** (`src/app/audit/jordan.ts`) is a simulated IAM analyst. On first use of
+  GRC only, Jordan's shift is played through the real engine: the correct playbook plus six planted
+  mistakes (`MISTAKES`). The audit log, directory and follow-up incidents are therefore genuine
+  evidence. The directory is read-only on this path.
+- **The shift audit** (`src/app/audit/weekAudit.ts`) has seven tasks: walkthrough, sample
+  selection, control testing, evidence evaluation, a finding (condition, criteria, cause, effect,
+  recommendation), risk ratings and the management response. It serves both the self-audit (the learner's
+  own shift) and GRC only (Jordan's). Answer keys are computed from the audited shift's log and
+  ticket records when the audit starts, then frozen.
+- **Framework panels** (`src/app/frameworks.ts`) appear on tickets (IAM + GRC) and audit tasks.
+  While the work is open they name only control families. After grading they show the requirements.
+  NIST SP 800-53 Rev. 5 and HIPAA (45 CFR 164) text is quoted verbatim from NIST's OSCAL catalog and
+  the eCFR. ISO/IEC 27001:2022, SOC 2 and PCI DSS v4.0.1 get IDs and our own summaries only, with a
+  link to the official source.
+
+## Images and licenses
+
+**Photos** (`public/img/photos`, self-hosted WebP copies) are from Unsplash under the
+[Unsplash License](https://unsplash.com/license). It's free for commercial use, attribution isn't
+required, and photos can't be sold unaltered or used to build a competing service. We credit the
+photographers anyway, in the image captions and here:
+
+| File | Photographer | Source |
+|---|---|---|
+| `service-desk-*.webp` | BaljkanN 4 | https://unsplash.com/photos/wnpf3Q5pkXA |
+| `mentoring-*.webp` | Centre for Ageing Better | https://unsplash.com/photos/wkFRvw2lTAg (also Public Domain) |
+| `engineers-*.webp` | Tim van der Kuip | https://unsplash.com/photos/CPs2X8JYmS8 |
+| `team-room-*.webp` | RUT MIIT | https://unsplash.com/photos/RbC4-8CdbVQ |
+
+**Illustrations** (`src/components/brand/illustrations.tsx`) are original SVGs drawn for
+Rolevara, so no third-party license applies. unDraw was considered, but its license forbids
+automated downloading.
+
+**Skills strip** labels are plain text, not vendor logos.
+
+## Pricing
+
+`src/marketing/plans.ts` holds the tiers and feature statuses; `PRICES` there is the only place
+prices are set (Free, Pro with a 14-day trial, Pro + Labs; "Cancel anytime" on paid plans). Pricing is
+**display only**: nothing is charged. Items that aren't built yet are marked "Coming soon". Full
+hints, the tutor and the readiness report are marked "Included free during early access".
+"Start free" opens the app. Paid buttons pre-select the tier and billing period in the waitlist form,
+which sends `email`, `tier` and `role` to `FORM_ENDPOINT` in `src/marketing/config.ts` (empty =
+preview mode: the form validates but doesn't send).
+
+## Platform labs and tester access
+
+Three labs (Microsoft Entra ID, Okta, AWS IAM) share the Pacific Crest seed data and grading in
+`src/app/lab/core.ts`; each platform parses its own read-only export (`entra.ts`, `okta.ts`,
+`aws.ts`). The scripts and each lab's step-by-step guide (`lab-files/<lab>/guide.json`) live in
+`lab-files/`, outside `public/` and `src/`, so none of it is in the site build (an e2e test checks
+`dist/`). Vercel serves them from `api/lab-file.js` only to browsers holding tester access, checked on
+every request.
+
+Access is a private link, `/labs/access?key=...`, signed with `LAB_ACCESS_SECRET` (Vercel project
+environment variable, 32+ characters; without it every link is refused). The link sets an HttpOnly
+cookie and opens `/app/#/labs`. Make the secret and links locally:
+
+```sh
+node scripts/make-lab-link.mjs --new-secret          # paste into Vercel as LAB_ACCESS_SECRET
+LAB_ACCESS_SECRET=... node scripts/make-lab-link.mjs --to "tester@example.com" --days 30
+```
+
+Links expire on their own. To cut off one tester early, add the name used with `--to` to the
+`LAB_REVOKED` environment variable (comma-separated) and redeploy; rotating the secret revokes every
+link. The repository itself is public, so anyone can still read `lab-files/` on GitHub until it moves
+to private storage. `TODO(labs-auth)` in `api/_lib/labAccess.js` covers the
+move to Supabase Auth with a paid-tier check and scripts and guide text served from storage. The
+public `/labs` page shows only each lab's overview. The AWS template
+(`lab-files/aws/rolevara-lab-aws.json`) is generated from `awsTemplate()`; `tests/awsLab.test.ts`
+fails if they drift.
+
+## Develop
+
+```sh
+npm install
+npm run dev        # http://localhost:5173/  (app at /app/, pricing at /pricing/, report at /report/)
+npm run build      # type-check and build to dist/
+npm test           # Vitest: engine parity, engine behaviour, landing demo vs engine
+npm run e2e        # Playwright: UI, marketing pages, reduced motion, axe (uses installed Chrome)
+```
+
+## Brand
+
+The mark, wordmark and tagline live in `src/components/brand/Rolevara.tsx`; level badges in
+`LevelBadge.tsx`. `node scripts/make-brand-assets.mjs` renders the favicon, app icons, social preview,
+logo lockups (`public/brand/`, SVG with the font embedded, plus PNG) and the LinkedIn level images
+(`public/badges/`). The product was called ShiftReady before; an inline script on every page moves
+saved progress from the old `shiftready-*` storage keys to `rolevara-*` (its hash is in the CSP in
+`vercel.json`), and the lab scripts still accept labs seeded under the old name.
+
 ## Deploy to Vercel
 
-1. Push this repo to GitHub.
-2. In Vercel, choose **Add New → Project**, import the repo, and select **Deploy**. Leave the
-   framework preset as **Other** and the build settings empty.
-3. For the waitlist, create a free form at formspree.io and paste its endpoint into
-   `FORM_ENDPOINT` near the bottom of `index.html`. Commit, and Vercel redeploys.
-4. Optional: add a custom domain under **Project → Settings → Domains**.
+`vercel.json` sets the Vite framework preset, `npm run build` and the `dist` output directory. Push
+to GitHub and import the repo into Vercel (or run `vercel deploy --prod`). Canonical URLs, the
+sitemap and social previews use `SITE_URL` (default `https://rolevara.com`).
 
-`.vercelignore` keeps `tests/`, `tools/` and `legacy/` out of the deployment.
+## Hints and scoring
 
-## Run locally
-
-ES modules don't load from `file://`, so serve the folder over HTTP. On Windows, without
-Node or Python:
-
-```powershell
-powershell -ExecutionPolicy Bypass -File tools\serve.ps1     # http://localhost:5173/
-```
-
-Any static server works too (`npx serve`, `python -m http.server 5173`).
-
-## How it fits together
-
-```
-assets/css/tokens.css      palette (light + dark), type, spacing, base styles, shared with the landing page
-assets/css/app.css         components and page layouts
-assets/js/engine/          simulation: no DOM, testable
-  company.js  tickets.js  thursday.js  grc.js   the original simulator's data and grading, unchanged
-  store.js                 live state (S) and the grading helpers
-  state.js                 persistence, directory and ticket actions, hint scoring, totals
-  hints.js                 three hint tiers, a skill and a tutor category for every ticket
-  policy.js  skills.js  report.js
-assets/js/app/             UI: hash router (main.js), event handlers (actions.js), views/
-```
-
-Progress is saved in `localStorage` under `pcl-iam-sim-v1`, the same key the original
-single-file simulator used.
-
-### Hints and scoring
-
-Each ticket has three hints. The learner loses the percentage of the **highest** tier they
-opened before closing the ticket. The costs don't add up.
+Each ticket has three hints. The learner loses the percentage of the **highest** tier opened before
+closing. The costs don't add up.
 
 | Tier | Cost | Badge |
 |---|---|---|
 | Nudge | −10% | Solo |
-| Policy clause (quoted from the runbook, plus the matching access-matrix rows) | −25% | Solo |
+| Policy clause (quoted from the runbook, plus matrix rows) | −25% | Solo |
 | Exact steps | −50% | **Assisted** |
 
-The raw graded score is stored unchanged, and the penalty is applied on top of it
-(`finalScore()` in `state.js`). Once a ticket is closed, its hints are free to read and don't
-change the score. To change the costs, edit `HINT_TIERS` in `state.js`.
+The raw graded score is stored unchanged, and the penalty is applied on top (`finalScore()` in
+`src/engine/state.js`). Hints on closed tickets are free to read.
 
-### Tutor
+The tutor is rule-based (`src/app/tutor.ts`) and says so in its panel. It asks guiding questions,
+recaps the audit trail, explains terms and looks things up, but never gives answers.
 
-The tutor is guided and rule-based, not a language model, and it says so in the panel. It asks
-guiding questions for each type of ticket, recaps the learner's own audit trail, explains terms,
-looks up people and roles, and goes through lost points after a ticket is closed. It won't give
-answers, because that's what the paid hints are for. A server-side AI tutor could replace
-`answer()` in `views/tutor.js` later.
-
-### Readiness report links
-
-The report is JSON, base64url-encoded into the URL fragment (`/report/#r=…`). Fragments never
-reach a server, so sharing needs no backend. The report states that it's self-reported: a
-learner could edit the data in the link, so treat it as a conversation starter, not proof.
+Report links carry the report as base64url JSON in the URL fragment, so they need no server.
+Learners could edit them, so the report states that it's self-reported.
 
 ## Tests
 
-Start `tools/serve.ps1`, then open these pages in a browser, or run them headless with
-`sh tools/run-test.sh tests/<page>.html`:
-
-- `tests/parity.html` runs the original simulator (`legacy/sim-original.html`) and the new
-  engine through 40 seeded random scenarios, comparing full state after every action, the
-  Thursday handoff, totals and GRC grading.
-- `tests/walkthrough.html` checks that every ticket's exact-steps hint earns full marks, that a
-  clean Monday fires no consequences and a careless one fires all 13, the hint penalty maths,
-  and a click-through of the UI (hints, Solo/Assisted, tutor, undo, search focus, report link).
-- `tests/seed.html?s=mon|thu&to=%23/queue` loads a partly played week for manual QA.
-  `tests/frame.html` renders a page at exact phone widths.
+- `tests/parity.test.js` runs the original single-file simulator (`legacy/sim-original.html`) and
+  the engine through 40 seeded random scenarios, comparing full state after every action, the
+  handoff to the follow-ups (with the live queue switched off, since the original had two fixed
+  shifts), totals and GRC grading.
+- `tests/paths.test.ts` checks Jordan's shift (only the planted mistakes lose points, three
+  consequences fire), the shift audit's answer keys against that evidence, a clean shift, grading,
+  per-path storage keys, GRC-only report links, and that only public-domain framework text is quoted.
+- `e2e/paths.spec.ts` covers the first-visit picker, GRC only end to end, switching paths without
+  losing progress, skipping and resuming the self-audit, the shift summary, and framework panels, with axe scans.
+- `tests/engine.test.js` checks that all 35 exact-steps hints earn full marks, that a clean shift
+  fires no follow-ups and a careless one fires all 13, the live queue (requester replies reopen
+  tickets, follow-ups land a few closes later, nothing stalls), the hint penalties, and the report link.
+- `tests/demo.test.js` checks the landing-page demo's grade lines against what the engine awards.
+- `e2e/marketing.spec.ts` covers the pricing toggle, labels and waitlist tier pre-selection, the
+  landing section order and photo credits, the Pause control, and reduced motion.
+- `e2e/app.spec.ts` covers hints and penalty maths, Solo/Assisted, the tutor, undo, search focus,
+  results, the public report, mobile layout, and an axe scan of every page (pricing included) in
+  both themes.
